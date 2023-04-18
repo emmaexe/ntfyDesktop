@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Generated with glade -->
+<interface>
+  <requires lib="gtk+" version="3.24"/>
+  <menu id='mainmenu'>
+    <submenu>
+      <attribute name='label' translatable='yes'>_Config</attribute>
+      <item>
+        <attribute name='label' translatable='yes'>_Save</attribute>
+        <attribute name='action'>app.save</attribute>
+        <attribute name='accel'>&lt;Primary&gt;s</attribute>
+      </item>
+      <item>
+        <attribute name='label' translatable='yes'>_Reload</attribute>
+        <attribute name='action'>app.reload</attribute>
+        <attribute name='accel'>&lt;Primary&gt;r</attribute>
+      </item>
+    </submenu>
+  </menu>
+  <menu id='appmenu'>
+    <submenu>
+      <attribute name='label' translatable='yes'>_ntfyDesktop</attribute>
+      <item>
+        <attribute name='label' translatable='yes'>_Start</attribute>
+        <attribute name='action'>app.start</attribute>
+      </item>
+      <item>
+        <attribute name='label' translatable='yes'>_Stop</attribute>
+        <attribute name='action'>app.stop</attribute>
+      </item>
+    </submenu>
+    <submenu>
+      <attribute name='label' translatable='yes'>_Help</attribute>
+      <section>
+        <item>
+          <attribute name='label' translatable='yes'>_About</attribute>
+          <attribute name='action'>app.about</attribute>
+        </item>
+      </section>
+    </submenu>
+    <item>
+      <attribute name='label' translatable='yes'>_Quit</attribute>
+      <attribute name='action'>app.quit</attribute>
+      <attribute name='accel'>&lt;Primary&gt;q</attribute>
+    </item>
+  </menu>
+</interface>

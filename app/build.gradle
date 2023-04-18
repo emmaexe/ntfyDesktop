@@ -1,0 +1,32 @@
+plugins {
+    id 'com.github.johnrengelman.shadow' version '7.1.2'
+    id 'java'
+    id 'application'
+}
+
+sourceCompatibility = 1.11
+targetCompatibility = 1.11
+
+group 'moe.emmaexe.ntfyDesktop'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation group: 'commons-io', name: 'commons-io', version: '2.11.0'
+    implementation group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1.1'
+    //implementation group: "com.github.java-json-tools", name: "json-schema-validator", version: "2.2.14"
+}
+
+application {
+    mainClass = 'moe.emmaexe.ntfyDesktop.NtfyDesktopApp'
+}
+
+shadowJar {
+    manifest {
+        attributes 'Main-Class': 'moe.emmaexe.ntfyDesktop.NtfyDesktopApp'
+    }
+}
+
+build.dependsOn(shadowJar)

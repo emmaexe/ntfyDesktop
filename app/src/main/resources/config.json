@@ -1,0 +1,6 @@
+{
+	"version": "1.0.0",
+	"sources": [
+		{"name": "Example", "url":"https://ntfy.sh/testing/json"}
+	]
+}

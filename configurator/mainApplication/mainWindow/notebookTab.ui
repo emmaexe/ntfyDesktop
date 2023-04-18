@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Generated with glade 3.38.2 -->
+<interface>
+  <requires lib="gtk+" version="3.24"/>
+  <object class="GtkLabel" id="name">
+    <property name="visible">True</property>
+    <property name="can-focus">False</property>
+    <property name="tooltip-text" translatable="yes">Name of notification source</property>
+    <property name="label" translatable="yes">Name: </property>
+  </object>
+  <object class="GtkEntry" id="nameentry">
+    <property name="visible">True</property>
+    <property name="can-focus">True</property>
+    <property name="tooltip-text" translatable="yes">Name of notification source</property>
+    <property name="placeholder-text" translatable="yes">Example name</property>
+  </object>
+  <object class="GtkLabel" id="server">
+    <property name="visible">True</property>
+    <property name="can-focus">False</property>
+    <property name="tooltip-text" translatable="yes">Server to use for this notification source (default: ntfy.sh)</property>
+    <property name="label" translatable="yes">Server:</property>
+  </object>
+  <object class="GtkEntry" id="serverentry">
+    <property name="visible">True</property>
+    <property name="can-focus">True</property>
+    <property name="tooltip-text" translatable="yes">Server to use for this notification source (default: ntfy.sh)</property>
+    <property name="placeholder-text" translatable="yes">ntfy.sh</property>
+  </object>
+  <object class="GtkLabel" id="topic">
+    <property name="visible">True</property>
+    <property name="can-focus">False</property>
+    <property name="tooltip-text" translatable="yes">Topic from which the notifications will be fetched</property>
+    <property name="label" translatable="yes">Topic:</property>
+  </object>
+  <object class="GtkEntry" id="topicentry">
+    <property name="visible">True</property>
+    <property name="can-focus">True</property>
+    <property name="tooltip-text" translatable="yes">Topic from which the notifications will be fetched</property>
+    <property name="placeholder-text" translatable="yes">testing</property>
+  </object>
+</interface>
