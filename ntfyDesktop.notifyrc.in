@@ -1,0 +1,11 @@
+[Global]
+Name=Ntfy Desktop
+IconName=ntfyDesktop
+Comment=@ND_DESCRIPTION@
+DesktopEntry=moe.emmaexe.ntfyDesktop.desktop
+
+[Event/general]
+Name=General Notifications
+Comment=Notifications that come in from notification sources.
+Action=Popup
+Urgency=Normal

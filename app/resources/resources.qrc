@@ -1,0 +1,7 @@
+<RCC>
+  <qresource prefix="images">
+    <file>ntfy.svg</file>
+    <file>ntfy-nobg.svg</file>
+    <file>ntfy-symbolic.svg</file>
+  </qresource>
+</RCC>
