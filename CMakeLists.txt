@@ -1,5 +1,11 @@
 cmake_minimum_required(VERSION 3.10)
-project(ntfyDesktop VERSION 1.0.0 LANGUAGES C CXX)
+project(
+    ntfyDesktop
+    VERSION 1.0.0
+    DESCRIPTION "A desktop client for ntfy." 
+    HOMEPAGE_URL "https://github.com/emmaexe/ntfyDesktop/"
+    LANGUAGES C CXX
+)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
@@ -13,11 +19,7 @@ set(RES_DIR "${CMAKE_CURRENT_SOURCE_DIR}/app/resources")
 set(GEN_DIR "${CMAKE_BINARY_DIR}/generated")
 include_directories("${GEN_DIR}")
 
-# Application variables
-set(ND_DESCRIPTION "A desktop client for ntfy.")
-
 # Setup libraries
-
 find_package(ECM REQUIRED NO_MODULE)
 set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH})
 include(KDEInstallDirs)
@@ -79,3 +81,31 @@ install(FILES "${GEN_DIR}/${CMAKE_PROJECT_NAME}.notifyrc" DESTINATION ${KDE_INST
 install(PROGRAMS "${GEN_DIR}/moe.emmaexe.ntfyDesktop.desktop" DESTINATION ${KDE_INSTALL_APPDIR})
 
 install(TARGETS ${CMAKE_PROJECT_NAME} ${KDE_INSTALL_TARGETS_DEFAULT_ARGS})
+
+# Packaging
+include(GNUInstallDirs)
+set(CPACK_GENERATOR "RPM;DEB;TGZ")
+set(CPACK_PACKAGE_NAME "${CMAKE_PROJECT_NAME}")
+set(CPACK_PACKAGE_VERSION "${PROJECT_VERSION}")
+set(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION}")
+set(CPACK_PACKAGE_DESCRIPTION "${CMAKE_PROJECT_DESCRIPTION} Allows you to subscribe to topics from any ntfy server and recieve notifications natively on the desktop.")
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "${CMAKE_PROJECT_DESCRIPTION}")
+set(CPACK_PACKAGE_CHECKSUM "SHA256")
+set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_SOURCE_DIR}/LICENSE")
+set(CPACK_RESOURCE_FILE_README "${CMAKE_SOURCE_DIR}/README.md")
+set(CPACK_STRIP_FILES TRUE)
+
+set(CPACK_RPM_PACKAGE_LICENSE "GPL")
+set(CPACK_RPM_PACKAGE_GROUP "System/Utilities")
+set(CPACK_RPM_PACKAGE_DESCRIPTION "${CPACK_PACKAGE_DESCRIPTION}")
+set(CPACK_RPM_PACKAGE_AUTOREQ TRUE)
+
+set(CPACK_DEBIAN_FILE_NAME "${CPACK_PACKAGE_FILE_NAME}.deb")
+# TODO: Depends on Qt6/KF6 and libcurl, needs setting up for debian
+#set(CPACK_DEBIAN_PACKAGE_DEPENDS "")
+set(CPACK_DEBIAN_PACKAGE_MAINTAINER "emmaexe <emma.git@emmaexe.moe>")
+set(CPACK_DEBIAN_PACKAGE_SECTION "utils")
+set(CPACK_DEBIAN_PACKAGE_PRIORITY "optional")
+
+set(CPACK_COMPONENTS_ALL ON)
+include(CPack)
