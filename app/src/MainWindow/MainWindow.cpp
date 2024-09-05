@@ -5,7 +5,6 @@
 #include <QCloseEvent>
 #include "../NotificationManager/NotificationManager.hpp"
 
-
 MainWindow::MainWindow(std::shared_ptr<ThreadManager> threadManager, QWidget* parent): QMainWindow(parent), ui(new Ui::MainWindow), threadManager(threadManager) {
     this->ui->setupUi(this);
     QObject::connect(this->ui->saveAction, &QAction::triggered, this, &MainWindow::saveAction);
@@ -41,6 +40,20 @@ MainWindow::MainWindow(std::shared_ptr<ThreadManager> threadManager, QWidget* pa
 
 MainWindow::~MainWindow() {
     delete ui, tray;
+}
+
+void MainWindow::ntfyProtocolTriggered(ProtocolHandler url) {
+    if (url.protocol() == "ntfy") {
+        this->tabs.push_back(new ConfigTab("New Notification Source " + std::to_string(this->newTabCounter), url.domain(), url.path()[0], this));
+        this->newTabCounter++;
+        this->ui->tabs->addTab(this->tabs.at(this->tabs.size()-1), this->tabs.at(this->tabs.size()-1)->getName().c_str());
+        this->ui->tabs->setCurrentIndex(this->tabs.size()-1);
+        if (this->isHidden()) {
+            this->show();
+        } else {
+            QApplication::alert(this);
+        }
+    }
 }
 
 void MainWindow::saveAction() {

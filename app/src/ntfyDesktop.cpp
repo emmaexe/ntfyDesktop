@@ -6,6 +6,7 @@
 #include <curl/curl.h>
 #include <iostream>
 #include <optional>
+#include <memory>
 
 #include "MainWindow/MainWindow.hpp"
 #include "ErrorWindow/ErrorWindow.hpp"
@@ -13,6 +14,7 @@
 #include "SingleInstanceManager/SingleInstanceManager.hpp"
 #include "ThreadManager/ThreadManager.hpp"
 #include "NotificationManager/NotificationManager.hpp"
+#include "ProtocolHandler/ProtocolHandler.hpp"
 #include "ntfyDesktop.hpp"
 
 int main(int argc, char* argv[]) {
@@ -26,7 +28,7 @@ int main(int argc, char* argv[]) {
 
     QCommandLineParser parser;
 
-    parser.addPositionalArgument("url", "Optional URL argument. Used by x-scheme-handler to handle the ntfy:// scheme.", "[url]");
+    parser.addPositionalArgument("url", "Optional URL argument. Used by x-scheme-handler to handle the ntfy:// protocol.", "[url]");
 
     aboutData.setupCommandLine(&parser);
     parser.process(app);
@@ -49,7 +51,7 @@ int main(int argc, char* argv[]) {
         window = std::make_shared<MainWindow>(threadManager);
         singleInstanceManager.onNewInstanceStarted = [&](std::optional<std::string> url){
             if (url.has_value()) {
-                // TODO: Create new tab with the url to handle the ntfy:// protocol
+                std::static_pointer_cast<MainWindow>(window).get()->ntfyProtocolTriggered(ProtocolHandler(url.value()));
             } else {
                 if (window->isHidden()) {
                     window->show();
