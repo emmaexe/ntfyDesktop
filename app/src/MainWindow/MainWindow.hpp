@@ -8,6 +8,7 @@
 #include "ConfigTab.hpp"
 #include "../Config/Config.hpp"
 #include "../ThreadManager/ThreadManager.hpp"
+#include "../ProtocolHandler/ProtocolHandler.hpp"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -21,6 +22,7 @@ class MainWindow: public QMainWindow {
         MainWindow(std::shared_ptr<ThreadManager> threadManager, QWidget* parent = nullptr);
         ~MainWindow();
     public slots:
+        void ntfyProtocolTriggered(ProtocolHandler url);
         void saveAction();
         void addAction();
         void removeAction();

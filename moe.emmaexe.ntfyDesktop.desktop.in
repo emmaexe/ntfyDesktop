@@ -4,6 +4,6 @@ Name=Ntfy Desktop
 Categories=Utility;
 Keywords=notification;
 Comment=@CMAKE_PROJECT_DESCRIPTION@
-Exec=@CMAKE_PROJECT_NAME@
+Exec=@CMAKE_PROJECT_NAME@ %u
 Icon=ntfyDesktop
 MimeType=x-scheme-handler/ntfy;
