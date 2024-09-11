@@ -4,6 +4,8 @@
 #include <KNotification>
 #include <iostream>
 
+#include "../FileManager/FileManager.hpp"
+
 NotificationAction::NotificationAction(const nlohmann::json& actionData) {
     this->type = NotificationActionType::BUTTON;
     try {
@@ -35,8 +37,8 @@ void NotificationManager::generalNotification(const std::string title, const std
         // TODO: priority system
     }
     if (attachment.has_value()) {
-        // TODO: Check if attachment is native to the ntfy server, or if it is external and proxy it (?)
-        notification->setUrls(QList<QUrl>({ QUrl(QString::fromStdString(attachment->url)) }));
+        QUrl tempFileUrl = FileManager::urlToTempFile(QUrl(QString::fromStdString(attachment->url)));
+        notification->setUrls(QList<QUrl>({ tempFileUrl }));
     }
     if (actions.has_value()) {
         for (NotificationAction action: actions.value()) {
@@ -48,7 +50,7 @@ void NotificationManager::generalNotification(const std::string title, const std
             } else if (action.type == NotificationActionType::BUTTON) {
                 knaction = notification->addAction(QString::fromStdString(action.label));
             }
-            
+
             KNotificationAction::connect(knaction, &KNotificationAction::activated, [actionUrl = action.url](){
                 QDesktopServices::openUrl(QUrl(QString::fromStdString(actionUrl)));
             });
