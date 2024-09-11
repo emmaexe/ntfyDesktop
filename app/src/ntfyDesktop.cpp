@@ -7,6 +7,8 @@
 #include <iostream>
 #include <optional>
 #include <memory>
+#include <cstdlib>
+#include <ctime>
 
 #include "MainWindow/MainWindow.hpp"
 #include "ErrorWindow/ErrorWindow.hpp"
@@ -42,6 +44,7 @@ int main(int argc, char* argv[]) {
 
     SingleInstanceManager singleInstanceManager([&](std::optional<std::string> url){ std::cerr << "A new instance was started, but this instance does not have a main window to show." << std::endl; }, passedUrl);
 
+    std::srand(std::time(0));
     curl_global_init(CURL_GLOBAL_DEFAULT);
 
     std::shared_ptr<QMainWindow> window;

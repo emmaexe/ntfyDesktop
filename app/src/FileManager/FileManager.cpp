@@ -5,6 +5,7 @@
 #include <fstream>
 
 #include "FileManagerException.hpp"
+#include "../Util/Util.hpp"
 
 std::vector<QTemporaryFile*> FileManager::tempFileHolder = {};
 
@@ -21,14 +22,12 @@ QUrl FileManager::urlToTempFile(QUrl url) {
         curl_easy_setopt(curl, CURLOPT_URL, url.toString().toStdString().c_str());
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, FileManager::urlToTempFileWriteCallback);
         curl_easy_setopt(curl, CURLOPT_WRITEDATA, &fileStream);
-        // TODO: Random user agent
+        curl_easy_setopt(curl, CURLOPT_USERAGENT, Util::getRandomUA().c_str());
 
         char curlError[CURL_ERROR_SIZE] = "";
         curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, curlError);
 
-        CURLcode res = curl_easy_perform(curl);
-
-        if (res != CURLE_OK) {
+        if (curl_easy_perform(curl) != CURLE_OK) {
             std::string err = "Failed to download file: ";
             err.append(curlError);
             throw FileManagerException(err.c_str());
