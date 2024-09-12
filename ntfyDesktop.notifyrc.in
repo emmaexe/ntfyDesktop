@@ -9,3 +9,9 @@ Name=General Notifications
 Comment=Notifications that come in from notification sources.
 Action=Popup
 Urgency=Normal
+
+[Event/startup]
+Name=Startup Notifications
+Comment=Notification that is sent when the app starts.
+Action=Popup
+Urgency=Normal

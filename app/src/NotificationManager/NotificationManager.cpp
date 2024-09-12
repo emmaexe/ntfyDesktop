@@ -70,3 +70,12 @@ void NotificationManager::generalNotification(const std::string title, const std
 
     notification->sendEvent();
 }
+
+void NotificationManager::startupNotification() {
+    KNotification* notification = new KNotification("startup");
+    notification->setUrgency(KNotification::Urgency::LowUrgency);
+    notification->setTitle("Ntfy Desktop");
+    notification->setText("Ntfy Desktop is running in the background.");
+    notification->setIconName("ntfyDesktop");
+    notification->sendEvent();
+}

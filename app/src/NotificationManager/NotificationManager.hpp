@@ -43,4 +43,5 @@ class NotificationManager {
     public:
         NotificationManager() = delete;
         static void generalNotification(const std::string title, const std::string message, std::optional<NotificationPriority> priority = std::nullopt, std::optional<NotificationAttachment> attachment = std::nullopt, std::optional<std::vector<NotificationAction>> actions = std::nullopt);
+        static void startupNotification();
 };
