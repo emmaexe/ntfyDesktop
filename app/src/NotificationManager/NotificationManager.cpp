@@ -2,7 +2,6 @@
 
 #include <QDesktopServices>
 #include <KNotification>
-#include <iostream>
 
 #include "../FileManager/FileManager.hpp"
 
@@ -30,16 +29,28 @@ NotificationAction::NotificationAction(const std::string& clickUrl) {
 
 void NotificationManager::generalNotification(const std::string title, const std::string message, std::optional<NotificationPriority> priority, std::optional<NotificationAttachment> attachment, std::optional<std::vector<NotificationAction>> actions) {
     KNotification* notification = new KNotification("general");
+
+    if (priority.has_value()) {
+        if (priority.value() == NotificationPriority::HIGHEST) {
+            notification->setUrgency(KNotification::Urgency::CriticalUrgency);
+        } else if (priority.value() == NotificationPriority::HIGH) {
+            notification->setUrgency(KNotification::Urgency::HighUrgency);
+        } else if (priority.value() == NotificationPriority::NORMAL) {
+            notification->setUrgency(KNotification::Urgency::NormalUrgency);
+        } else if (priority.value() == NotificationPriority::LOW || priority.value() == NotificationPriority::LOWEST) {
+            notification->setUrgency(KNotification::Urgency::LowUrgency);
+        }
+    }
+
     notification->setTitle(title.c_str());
     notification->setText(message.c_str());
     notification->setIconName("ntfyDesktop");
-    if (priority.has_value()) {
-        // TODO: priority system
-    }
+
     if (attachment.has_value()) {
         QUrl tempFileUrl = FileManager::urlToTempFile(QUrl(QString::fromStdString(attachment->url)));
         notification->setUrls(QList<QUrl>({ tempFileUrl }));
     }
+
     if (actions.has_value()) {
         for (NotificationAction action: actions.value()) {
             if (!action.useable) { continue; }
@@ -56,5 +67,6 @@ void NotificationManager::generalNotification(const std::string title, const std
             });
         }
     }
+
     notification->sendEvent();
 }
