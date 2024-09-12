@@ -4,7 +4,6 @@
 #include <curl/curl.h>
 #include <fstream>
 
-#include "FileManagerException.hpp"
 #include "../Util/Util.hpp"
 
 std::vector<QTemporaryFile*> FileManager::tempFileHolder = {};
