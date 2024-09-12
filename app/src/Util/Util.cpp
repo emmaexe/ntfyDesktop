@@ -15,6 +15,7 @@ namespace Util {
     int random(int min, int max) {
         return rand() % (max - min + 1) + min;
     }
+
     std::string getRandomUA(int limit) {
         std::string rawData;
         CURL* curl = curl_easy_init();
@@ -31,4 +32,17 @@ namespace Util {
         }
     }
 
+    std::vector<std::string> split(const std::string& string, const std::string& delimiter) {
+        std::vector<std::string> parts;
+        std::string string_c = std::string(string);
+        size_t pos = 0;
+        std::string token;
+        while ((pos = string_c.find(delimiter)) != std::string::npos) {
+            token = string_c.substr(0, pos);
+            parts.push_back(token);
+            string_c.erase(0, pos + delimiter.length());
+        }
+        parts.push_back(string_c);
+        return parts;
+    }
 }

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <vector>
 
 /**
  * @brief Miscellaneous utility functions.
@@ -21,4 +22,13 @@ namespace Util {
      * @return std::string - The user agent.
      */
     std::string getRandomUA(int limit = 3);
+    /**
+     * @brief Split a string into a vector of strings based on a delimiter.
+     * Does not remove trailing empty strings if the source string ends with the delimiter.
+     *
+     * @param string The string getting split
+     * @param delimiter The delimiter
+     * @return std::vector<std::string> - The resulting vector of strings.
+     */
+    std::vector<std::string> split(const std::string& string, const std::string& delimiter);
 }
