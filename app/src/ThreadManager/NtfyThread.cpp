@@ -66,6 +66,22 @@ size_t NtfyThread::writeCallback(char* ptr, size_t size, size_t nmemb, void* use
         if (jsonData["event"] == "message") {
             std::string title(jsonData.contains("title") ? jsonData["title"] : jsonData["topic"]);
             std::string message(jsonData["message"]);
+            if (jsonData.contains("tags")) {
+                bool seenTag = false;
+                for (nlohmann::json item: jsonData["tags"]) {
+                    std::string tag = static_cast<std::string>(item);
+                    std::string ptag = emojicpp::emoji::parse(":" + tag + ":");
+                    if (":" + tag + ":" == ptag) {
+                        if (!seenTag) {
+                            seenTag = true;
+                            message += " Tags: ";
+                        }
+                        message += tag + " ";
+                    } else {
+                        title = ptag + " " + title;
+                    }
+                }
+            }
             std::optional<NotificationPriority> priority = std::nullopt;
             if (jsonData.contains("priority")) {
                 priority = static_cast<NotificationPriority>(jsonData["priority"].get<int>());

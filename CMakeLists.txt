@@ -22,7 +22,7 @@ include_directories("${GEN_DIR}")
 # Setup libraries
 find_package(ECM REQUIRED NO_MODULE)
 set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH})
-include(KDEInstallDirs)
+include(KDEInstallDirs) # This is supposed to be KDEInstallDirs6 but KDEInstallDirs6 is broken atm
 include(ECMInstallIcons)
 include(ECMAddAppIcon)
 
@@ -76,7 +76,7 @@ file(GLOB ICONS_SRC "${CMAKE_CURRENT_SOURCE_DIR}/app/icons/*.png")
 ecm_add_app_icon(${CMAKE_PROJECT_NAME} ICONS ${ICONS_SRC})
 ecm_install_icons(ICONS ${ICONS_SRC} DESTINATION ${KDE_INSTALL_ICONDIR})
 
-install(FILES "${GEN_DIR}/${CMAKE_PROJECT_NAME}.notifyrc" DESTINATION ${KDE_INSTALL_KNOTIFYRCDIR})
+install(FILES "${GEN_DIR}/${CMAKE_PROJECT_NAME}.notifyrc" DESTINATION "${KDE_INSTALL_DATAROOTDIR}/knotifications6")
 
 install(PROGRAMS "${GEN_DIR}/moe.emmaexe.ntfyDesktop.desktop" DESTINATION ${KDE_INSTALL_APPDIR})
 

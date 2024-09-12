@@ -36,6 +36,7 @@ MainWindow::MainWindow(std::shared_ptr<ThreadManager> threadManager, QWidget* pa
     QObject::connect(this->tray, &QSystemTrayIcon::activated, this, &MainWindow::trayIconPressed);
 
     this->ui->statusBar->showMessage(QStatusBar::tr("Ready"), 2000);
+    NotificationManager::startupNotification();
 }
 
 MainWindow::~MainWindow() {
