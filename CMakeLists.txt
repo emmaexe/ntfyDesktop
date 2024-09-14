@@ -83,7 +83,7 @@ set(CPACK_COMPONENTS_ALL ON)
 
 # Configure files
 configure_file("${SRC_DIR}/ntfyDesktop.hpp.in" "${GEN_DIR}/ntfyDesktop.hpp" @ONLY)
-configure_file("${CMAKE_CURRENT_SOURCE_DIR}/${CMAKE_PROJECT_NAME}.notifyrc.in" "${GEN_DIR}/${CMAKE_PROJECT_NAME}.notifyrc" @ONLY)
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/moe.emmaexe.ntfyDesktop.notifyrc.in" "${GEN_DIR}/moe.emmaexe.ntfyDesktop.notifyrc" @ONLY)
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/moe.emmaexe.ntfyDesktop.desktop.in" "${GEN_DIR}/moe.emmaexe.ntfyDesktop.desktop" @ONLY)
 
 # Enable MOC
@@ -105,7 +105,7 @@ file(GLOB ICONS_SRC "${ICON_DIR}/*.png")
 ecm_add_app_icon(${CMAKE_PROJECT_NAME} ICONS ${ICONS_SRC})
 ecm_install_icons(ICONS ${ICONS_SRC} DESTINATION ${KDE_INSTALL_ICONDIR})
 
-install(FILES "${GEN_DIR}/${CMAKE_PROJECT_NAME}.notifyrc" DESTINATION "${KDE_INSTALL_DATAROOTDIR}/knotifications6")
+install(FILES "${GEN_DIR}/moe.emmaexe.ntfyDesktop.notifyrc" DESTINATION "${KDE_INSTALL_DATAROOTDIR}/knotifications6")
 
 install(PROGRAMS "${GEN_DIR}/moe.emmaexe.ntfyDesktop.desktop" DESTINATION ${KDE_INSTALL_APPDIR})
 
