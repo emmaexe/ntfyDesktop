@@ -14,12 +14,14 @@ set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O2")
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g")
 
 # Directory variables
+set(APP_DIR "${CMAKE_CURRENT_SOURCE_DIR}/app}")
 set(SRC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/app/src")
 set(RES_DIR "${CMAKE_CURRENT_SOURCE_DIR}/app/resources")
+set(ICON_DIR "${CMAKE_CURRENT_SOURCE_DIR}/app/icons")
 set(GEN_DIR "${CMAKE_BINARY_DIR}/generated")
-include_directories("${GEN_DIR}")
+include_directories("${GEN_DIR}")   
 
-# Setup libraries
+# Libraries
 find_package(ECM REQUIRED NO_MODULE)
 set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH})
 include(KDEInstallDirs) # This is supposed to be KDEInstallDirs6 but KDEInstallDirs6 is broken atm
@@ -49,40 +51,10 @@ find_package(KF6CoreAddons)
 find_package(KF6I18n)
 find_package(KF6Notifications)
 
-# Find all source and header files in src directory using file globbing
+# Find all source files
 file(GLOB_RECURSE SRC_FILES "${SRC_DIR}/*.cpp" "${SRC_DIR}/*.hpp" "${SRC_DIR}/*.ui")
 
-# Configure files
-configure_file("${SRC_DIR}/ntfyDesktop.hpp.in" "${GEN_DIR}/ntfyDesktop.hpp" @ONLY)
-configure_file("${CMAKE_CURRENT_SOURCE_DIR}/${CMAKE_PROJECT_NAME}.notifyrc.in" "${GEN_DIR}/${CMAKE_PROJECT_NAME}.notifyrc" @ONLY)
-configure_file("${CMAKE_CURRENT_SOURCE_DIR}/moe.emmaexe.ntfyDesktop.desktop.in" "${GEN_DIR}/moe.emmaexe.ntfyDesktop.desktop" @ONLY)
-
-# Setup Qt MOC
-set(CMAKE_AUTOMOC ON)
-set(CMAKE_AUTOUIC ON)
-set(CMAKE_AUTORCC ON)
-
-# Handle resources
-qt_add_resources(RES_FILES "${RES_DIR}/resources.qrc")
-
-# Add executable
-qt_add_executable(${CMAKE_PROJECT_NAME} ${SRC_FILES} ${MOC_FILES} ${RES_FILES})
-
-# Link found libraries
-target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE nlohmann_json::nlohmann_json emojicpp CURL::libcurl Qt6::Core Qt6::Gui Qt6::Widgets KF6::CoreAddons KF6::I18n KF6::Notifications)
-
-# Install
-file(GLOB ICONS_SRC "${CMAKE_CURRENT_SOURCE_DIR}/app/icons/*.png")
-ecm_add_app_icon(${CMAKE_PROJECT_NAME} ICONS ${ICONS_SRC})
-ecm_install_icons(ICONS ${ICONS_SRC} DESTINATION ${KDE_INSTALL_ICONDIR})
-
-install(FILES "${GEN_DIR}/${CMAKE_PROJECT_NAME}.notifyrc" DESTINATION "${KDE_INSTALL_DATAROOTDIR}/knotifications6")
-
-install(PROGRAMS "${GEN_DIR}/moe.emmaexe.ntfyDesktop.desktop" DESTINATION ${KDE_INSTALL_APPDIR})
-
-install(TARGETS ${CMAKE_PROJECT_NAME} ${KDE_INSTALL_TARGETS_DEFAULT_ARGS})
-
-# Packaging
+# Configure CPack
 include(GNUInstallDirs)
 set(CPACK_GENERATOR "RPM;DEB;TGZ")
 set(CPACK_PACKAGE_NAME "${CMAKE_PROJECT_NAME}")
@@ -108,4 +80,36 @@ set(CPACK_DEBIAN_PACKAGE_SECTION "utils")
 set(CPACK_DEBIAN_PACKAGE_PRIORITY "optional")
 
 set(CPACK_COMPONENTS_ALL ON)
+
+# Configure files
+configure_file("${SRC_DIR}/ntfyDesktop.hpp.in" "${GEN_DIR}/ntfyDesktop.hpp" @ONLY)
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/${CMAKE_PROJECT_NAME}.notifyrc.in" "${GEN_DIR}/${CMAKE_PROJECT_NAME}.notifyrc" @ONLY)
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/moe.emmaexe.ntfyDesktop.desktop.in" "${GEN_DIR}/moe.emmaexe.ntfyDesktop.desktop" @ONLY)
+
+# Enable MOC
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTOUIC ON)
+set(CMAKE_AUTORCC ON)
+
+# Add resources
+qt_add_resources(RES_FILES "${RES_DIR}/resources.qrc")
+
+# Add executable
+qt_add_executable(${CMAKE_PROJECT_NAME} ${SRC_FILES} ${MOC_FILES} ${RES_FILES})
+
+# Link libraries
+target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE nlohmann_json::nlohmann_json emojicpp CURL::libcurl Qt6::Core Qt6::Gui Qt6::Widgets KF6::CoreAddons KF6::I18n KF6::Notifications)
+
+# Install files
+file(GLOB ICONS_SRC "${ICON_DIR}/*.png")
+ecm_add_app_icon(${CMAKE_PROJECT_NAME} ICONS ${ICONS_SRC})
+ecm_install_icons(ICONS ${ICONS_SRC} DESTINATION ${KDE_INSTALL_ICONDIR})
+
+install(FILES "${GEN_DIR}/${CMAKE_PROJECT_NAME}.notifyrc" DESTINATION "${KDE_INSTALL_DATAROOTDIR}/knotifications6")
+
+install(PROGRAMS "${GEN_DIR}/moe.emmaexe.ntfyDesktop.desktop" DESTINATION ${KDE_INSTALL_APPDIR})
+
+install(TARGETS ${CMAKE_PROJECT_NAME} ${KDE_INSTALL_TARGETS_DEFAULT_ARGS})
+
+# Package
 include(CPack)
