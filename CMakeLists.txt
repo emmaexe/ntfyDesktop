@@ -14,7 +14,7 @@ set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O2")
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g")
 
 # Directory variables
-set(APP_DIR "${CMAKE_CURRENT_SOURCE_DIR}/app}")
+set(APP_DIR "${CMAKE_CURRENT_SOURCE_DIR}/app")
 set(SRC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/app/src")
 set(RES_DIR "${CMAKE_CURRENT_SOURCE_DIR}/app/resources")
 set(ICON_DIR "${CMAKE_CURRENT_SOURCE_DIR}/app/icons")
@@ -83,8 +83,8 @@ set(CPACK_COMPONENTS_ALL ON)
 
 # Configure files
 configure_file("${SRC_DIR}/ntfyDesktop.hpp.in" "${GEN_DIR}/ntfyDesktop.hpp" @ONLY)
-configure_file("${CMAKE_CURRENT_SOURCE_DIR}/moe.emmaexe.ntfyDesktop.notifyrc.in" "${GEN_DIR}/moe.emmaexe.ntfyDesktop.notifyrc" @ONLY)
-configure_file("${CMAKE_CURRENT_SOURCE_DIR}/moe.emmaexe.ntfyDesktop.desktop.in" "${GEN_DIR}/moe.emmaexe.ntfyDesktop.desktop" @ONLY)
+configure_file("${APP_DIR}/moe.emmaexe.ntfyDesktop.notifyrc.in" "${GEN_DIR}/moe.emmaexe.ntfyDesktop.notifyrc" @ONLY)
+configure_file("${APP_DIR}/moe.emmaexe.ntfyDesktop.desktop.in" "${GEN_DIR}/moe.emmaexe.ntfyDesktop.desktop" @ONLY)
 
 # Enable MOC
 set(CMAKE_AUTOMOC ON)
