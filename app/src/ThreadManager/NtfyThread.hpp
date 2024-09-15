@@ -1,11 +1,12 @@
 #pragma once
 
-#include<atomic>
-#include<thread>
-#include<mutex>
-#include<functional>
-#include<string>
-#include<curl/curl.h>
+#include <curl/curl.h>
+
+#include <atomic>
+#include <functional>
+#include <mutex>
+#include <string>
+#include <thread>
 
 // How long to wait for after the connection fails before retrying.
 #define CONNECTION_LOST_TIMEOUT 1000

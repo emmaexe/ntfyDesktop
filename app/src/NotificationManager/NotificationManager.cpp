@@ -1,9 +1,9 @@
 #include "NotificationManager.hpp"
 
-#include <QDesktopServices>
-#include <KNotification>
-
 #include "../FileManager/FileManager.hpp"
+
+#include <KNotification>
+#include <QDesktopServices>
 
 NotificationAction::NotificationAction(const nlohmann::json& actionData) {
     this->type = NotificationActionType::BUTTON;
@@ -15,9 +15,7 @@ NotificationAction::NotificationAction(const nlohmann::json& actionData) {
         } else {
             this->useable = false;
         }
-    } catch (nlohmann::json::parse_error err) {
-        this->useable = false;
-    }
+    } catch (nlohmann::json::parse_error err) { this->useable = false; }
 }
 
 NotificationAction::NotificationAction(const std::string& clickUrl) {
@@ -27,7 +25,10 @@ NotificationAction::NotificationAction(const std::string& clickUrl) {
     this->useable = true;
 }
 
-void NotificationManager::generalNotification(const std::string title, const std::string message, std::optional<NotificationPriority> priority, std::optional<NotificationAttachment> attachment, std::optional<std::vector<NotificationAction>> actions) {
+void NotificationManager::generalNotification(
+    const std::string title, const std::string message, std::optional<NotificationPriority> priority, std::optional<NotificationAttachment> attachment,
+    std::optional<std::vector<NotificationAction>> actions
+) {
     KNotification* notification = new KNotification("general");
 
     if (priority.has_value()) {
@@ -62,9 +63,7 @@ void NotificationManager::generalNotification(const std::string title, const std
                 knaction = notification->addAction(QString::fromStdString(action.label));
             }
 
-            KNotificationAction::connect(knaction, &KNotificationAction::activated, [actionUrl = action.url](){
-                QDesktopServices::openUrl(QUrl(QString::fromStdString(actionUrl)));
-            });
+            KNotificationAction::connect(knaction, &KNotificationAction::activated, [actionUrl = action.url]() { QDesktopServices::openUrl(QUrl(QString::fromStdString(actionUrl))); });
         }
     }
 

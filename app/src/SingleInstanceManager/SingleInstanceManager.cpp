@@ -1,11 +1,12 @@
 #include "SingleInstanceManager.hpp"
 
-#include <iostream>
 #include <QApplication>
 #include <QDBusConnection>
 #include <QDBusMessage>
+#include <iostream>
 
-SingleInstanceManager::SingleInstanceManager(std::function<void(std::optional<std::string> url)> onNewInstanceStarted, std::optional<std::string> url, QObject* parent): QObject(parent), onNewInstanceStarted(onNewInstanceStarted) {
+SingleInstanceManager::SingleInstanceManager(std::function<void(std::optional<std::string> url)> onNewInstanceStarted, std::optional<std::string> url, QObject* parent):
+    QObject(parent), onNewInstanceStarted(onNewInstanceStarted) {
     QDBusConnection sessionBus = QDBusConnection::sessionBus();
     if (!sessionBus.registerService("moe.emmaexe.ntfyDesktop")) {
         QDBusMessage message = QDBusMessage::createMethodCall("moe.emmaexe.ntfyDesktop", "/SingleInstanceManager", "moe.emmaexe.ntfyDesktop.SingleInstanceManager", "newInstanceStarted");
@@ -15,9 +16,7 @@ SingleInstanceManager::SingleInstanceManager(std::function<void(std::optional<st
             message << "";
         }
         QDBusMessage reply = sessionBus.call(message);
-        if (reply.type() == QDBusMessage::ErrorMessage) {
-            std::cerr << "DBus error: " << reply.errorMessage().toStdString() << std::endl;
-        }
+        if (reply.type() == QDBusMessage::ErrorMessage) { std::cerr << "DBus error: " << reply.errorMessage().toStdString() << std::endl; }
         exit(1);
     }
 
@@ -30,7 +29,5 @@ SingleInstanceManager::SingleInstanceManager(std::function<void(std::optional<st
 SingleInstanceManager::~SingleInstanceManager() {}
 
 void SingleInstanceManager::newInstanceStarted(const QString& url) {
-    if (this->onNewInstanceStarted) {
-        this->onNewInstanceStarted(url.isEmpty() ? std::nullopt : std::make_optional(url.toStdString()));
-    }
+    if (this->onNewInstanceStarted) { this->onNewInstanceStarted(url.isEmpty() ? std::nullopt : std::make_optional(url.toStdString())); }
 }

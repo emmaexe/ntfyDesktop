@@ -1,9 +1,10 @@
 #include "MainWindow.hpp"
+
+#include "../NotificationManager/NotificationManager.hpp"
 #include "ui_MainWindow.h"
 
-#include <QEvent>
 #include <QCloseEvent>
-#include "../NotificationManager/NotificationManager.hpp"
+#include <QEvent>
 
 MainWindow::MainWindow(std::shared_ptr<ThreadManager> threadManager, QWidget* parent): QMainWindow(parent), ui(new Ui::MainWindow), threadManager(threadManager) {
     this->ui->setupUi(this);
@@ -39,16 +40,14 @@ MainWindow::MainWindow(std::shared_ptr<ThreadManager> threadManager, QWidget* pa
     NotificationManager::startupNotification();
 }
 
-MainWindow::~MainWindow() {
-    delete ui, tray;
-}
+MainWindow::~MainWindow() { delete ui, tray; }
 
 void MainWindow::ntfyProtocolTriggered(ProtocolHandler url) {
     if (url.protocol() == "ntfy") {
         this->tabs.push_back(new ConfigTab("New Notification Source " + std::to_string(this->newTabCounter), url.domain(), url.path()[0], this));
         this->newTabCounter++;
-        this->ui->tabs->addTab(this->tabs.at(this->tabs.size()-1), this->tabs.at(this->tabs.size()-1)->getName().c_str());
-        this->ui->tabs->setCurrentIndex(this->tabs.size()-1);
+        this->ui->tabs->addTab(this->tabs.at(this->tabs.size() - 1), this->tabs.at(this->tabs.size() - 1)->getName().c_str());
+        this->ui->tabs->setCurrentIndex(this->tabs.size() - 1);
         if (this->isHidden()) {
             this->show();
         } else {
@@ -75,8 +74,8 @@ void MainWindow::saveAction() {
 void MainWindow::addAction() {
     this->tabs.push_back(new ConfigTab("New Notification Source " + std::to_string(this->newTabCounter), "", "", this));
     this->newTabCounter++;
-    this->ui->tabs->addTab(this->tabs.at(this->tabs.size()-1), this->tabs.at(this->tabs.size()-1)->getName().c_str());
-    this->ui->tabs->setCurrentIndex(this->tabs.size()-1);
+    this->ui->tabs->addTab(this->tabs.at(this->tabs.size() - 1), this->tabs.at(this->tabs.size() - 1)->getName().c_str());
+    this->ui->tabs->setCurrentIndex(this->tabs.size() - 1);
 }
 
 void MainWindow::removeAction() {
@@ -98,7 +97,7 @@ void MainWindow::exitAction() {
 }
 
 void MainWindow::aboutAction() {
-    //TODO: Setup about menu
+    // TODO: Setup about menu
     printf("About Triggered\n");
 }
 
@@ -109,15 +108,13 @@ void MainWindow::closeEvent(QCloseEvent* event) {
 
 void MainWindow::changeEvent(QEvent* event) {
     if (event->type() == QEvent::WindowStateChange) {
-        if (this->isMinimized()) {
-            this->hide();
-        }
+        if (this->isMinimized()) { this->hide(); }
     }
     QMainWindow::changeEvent(event);
 }
 
 void MainWindow::trayIconPressed(QSystemTrayIcon::ActivationReason reason) {
-    switch(reason) {
+    switch (reason) {
         case QSystemTrayIcon::Trigger:
         case QSystemTrayIcon::MiddleClick:
             if (this->isHidden()) {
@@ -126,8 +123,7 @@ void MainWindow::trayIconPressed(QSystemTrayIcon::ActivationReason reason) {
                 this->hide();
             }
             break;
-        default:
-            break;
+        default: break;
     }
 }
 
@@ -148,8 +144,5 @@ void MainWindow::restartConfigAction() {
 
     this->threadManager->restartConfig();
 
-    if (wasShown) {
-        this->show();
-    }
+    if (wasShown) { this->show(); }
 }
-

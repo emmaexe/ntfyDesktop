@@ -1,18 +1,17 @@
 #include "FileManager.hpp"
 
-#include <QApplication>
-#include <curl/curl.h>
-#include <fstream>
-
 #include "../Util/Util.hpp"
+
+#include <curl/curl.h>
+
+#include <QApplication>
+#include <fstream>
 
 std::vector<QTemporaryFile*> FileManager::tempFileHolder = {};
 
 QUrl FileManager::urlToTempFile(QUrl url) {
     QTemporaryFile* file = new QTemporaryFile(QApplication::instance());
-    if (!file->open()) {
-        throw FileManagerException("Unable to create temporary file.");
-    }
+    if (!file->open()) { throw FileManagerException("Unable to create temporary file."); }
     file->setAutoRemove(true);
     FileManager::tempFileHolder.push_back(file);
     std::ofstream fileStream(file->fileName().toStdString(), std::ios::binary);
@@ -35,11 +34,10 @@ QUrl FileManager::urlToTempFile(QUrl url) {
         throw FileManagerException("Unable to create libcurl handle.");
     }
     return QUrl::fromLocalFile(file->fileName());
-
 }
 
 size_t FileManager::urlToTempFileWriteCallback(char* ptr, size_t size, size_t nmemb, void* userdata) {
     std::ofstream* fileStream = static_cast<std::ofstream*>(userdata);
-    fileStream->write(ptr, size*nmemb);
-    return size*nmemb;
+    fileStream->write(ptr, size * nmemb);
+    return size * nmemb;
 }

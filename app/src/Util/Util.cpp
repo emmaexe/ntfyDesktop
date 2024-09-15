@@ -1,20 +1,20 @@
 #include "Util.hpp"
 
-#include <algorithm>
-#include <cstdlib>
 #include <curl/curl.h>
 #include <nlohmann/json.hpp>
 
+#include <algorithm>
+#include <cstdlib>
+#include <memory>
+
 size_t stringWriteCallback(char* ptr, size_t size, size_t nmemb, void* userdata) {
     std::string* rawData = static_cast<std::string*>(userdata);
-    rawData->append(ptr, size*nmemb);
-    return size*nmemb;
+    rawData->append(ptr, size * nmemb);
+    return size * nmemb;
 }
 
 namespace Util {
-    int random(int min, int max) {
-        return rand() % (max - min + 1) + min;
-    }
+    int random(int min, int max) { return rand() % (max - min + 1) + min; }
 
     std::string getRandomUA(int limit) {
         std::string rawData;
@@ -27,9 +27,7 @@ namespace Util {
             nlohmann::json data = nlohmann::json::parse(rawData);
             int target = Util::random(0, std::min(limit, static_cast<int>(data.size())));
             return data.at(target);
-        } catch(nlohmann::json::parse_error e) {
-            return "curl/" + std::string(curl_version());
-        }
+        } catch (nlohmann::json::parse_error e) { return "curl/" + std::string(curl_version()); }
     }
 
     std::vector<std::string> split(const std::string& string, const std::string& delimiter) {
