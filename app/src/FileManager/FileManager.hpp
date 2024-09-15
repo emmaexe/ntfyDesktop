@@ -1,9 +1,9 @@
 #pragma once
 
-#include <QUrl>
-#include <QTemporaryFile>
-
 #include "FileManagerException.hpp"
+
+#include <QTemporaryFile>
+#include <QUrl>
 
 /**
  * @brief Static class with misc file managment functionality

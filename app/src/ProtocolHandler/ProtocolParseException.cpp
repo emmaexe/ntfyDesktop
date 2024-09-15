@@ -2,6 +2,4 @@
 
 ProtocolParseException::ProtocolParseException(const char* message): message(message) {}
 
-const char* ProtocolParseException::what() const throw() {
-    return this->message.c_str();
-}
+const char* ProtocolParseException::what() const throw() { return this->message.c_str(); }

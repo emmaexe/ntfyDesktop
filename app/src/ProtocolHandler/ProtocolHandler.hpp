@@ -1,10 +1,10 @@
 #pragma once
 
+#include "ProtocolParseException.hpp"
+
+#include <map>
 #include <string>
 #include <vector>
-#include <map>
-
-#include "ProtocolParseException.hpp"
 
 /**
  * @brief Class for handling the `ntfy://` protocol and other URLs in general. Creates an immutable object that holds parsed data from a URL.

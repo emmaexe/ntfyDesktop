@@ -1,15 +1,16 @@
 #pragma once
 
-#include <QObject>
-#include <vector>
+#include "../Config/Config.hpp"
+#include "NtfyThread.hpp"
+
+#include <atomic>
 #include <memory>
 #include <mutex>
-#include <atomic>
-#include "NtfyThread.hpp"
-#include "../Config/Config.hpp"
+#include <QObject>
+#include <vector>
 
 class ThreadManager: public QObject {
-    Q_OBJECT
+        Q_OBJECT
     public:
         ThreadManager(QObject *parent = nullptr);
         ~ThreadManager();

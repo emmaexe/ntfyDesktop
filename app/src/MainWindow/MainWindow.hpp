@@ -1,14 +1,14 @@
 #pragma once
 
+#include "../Config/Config.hpp"
+#include "../ProtocolHandler/ProtocolHandler.hpp"
+#include "../ThreadManager/ThreadManager.hpp"
+#include "ConfigTab.hpp"
+
 #include <QMainWindow>
 #include <QSystemTrayIcon>
-#include <vector>
 #include <memory>
-
-#include "ConfigTab.hpp"
-#include "../Config/Config.hpp"
-#include "../ThreadManager/ThreadManager.hpp"
-#include "../ProtocolHandler/ProtocolHandler.hpp"
+#include <vector>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -17,7 +17,7 @@ namespace Ui {
 QT_END_NAMESPACE
 
 class MainWindow: public QMainWindow {
-    Q_OBJECT
+        Q_OBJECT
     public:
         MainWindow(std::shared_ptr<ThreadManager> threadManager, QWidget* parent = nullptr);
         ~MainWindow();

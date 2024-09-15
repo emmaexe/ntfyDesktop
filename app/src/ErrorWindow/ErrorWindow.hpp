@@ -1,7 +1,8 @@
 #pragma once
 
-#include <QMainWindow>
 #include "../Config/Config.hpp"
+
+#include <QMainWindow>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -10,7 +11,7 @@ namespace Ui {
 QT_END_NAMESPACE
 
 class ErrorWindow: public QMainWindow {
-    Q_OBJECT
+        Q_OBJECT
     public:
         ErrorWindow(QWidget* parent = nullptr);
         ~ErrorWindow();
@@ -19,4 +20,3 @@ class ErrorWindow: public QMainWindow {
     private:
         Ui::ErrorWindow* ui;
 };
-

@@ -9,7 +9,7 @@ namespace Ui {
 QT_END_NAMESPACE
 
 class ConfigTab: public QWidget {
-    Q_OBJECT
+        Q_OBJECT
     public:
         ConfigTab(std::string name, std::string server, std::string topic, QWidget* parent = nullptr);
         ~ConfigTab();
