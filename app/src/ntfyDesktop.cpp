@@ -45,7 +45,7 @@ int main(int argc, char* argv[]) {
     );
     KAboutData::setApplicationData(aboutData);
 
-    QGuiApplication::setDesktopFileName("moe.emmaexe.ntfyDesktop.desktop");
+    QGuiApplication::setDesktopFileName("moe.emmaexe.ntfyDesktop");
 
     QCommandLineParser parser;
     parser.addPositionalArgument("url", "Optional URL argument. Used by x-scheme-handler to handle the ntfy:// protocol.", "[url]");
