@@ -1,5 +1,7 @@
 #include "Config.hpp"
 
+#include "../NotificationStore/NotificationStore.hpp"
+
 #include <QStandardPaths>
 #include <filesystem>
 #include <fstream>
@@ -32,6 +34,7 @@ void Config::read() {
     }
     configStream.close();
     Config::initialized = true;
+    NotificationStore::configSync();
 }
 
 void Config::write() {
@@ -41,6 +44,7 @@ void Config::write() {
     std::ofstream configStream(Config::getConfigFile(), std::ios::trunc);
     configStream << configSerialized;
     configStream.close();
+    NotificationStore::configSync();
 }
 
 bool Config::ready() {

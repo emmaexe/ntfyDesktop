@@ -40,6 +40,10 @@ class NotificationStore {
          * @param topic The topic to remove
          */
         static void remove(const std::string& domain, const std::string& topic);
+        /**
+         * @brief Synchronize the NotificationStore to the Config.
+         */
+        static void configSync();
     private:
         static bool initialized;
         static std::map<std::string, std::string> internalData;
