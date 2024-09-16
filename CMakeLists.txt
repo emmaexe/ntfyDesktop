@@ -42,6 +42,7 @@ CPMAddPackage("gh:nlohmann/json@3.11.3")
 CPMAddPackage("gh:emmaexe/emojicpp@2.0.0")
 include_directories("${emojicpp_SOURCE_DIR}")
 find_package(CURL REQUIRED)
+find_package(Boost REQUIRED COMPONENTS serialization)
 find_package(Qt6 REQUIRED COMPONENTS
     Core
     Gui
@@ -73,7 +74,7 @@ set(CPACK_RPM_PACKAGE_DESCRIPTION "${CPACK_PACKAGE_DESCRIPTION}")
 set(CPACK_RPM_PACKAGE_AUTOREQ TRUE)
 
 set(CPACK_DEBIAN_FILE_NAME "${CPACK_PACKAGE_FILE_NAME}.deb")
-# TODO: Depends on Qt6/KF6 and libcurl, needs setting up for debian
+# TODO: Depends on Qt6/KF6, boost and libcurl, needs setting up for debian
 #set(CPACK_DEBIAN_PACKAGE_DEPENDS "")
 set(CPACK_DEBIAN_PACKAGE_MAINTAINER "emmaexe <emma.git@emmaexe.moe>")
 set(CPACK_DEBIAN_PACKAGE_SECTION "utils")
@@ -98,7 +99,7 @@ qt_add_resources(RES_FILES "${RES_DIR}/resources.qrc")
 qt_add_executable(${CMAKE_PROJECT_NAME} ${SRC_FILES} ${MOC_FILES} ${RES_FILES})
 
 # Link libraries
-target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE nlohmann_json::nlohmann_json emojicpp CURL::libcurl Qt6::Core Qt6::Gui Qt6::Widgets KF6::CoreAddons KF6::I18n KF6::Notifications)
+target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE nlohmann_json::nlohmann_json emojicpp CURL::libcurl Boost::serialization Qt6::Core Qt6::Gui Qt6::Widgets KF6::CoreAddons KF6::I18n KF6::Notifications)
 
 # Install files
 file(GLOB ICONS_SRC "${ICON_DIR}/*.png")

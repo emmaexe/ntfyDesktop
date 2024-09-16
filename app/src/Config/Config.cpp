@@ -1,5 +1,7 @@
 #include "Config.hpp"
 
+#include "../NotificationStore/NotificationStore.hpp"
+
 #include <QStandardPaths>
 #include <filesystem>
 #include <fstream>
@@ -32,6 +34,7 @@ void Config::read() {
     }
     configStream.close();
     Config::initialized = true;
+    NotificationStore::configSync();
 }
 
 void Config::write() {
@@ -41,6 +44,7 @@ void Config::write() {
     std::ofstream configStream(Config::getConfigFile(), std::ios::trunc);
     configStream << configSerialized;
     configStream.close();
+    NotificationStore::configSync();
 }
 
 bool Config::ready() {
@@ -53,6 +57,6 @@ const std::string& Config::getError() {
     return Config::internalError;
 }
 
-const std::string Config::getConfigPath() { return QStandardPaths::writableLocation(QStandardPaths::ConfigLocation).toStdString() + std::string("/ntfyDesktop/"); }
+const std::string Config::getConfigPath() { return QStandardPaths::writableLocation(QStandardPaths::ConfigLocation).toStdString() + std::string("/moe.emmaexe.ntfyDesktop/"); }
 
-const std::string Config::getConfigFile() { return QStandardPaths::writableLocation(QStandardPaths::ConfigLocation).toStdString() + std::string("/ntfyDesktop/config.json"); }
+const std::string Config::getConfigFile() { return QStandardPaths::writableLocation(QStandardPaths::ConfigLocation).toStdString() + std::string("/moe.emmaexe.ntfyDesktop/config.json"); }

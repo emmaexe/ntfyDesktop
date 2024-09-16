@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <cstdlib>
 #include <memory>
+#include <regex>
 
 size_t stringWriteCallback(char* ptr, size_t size, size_t nmemb, void* userdata) {
     std::string* rawData = static_cast<std::string*>(userdata);
@@ -43,4 +44,8 @@ namespace Util {
         parts.push_back(string_c);
         return parts;
     }
+
+    bool isDomain(const std::string& domain) { return std::regex_match(domain, std::regex("^[.A-Za-z]+$")); }
+
+    bool isTopic(const std::string& topic) { return std::regex_match(topic, std::regex("^[A-Za-z]+$")); }
 }

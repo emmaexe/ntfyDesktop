@@ -33,7 +33,7 @@ WIP
 
 ```bash
 dnf groupinstall "Development Tools"
-dnf install gcc-c++ cmake extra-cmake-modules libcurl-devel qt6-qtbase-devel kf6-kcoreaddons-devel kf6-ki18n-devel kf6-knotifications-devel rpm-build
+dnf install gcc-c++ cmake extra-cmake-modules boost-devel libcurl-devel qt6-qtbase-devel kf6-kcoreaddons-devel kf6-ki18n-devel kf6-knotifications-devel rpm-build
 ```
 
 #### Ubuntu

@@ -13,15 +13,17 @@
 
 class NtfyThread {
     public:
-        NtfyThread(std::string url, std::mutex* mutex);
+        NtfyThread(std::string domain, std::string topic, bool secure, std::string lastNotificationID, std::mutex* mutex);
         ~NtfyThread();
         void run();
-        void stop();
+        const std::string& stop();
+        const std::string& domain();
+        const std::string& topic();
     private:
         std::thread thread;
         std::mutex* mutex;
         std::atomic<bool> running;
-        std::string url;
+        std::string internalDomain, internalTopic, url, lastNotificationID;
         static size_t writeCallback(char* ptr, size_t size, size_t nmemb, void* userdata);
         static int progressCallback(void* clientp, curl_off_t dltotal, curl_off_t dlnow, curl_off_t ultotal, curl_off_t ulnow);
 };
