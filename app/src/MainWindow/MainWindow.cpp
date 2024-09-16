@@ -1,10 +1,12 @@
 #include "MainWindow.hpp"
 
 #include "../NotificationManager/NotificationManager.hpp"
+#include "../Util/Util.hpp"
 #include "ui_MainWindow.h"
 
 #include <QCloseEvent>
 #include <QEvent>
+#include <algorithm>
 
 MainWindow::MainWindow(std::shared_ptr<ThreadManager> threadManager, QWidget* parent): QMainWindow(parent), ui(new Ui::MainWindow), threadManager(threadManager) {
     this->ui->setupUi(this);
@@ -58,14 +60,31 @@ void MainWindow::ntfyProtocolTriggered(ProtocolHandler url) {
 
 void MainWindow::saveAction() {
     Config::data()["sources"] = nlohmann::json::array();
+    std::vector<std::string> seen = {};
     for (int i = 0; i < this->tabs.size(); i++) {
         ConfigTab* tab = this->tabs.at(i);
-        this->ui->tabs->setTabText(i, tab->getName().c_str());
-        nlohmann::json tabData;
-        tabData["name"] = tab->getName();
-        tabData["server"] = tab->getServer();
-        tabData["topic"] = tab->getTopic();
-        Config::data()["sources"].push_back(tabData);
+        std::string domainTopic = tab->getServer() + "/" + tab->getTopic();
+        if (std::find(seen.begin(), seen.end(), domainTopic) != seen.end()) {
+            std::string tabName = "⚠️" + tab->getName();
+            this->ui->tabs->setTabText(i, QString::fromStdString(tabName));
+            this->ui->tabs->setCurrentIndex(i);
+            this->ui->statusBar->showMessage(QStatusBar::tr("⚠️ Duplicate configuration found. Did not save."), 5000);
+            return;
+        } else if (!Util::isDomain(tab->getServer()) || !Util::isTopic(tab->getTopic())) {
+            std::string tabName = "⚠️" + tab->getName();
+            this->ui->tabs->setTabText(i, QString::fromStdString(tabName));
+            this->ui->tabs->setCurrentIndex(i);
+            this->ui->statusBar->showMessage(QStatusBar::tr("⚠️ Invalid domain or topic. Did not save."), 5000);
+            return;
+        } else {
+            seen.push_back(domainTopic);
+            this->ui->tabs->setTabText(i, tab->getName().c_str());
+            nlohmann::json tabData;
+            tabData["name"] = tab->getName();
+            tabData["server"] = tab->getServer();
+            tabData["topic"] = tab->getTopic();
+            Config::data()["sources"].push_back(tabData);
+        }
     }
     Config::write();
     this->ui->statusBar->showMessage(QStatusBar::tr("Configuration saved."), 2000);

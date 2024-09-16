@@ -31,4 +31,16 @@ namespace Util {
      * @return std::vector<std::string> - The resulting vector of strings.
      */
     std::vector<std::string> split(const std::string& string, const std::string& delimiter);
+    /**
+     * @brief Check if a string contains a valid ntfy domain
+     *
+     * @param domain The domain to check
+     */
+    bool isDomain(const std::string& domain);
+    /**
+     * @brief Check if a string contains a valid ntfy topic
+     *
+     * @param topic The topic to check
+     */
+    bool isTopic(const std::string& topic);
 }
