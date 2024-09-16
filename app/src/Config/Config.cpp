@@ -53,6 +53,6 @@ const std::string& Config::getError() {
     return Config::internalError;
 }
 
-const std::string Config::getConfigPath() { return QStandardPaths::writableLocation(QStandardPaths::ConfigLocation).toStdString() + std::string("/ntfyDesktop/"); }
+const std::string Config::getConfigPath() { return QStandardPaths::writableLocation(QStandardPaths::ConfigLocation).toStdString() + std::string("/moe.emmaexe.ntfyDesktop/"); }
 
-const std::string Config::getConfigFile() { return QStandardPaths::writableLocation(QStandardPaths::ConfigLocation).toStdString() + std::string("/ntfyDesktop/config.json"); }
+const std::string Config::getConfigFile() { return QStandardPaths::writableLocation(QStandardPaths::ConfigLocation).toStdString() + std::string("/moe.emmaexe.ntfyDesktop/config.json"); }
