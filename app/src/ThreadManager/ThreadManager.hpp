@@ -3,10 +3,10 @@
 #include "../Config/Config.hpp"
 #include "NtfyThread.hpp"
 
+#include <QObject>
 #include <atomic>
 #include <memory>
 #include <mutex>
-#include <QObject>
 #include <vector>
 
 class ThreadManager: public QObject {
