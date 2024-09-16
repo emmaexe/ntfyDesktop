@@ -2,6 +2,7 @@
 
 #include "../NotificationManager/NotificationManager.hpp"
 #include "../Util/Util.hpp"
+#include "ntfyDesktop.hpp"
 
 #include <emojicpp/emoji.hpp>
 #include <nlohmann/json.hpp>
@@ -30,6 +31,7 @@ void NtfyThread::run() {
     curl_easy_setopt(curlHandle, CURLOPT_XFERINFODATA, this);
     curl_easy_setopt(curlHandle, CURLOPT_NOPROGRESS, 0L);
     curl_easy_setopt(curlHandle, CURLOPT_NOSIGNAL, 1L);
+    curl_easy_setopt(curlHandle, CURLOPT_USERAGENT, ND_USERAGENT);
 
     while (this->running) {
         if (!firstRun) { std::this_thread::sleep_for(std::chrono::milliseconds(CONNECTION_LOST_TIMEOUT)); }
