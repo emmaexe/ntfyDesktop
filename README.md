@@ -1,4 +1,4 @@
-# <img alt="logo" height="48" src="https://raw.githubusercontent.com/emmaexe/ntfyDesktop/main/app/icons/ntfyDesktop.svg"> Ntfy Desktop
+# <img alt="logo" height="48" src="https://raw.githubusercontent.com/emmaexe/ntfyDesktop/main/app/resources/ntfyDesktop.svg"> Ntfy Desktop
 
 ![GitHub License](https://img.shields.io/github/license/emmaexe/ntfyDesktop)
 ![GitHub Tag](https://img.shields.io/github/v/tag/emmaexe/ntfyDesktop?label=Latest%20stable%20version)
