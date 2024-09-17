@@ -170,6 +170,7 @@ void MainWindow::restartAction() {
         this->ui->tabs->addTab(this->tabs.at(i), this->tabs.at(i)->getName().c_str());
     }
     this->threadManager->restartConfig();
+    this->newTabCounter = 1;
 
     if (wasShown) { this->show(); }
 }
