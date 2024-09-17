@@ -12,6 +12,7 @@ bool Config::initialized = false;
 bool Config::ok = true;
 nlohmann::json Config::internalData = {};
 std::string Config::internalError = "";
+int Config::internalErrorCounter = 0;
 
 nlohmann::json& Config::data() {
     if (!Config::initialized) { Config::read(); }
@@ -30,11 +31,17 @@ void Config::read() {
             Config::internalError = e.what();
         }
     } else {
-        Config::ok = false;
-        Config::internalError = "The config file does not exist.";
+        if (Config::internalErrorCounter <= 3) {
+            internalErrorCounter++;
+            return Config::reset();
+        } else {
+            Config::ok = false;
+            Config::internalError = "The config file does not exist.";
+        }
     }
     configStream.close();
     Config::initialized = true;
+    Config::internalErrorCounter = 0;
     NotificationStore::configSync();
 }
 

@@ -42,6 +42,7 @@ class Config {
         static bool initialized, ok;
         static nlohmann::json internalData;
         static std::string internalError;
+        static int internalErrorCounter;
         static const std::string getConfigPath();
         static const std::string getConfigFile();
 };
