@@ -42,6 +42,5 @@ class MainWindow: public QMainWindow {
         QSystemTrayIcon* tray;
         QMenu* trayMenu;
         QAction* showHideQAction;
-        QAction* restartQAction;
         KHelpMenu* helpMenu;
 };

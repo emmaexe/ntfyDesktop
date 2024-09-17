@@ -28,9 +28,7 @@ MainWindow::MainWindow(std::shared_ptr<ThreadManager> threadManager, KAboutData&
     this->showHideQAction = new QAction(QIcon(":/icons/ntfy-symbolic.svg"), QAction::tr("Show/hide window"), this);
     QObject::connect(this->showHideQAction, &QAction::triggered, this, &MainWindow::showHideAction);
     this->trayMenu->addAction(this->showHideQAction);
-    this->restartQAction = new QAction(QIcon::fromTheme("system-restart-panel"), QAction::tr("Restart"), this);
-    QObject::connect(this->restartQAction, &QAction::triggered, this, &MainWindow::restartAction);
-    this->trayMenu->addAction(this->restartQAction);
+    this->trayMenu->addAction(this->ui->restartAction);
     this->trayMenu->addAction(this->ui->exitAction);
 
     this->tray = new QSystemTrayIcon(this);
