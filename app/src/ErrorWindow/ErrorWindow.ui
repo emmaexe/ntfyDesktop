@@ -23,7 +23,7 @@
    <iconset theme="ntfyDesktop"/>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <layout class="QVBoxLayout" name="verticalLayout">
+   <layout class="QVBoxLayout" name="verticalLayout" stretch="1,0">
     <item>
      <widget class="QLabel" name="ErrorText">
       <property name="whatsThis">
@@ -38,7 +38,7 @@
      </widget>
     </item>
     <item>
-     <layout class="QHBoxLayout" name="ButtonsLayout">
+     <layout class="QHBoxLayout" name="ButtonsLayout" stretch="0,0">
       <item>
        <widget class="QPushButton" name="ResetButton">
         <property name="cursor">
