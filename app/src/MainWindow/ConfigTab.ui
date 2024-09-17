@@ -18,7 +18,7 @@
   </property>
   <property name="windowIcon">
    <iconset resource="../../resources/resources.qrc">
-    <normaloff>:/images/ntfy-nobg.svg</normaloff>:/images/ntfy-nobg.svg</iconset>
+    <normaloff>:/icons/ntfy-nobg.svg</normaloff>:/icons/ntfy-nobg.svg</iconset>
   </property>
   <layout class="QFormLayout" name="formLayout">
    <item row="0" column="1">

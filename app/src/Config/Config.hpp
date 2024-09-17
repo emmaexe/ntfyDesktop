@@ -29,6 +29,10 @@ class Config {
          */
         static bool ready();
         /**
+         * @brief Reset the config to the default values.
+         */
+        static void reset();
+        /**
          * @brief Get the error message if the config was not initialized successfully. Otherwise, returns an empty string.
          *
          * @return const std::string& errorMessage

@@ -5,6 +5,7 @@
 #include "../ThreadManager/ThreadManager.hpp"
 #include "ConfigTab.hpp"
 
+#include <KHelpMenu>
 #include <QMainWindow>
 #include <QSystemTrayIcon>
 #include <memory>
@@ -19,7 +20,7 @@ QT_END_NAMESPACE
 class MainWindow: public QMainWindow {
         Q_OBJECT
     public:
-        MainWindow(std::shared_ptr<ThreadManager> threadManager, QWidget* parent = nullptr);
+        MainWindow(std::shared_ptr<ThreadManager> threadManager, KAboutData& aboutData, QWidget* parent = nullptr);
         ~MainWindow();
     public slots:
         void ntfyProtocolTriggered(ProtocolHandler url);
@@ -27,7 +28,6 @@ class MainWindow: public QMainWindow {
         void addAction();
         void removeAction();
         void exitAction();
-        void aboutAction();
         void trayIconPressed(QSystemTrayIcon::ActivationReason reason);
         void showHideAction();
         void restartConfigAction();
@@ -43,4 +43,5 @@ class MainWindow: public QMainWindow {
         QMenu* trayMenu;
         QAction* showHideQAction;
         QAction* restartConfigQAction;
+        KHelpMenu* helpMenu;
 };

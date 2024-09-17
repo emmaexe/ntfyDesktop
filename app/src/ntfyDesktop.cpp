@@ -31,21 +31,21 @@ int main(int argc, char* argv[]) {
         QStringLiteral(ND_VERSION),
         i18n(ND_DESCRIPTION_SUMMARY),
         KAboutLicense::GPL_V3,
-        QStringLiteral("(c) 2024"),
+        QStringLiteral("© 2024"),
         QStringLiteral(),
         QStringLiteral(ND_HOMEPAGE_URL),
         QStringLiteral(ND_ISSUES_URL)
     );
+    aboutData.setProgramLogo(QIcon(":/icons/ntfyDesktop.svg"));
+    aboutData.setDesktopFileName("moe.emmaexe.ntfyDesktop");
     aboutData.addAuthor(
         QStringLiteral("emmaexe"),
         i18n("Author"),
-        QStringLiteral(""),
+        QStringLiteral("emma.git@emmaexe.moe"),
         QStringLiteral("https://www.emmaexe.moe/"),
-        QStringLiteral("https://cdn.discordapp.com/avatars/299265668522442752/841bddd42846b31f2a06eeb5e93a0652.png?size=4096")
+        QStringLiteral("")
     );
     KAboutData::setApplicationData(aboutData);
-
-    QGuiApplication::setDesktopFileName("moe.emmaexe.ntfyDesktop");
 
     QCommandLineParser parser;
     parser.addPositionalArgument("url", "Optional URL argument. Used by x-scheme-handler to handle the ntfy:// protocol.", "[url]");
@@ -67,7 +67,7 @@ int main(int argc, char* argv[]) {
     std::shared_ptr<ThreadManager> threadManager;
     if (Config::ready()) {
         threadManager = std::make_shared<ThreadManager>();
-        window = std::make_shared<MainWindow>(threadManager);
+        window = std::make_shared<MainWindow>(threadManager, aboutData);
         singleInstanceManager.onNewInstanceStarted = [&](std::optional<std::string> url) {
             if (url.has_value()) {
                 std::static_pointer_cast<MainWindow>(window).get()->ntfyProtocolTriggered(ProtocolHandler(url.value()));
@@ -80,7 +80,7 @@ int main(int argc, char* argv[]) {
             }
         };
     } else {
-        window = std::make_shared<ErrorWindow>();
+        window = std::make_shared<ErrorWindow>(aboutData);
     }
 
     return app.exec();

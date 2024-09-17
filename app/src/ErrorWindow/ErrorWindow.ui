@@ -17,16 +17,18 @@
    </sizepolicy>
   </property>
   <property name="windowTitle">
-   <string>Ntfy desktop - Error</string>
+   <string>Error</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="../409515d1/resources.qrc">
-    <normaloff>:/images/ntfy-nobg.svg</normaloff>:/images/ntfy-nobg.svg</iconset>
+   <iconset theme="ntfyDesktop"/>
   </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
      <widget class="QLabel" name="ErrorText">
+      <property name="whatsThis">
+       <string>This is text describing the error that occured.</string>
+      </property>
       <property name="text">
        <string>An error has occured.</string>
       </property>
@@ -42,6 +44,9 @@
         <property name="cursor">
          <cursorShape>PointingHandCursor</cursorShape>
         </property>
+        <property name="whatsThis">
+         <string>This is a reset button. It will reset the configuration file on the disk to a default state.</string>
+        </property>
         <property name="text">
          <string>Reset Configuration</string>
         </property>
@@ -54,6 +59,9 @@
        <widget class="QPushButton" name="OkButton">
         <property name="cursor">
          <cursorShape>PointingHandCursor</cursorShape>
+        </property>
+        <property name="whatsThis">
+         <string>This is an ok button. It will dismiss the error and exit.</string>
         </property>
         <property name="text">
          <string>OK</string>
@@ -76,24 +84,12 @@
      <height>30</height>
     </rect>
    </property>
-   <widget class="QMenu" name="menuAbout">
-    <property name="title">
-     <string>A&amp;bout</string>
-    </property>
-    <addaction name="aboutAction"/>
-   </widget>
-   <addaction name="menuAbout"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
-  <action name="aboutAction">
-   <property name="text">
-    <string>&amp;Ntfy Desktop</string>
-   </property>
-  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources>
-  <include location="../409515d1/resources.qrc"/>
+  <include location="../../resources/resources.qrc"/>
  </resources>
  <connections>
   <connection>
