@@ -14,6 +14,7 @@ MainWindow::MainWindow(std::shared_ptr<ThreadManager> threadManager, KAboutData&
     QObject::connect(this->ui->saveAction, &QAction::triggered, this, &MainWindow::saveAction);
     QObject::connect(this->ui->addAction, &QAction::triggered, this, &MainWindow::addAction);
     QObject::connect(this->ui->removeAction, &QAction::triggered, this, &MainWindow::removeAction);
+    QObject::connect(this->ui->restartAction, &QAction::triggered, this, &MainWindow::restartAction);
     QObject::connect(this->ui->exitAction, &QAction::triggered, this, &MainWindow::exitAction);
 
     nlohmann::json sources = Config::data()["sources"];
@@ -27,9 +28,9 @@ MainWindow::MainWindow(std::shared_ptr<ThreadManager> threadManager, KAboutData&
     this->showHideQAction = new QAction(QIcon(":/icons/ntfy-symbolic.svg"), QAction::tr("Show/hide window"), this);
     QObject::connect(this->showHideQAction, &QAction::triggered, this, &MainWindow::showHideAction);
     this->trayMenu->addAction(this->showHideQAction);
-    this->restartConfigQAction = new QAction(QIcon::fromTheme("system-restart-symbolic"), QAction::tr("Restart"), this);
-    QObject::connect(this->restartConfigQAction, &QAction::triggered, this, &MainWindow::restartConfigAction);
-    this->trayMenu->addAction(this->restartConfigQAction);
+    this->restartQAction = new QAction(QIcon::fromTheme("system-restart-panel"), QAction::tr("Restart"), this);
+    QObject::connect(this->restartQAction, &QAction::triggered, this, &MainWindow::restartAction);
+    this->trayMenu->addAction(this->restartQAction);
     this->trayMenu->addAction(this->ui->exitAction);
 
     this->tray = new QSystemTrayIcon(this);
@@ -153,13 +154,21 @@ void MainWindow::showHideAction() {
     }
 }
 
-void MainWindow::restartConfigAction() {
+void MainWindow::restartAction() {
     bool wasShown = !this->isHidden();
     if (wasShown) {
         this->hide();
         QApplication::processEvents();
     }
 
+    this->tabs.clear();
+    this->ui->tabs->clear();
+    Config::read();
+    nlohmann::json sources = Config::data()["sources"];
+    for (int i = 0; i < sources.size(); i++) {
+        this->tabs.push_back(new ConfigTab(sources[i]["name"], sources[i]["server"], sources[i]["topic"], this));
+        this->ui->tabs->addTab(this->tabs.at(i), this->tabs.at(i)->getName().c_str());
+    }
     this->threadManager->restartConfig();
 
     if (wasShown) { this->show(); }

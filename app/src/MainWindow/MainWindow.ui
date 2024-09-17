@@ -116,8 +116,8 @@
      <string>&amp;File</string>
     </property>
     <addaction name="saveAction"/>
-    <addaction name="reloadFromDiskAction"/>
     <addaction name="separator"/>
+    <addaction name="restartAction"/>
     <addaction name="exitAction"/>
    </widget>
    <widget class="QMenu" name="menu_Edit">
@@ -192,6 +192,14 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+R</string>
+   </property>
+  </action>
+  <action name="restartAction">
+   <property name="icon">
+    <iconset theme="system-restart-panel"/>
+   </property>
+   <property name="text">
+    <string>&amp;Restart</string>
    </property>
   </action>
  </widget>
