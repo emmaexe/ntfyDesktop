@@ -33,7 +33,7 @@ WIP
 
 ```bash
 dnf groupinstall "Development Tools"
-dnf install gcc-c++ cmake extra-cmake-modules boost-devel libcurl-devel qt6-qtbase-devel kf6-kcoreaddons-devel kf6-ki18n-devel kf6-knotifications-devel rpm-build
+dnf install gcc-c++ cmake extra-cmake-modules boost-devel libcurl-devel qt6-qtbase-devel kf6-kcoreaddons-devel kf6-ki18n-devel kf6-knotifications-devel kf6-kxmlgui-devel rpm-build
 ```
 
 #### Ubuntu
@@ -41,7 +41,7 @@ dnf install gcc-c++ cmake extra-cmake-modules boost-devel libcurl-devel qt6-qtba
 ⚠️ Until Ubuntu 24.10 releases, KDE Frameworks 6 will not be available on it, and you won't be able to build the project.
 
 ```bash
-apt install git g++ cmake extra-cmake-modules libcurl4-openssl-dev qt6-base-dev libkf6coreaddons-dev libkf6i18n-dev libkf6notifications-dev
+apt install git g++ cmake extra-cmake-modules libboost-dev libcurl4-openssl-dev qt6-base-dev libkf6coreaddons-dev libkf6i18n-dev libkf6notifications-dev libkf6xmlgui-dev
 ```
 
 #### Others
