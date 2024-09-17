@@ -56,18 +56,18 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="OkButton">
+       <widget class="QPushButton" name="ExitButton">
         <property name="cursor">
          <cursorShape>PointingHandCursor</cursorShape>
         </property>
         <property name="whatsThis">
-         <string>This is an ok button. It will dismiss the error and exit.</string>
+         <string>This is an exit button. It will dismiss the error and exit.</string>
         </property>
         <property name="text">
-         <string>OK</string>
+         <string>Exit</string>
         </property>
         <property name="icon">
-         <iconset theme="checkmark"/>
+         <iconset theme="exit"/>
         </property>
        </widget>
       </item>
@@ -92,7 +92,7 @@
  </resources>
  <connections>
   <connection>
-   <sender>OkButton</sender>
+   <sender>ExitButton</sender>
    <signal>clicked()</signal>
    <receiver>ErrorWindow</receiver>
    <slot>close()</slot>
