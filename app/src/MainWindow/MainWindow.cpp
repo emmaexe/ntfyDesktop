@@ -6,15 +6,15 @@
 
 #include <QCloseEvent>
 #include <QEvent>
+#include <QIcon>
 #include <algorithm>
 
-MainWindow::MainWindow(std::shared_ptr<ThreadManager> threadManager, QWidget* parent): QMainWindow(parent), ui(new Ui::MainWindow), threadManager(threadManager) {
+MainWindow::MainWindow(std::shared_ptr<ThreadManager> threadManager, KAboutData& aboutData, QWidget* parent): QMainWindow(parent), ui(new Ui::MainWindow), threadManager(threadManager) {
     this->ui->setupUi(this);
     QObject::connect(this->ui->saveAction, &QAction::triggered, this, &MainWindow::saveAction);
     QObject::connect(this->ui->addAction, &QAction::triggered, this, &MainWindow::addAction);
     QObject::connect(this->ui->removeAction, &QAction::triggered, this, &MainWindow::removeAction);
     QObject::connect(this->ui->exitAction, &QAction::triggered, this, &MainWindow::exitAction);
-    QObject::connect(this->ui->aboutAction, &QAction::triggered, this, &MainWindow::aboutAction);
 
     nlohmann::json sources = Config::data()["sources"];
     for (int i = 0; i < sources.size(); i++) {
@@ -24,7 +24,7 @@ MainWindow::MainWindow(std::shared_ptr<ThreadManager> threadManager, QWidget* pa
 
     this->trayMenu = new QMenu(this);
 
-    this->showHideQAction = new QAction(QIcon(":/images/ntfy-symbolic.svg"), QAction::tr("Show/hide window"), this);
+    this->showHideQAction = new QAction(QIcon(":/icons/ntfy-symbolic.svg"), QAction::tr("Show/hide window"), this);
     QObject::connect(this->showHideQAction, &QAction::triggered, this, &MainWindow::showHideAction);
     this->trayMenu->addAction(this->showHideQAction);
     this->restartConfigQAction = new QAction(QIcon::fromTheme("system-restart-symbolic"), QAction::tr("Restart"), this);
@@ -33,10 +33,14 @@ MainWindow::MainWindow(std::shared_ptr<ThreadManager> threadManager, QWidget* pa
     this->trayMenu->addAction(this->ui->exitAction);
 
     this->tray = new QSystemTrayIcon(this);
-    this->tray->setIcon(QIcon(":/images/ntfy-symbolic.svg").pixmap(236, 236));
+    this->tray->setIcon(QIcon(":/icons/ntfy-symbolic.svg").pixmap(236, 236));
     this->tray->setContextMenu(this->trayMenu);
     this->tray->show();
     QObject::connect(this->tray, &QSystemTrayIcon::activated, this, &MainWindow::trayIconPressed);
+
+    this->helpMenu = new KHelpMenu(this, aboutData);
+    this->helpMenu->action(KHelpMenu::MenuId::menuAboutApp)->setIcon(QIcon(QStringLiteral(":/icons/ntfyDesktop.svg")));
+    this->ui->menuBar->addMenu(this->helpMenu->menu());
 
     this->ui->statusBar->showMessage(QStatusBar::tr("Ready"), 2000);
     NotificationManager::startupNotification();
@@ -113,11 +117,6 @@ void MainWindow::exitAction() {
     }
     this->threadManager->stopAll();
     QApplication::quit();
-}
-
-void MainWindow::aboutAction() {
-    // TODO: Setup about menu
-    printf("About Triggered\n");
 }
 
 void MainWindow::closeEvent(QCloseEvent* event) {

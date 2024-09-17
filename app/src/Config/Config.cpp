@@ -3,6 +3,7 @@
 #include "../NotificationStore/NotificationStore.hpp"
 
 #include <QStandardPaths>
+#include <QFile>
 #include <filesystem>
 #include <fstream>
 #include <iostream>
@@ -50,6 +51,11 @@ void Config::write() {
 bool Config::ready() {
     if (!Config::initialized) { Config::read(); }
     return Config::ok;
+}
+
+void Config::reset() {
+    QFile::copy(":/config/defaultConfig.json", QString::fromStdString(Config::getConfigFile()));
+    Config::read();
 }
 
 const std::string& Config::getError() {

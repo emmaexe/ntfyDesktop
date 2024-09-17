@@ -51,6 +51,7 @@ find_package(Qt6 REQUIRED COMPONENTS
 find_package(KF6CoreAddons)
 find_package(KF6I18n)
 find_package(KF6Notifications)
+find_package(KF6XmlGui)
 
 # Find all source files
 file(GLOB_RECURSE SRC_FILES "${SRC_DIR}/*.cpp" "${SRC_DIR}/*.hpp" "${SRC_DIR}/*.ui")
@@ -99,7 +100,7 @@ qt_add_resources(RES_FILES "${RES_DIR}/resources.qrc")
 qt_add_executable(${CMAKE_PROJECT_NAME} ${SRC_FILES} ${MOC_FILES} ${RES_FILES})
 
 # Link libraries
-target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE nlohmann_json::nlohmann_json emojicpp CURL::libcurl Boost::serialization Qt6::Core Qt6::Gui Qt6::Widgets KF6::CoreAddons KF6::I18n KF6::Notifications)
+target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE nlohmann_json::nlohmann_json emojicpp CURL::libcurl Boost::serialization Qt6::Core Qt6::Gui Qt6::Widgets KF6::CoreAddons KF6::I18n KF6::Notifications KF6::XmlGui)
 
 # Install files
 file(GLOB ICONS_SRC "${ICON_DIR}/*.png")
