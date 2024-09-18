@@ -16,10 +16,6 @@
     <verstretch>0</verstretch>
    </sizepolicy>
   </property>
-  <property name="windowIcon">
-   <iconset resource="../../resources/resources.qrc">
-    <normaloff>:/icons/ntfy-nobg.svg</normaloff>:/icons/ntfy-nobg.svg</iconset>
-  </property>
   <layout class="QFormLayout" name="formLayout">
    <item row="0" column="1">
     <layout class="QFormLayout" name="centralWidget">
@@ -34,27 +30,51 @@
      </property>
      <item row="0" column="1">
       <widget class="QLineEdit" name="nameLineEdit">
+       <property name="toolTip">
+        <string>The name of this notification source.</string>
+       </property>
+       <property name="whatsThis">
+        <string>This is the name of the notification source you are viewing.</string>
+       </property>
        <property name="placeholderText">
-        <string>A name for your server.</string>
+        <string>New Notification Source</string>
        </property>
       </widget>
      </item>
      <item row="1" column="0">
       <widget class="QLabel" name="serverLabel">
+       <property name="toolTip">
+        <string>A valid domain or IP, with or without a port e.g. ntfy.sh, 192.168.1.69:8080, 91.198.174.192</string>
+       </property>
+       <property name="whatsThis">
+        <string>This is the domain of the notification source you are viewing. It determines the server where the notifications are fetched from for this notification source.</string>
+       </property>
        <property name="text">
-        <string>Server</string>
+        <string>Domain</string>
        </property>
       </widget>
      </item>
      <item row="1" column="1">
       <widget class="QLineEdit" name="serverLineEdit">
+       <property name="toolTip">
+        <string>A valid domain or IP, with or without a port e.g. ntfy.sh, 192.168.1.69:8080, 91.198.174.192</string>
+       </property>
+       <property name="whatsThis">
+        <string>This is the domain of the notification source you are viewing. It determines the server where the notifications are fetched from for this notification source.</string>
+       </property>
        <property name="placeholderText">
-        <string>ntfy.sh (only the domain)</string>
+        <string>ntfy.sh</string>
        </property>
       </widget>
      </item>
      <item row="2" column="0">
       <widget class="QLabel" name="topicLabel">
+       <property name="toolTip">
+        <string>The name of the ntfy topic.</string>
+       </property>
+       <property name="whatsThis">
+        <string>This is the topic of the notification source you are viewing. It determines the topic that you are subscribing to.</string>
+       </property>
        <property name="text">
         <string>Topic</string>
        </property>
@@ -62,13 +82,25 @@
      </item>
      <item row="2" column="1">
       <widget class="QLineEdit" name="topicLineEdit">
+       <property name="toolTip">
+        <string>The name of the ntfy topic.</string>
+       </property>
+       <property name="whatsThis">
+        <string>This is the topic of the notification source you are viewing. It determines the topic that you are subscribing to.</string>
+       </property>
        <property name="placeholderText">
-        <string>someTopicName</string>
+        <string>ntfyDesktop</string>
        </property>
       </widget>
      </item>
      <item row="0" column="0">
       <widget class="QLabel" name="nameLabel">
+       <property name="toolTip">
+        <string>The name of this notification source.</string>
+       </property>
+       <property name="whatsThis">
+        <string>This is the name of the notification source you are viewing.</string>
+       </property>
        <property name="text">
         <string>Name</string>
        </property>
