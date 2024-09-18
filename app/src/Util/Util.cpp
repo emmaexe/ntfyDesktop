@@ -46,9 +46,9 @@ namespace Util {
         return parts;
     }
 
-    bool isDomain(const std::string& domain) { return std::regex_match(domain, std::regex("^[.A-Za-z]+$")); }
+    bool isDomain(const std::string& domain) { return std::regex_match(domain, std::regex("^[.0-9:A-Za-z]+$")); }
 
-    bool isTopic(const std::string& topic) { return std::regex_match(topic, std::regex("^[A-Za-z]+$")); }
+    bool isTopic(const std::string& topic) { return std::regex_match(topic, std::regex("^[\-0-9A-Z_a-z]{1,64}$")); }
 
     void setLayoutVisibility(QLayout* layout, bool visible) {
         for (int i = 0; i < layout->count(); i++) {
