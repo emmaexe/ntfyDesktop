@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.10)
 project(
     ntfyDesktop
     VERSION 1.0.0
-    DESCRIPTION "A desktop client for ntfy." 
+    DESCRIPTION "A desktop client for ntfy."
     HOMEPAGE_URL "https://github.com/emmaexe/ntfyDesktop/"
     LANGUAGES C CXX
 )
@@ -19,7 +19,7 @@ set(SRC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/app/src")
 set(RES_DIR "${CMAKE_CURRENT_SOURCE_DIR}/app/resources")
 set(ICON_DIR "${CMAKE_CURRENT_SOURCE_DIR}/app/icons")
 set(GEN_DIR "${CMAKE_BINARY_DIR}/generated")
-include_directories("${GEN_DIR}")   
+include_directories("${GEN_DIR}")
 
 # Libraries
 find_package(ECM REQUIRED NO_MODULE)
