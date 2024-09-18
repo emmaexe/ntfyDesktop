@@ -21,6 +21,7 @@ QUrl FileManager::urlToTempFile(QUrl url) {
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, FileManager::urlToTempFileWriteCallback);
         curl_easy_setopt(curl, CURLOPT_WRITEDATA, &fileStream);
         curl_easy_setopt(curl, CURLOPT_USERAGENT, Util::getRandomUA().c_str());
+        curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
 
         char curlError[CURL_ERROR_SIZE] = "";
         curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, curlError);
