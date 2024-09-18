@@ -22,6 +22,7 @@ nlohmann::json& Config::data() {
 void Config::read() {
     Config::ok = true;
     Config::internalError = "";
+    if (!std::filesystem::exists(Config::getConfigPath()) || !std::filesystem::is_directory(Config::getConfigPath())) { std::filesystem::create_directory(Config::getConfigPath()); }
     std::ifstream configStream(Config::getConfigFile());
     if (configStream.is_open()) {
         try {
