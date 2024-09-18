@@ -1,5 +1,7 @@
 #pragma once
 
+#include <QLayout>
+#include <QWidget>
 #include <string>
 #include <vector>
 
@@ -43,4 +45,9 @@ namespace Util {
      * @param topic The topic to check
      */
     bool isTopic(const std::string& topic);
+    /**
+     * @brief Change the visibility of an entire Qt layout.
+     * @warning Only works with widgets and layouts. Spacers and other elements are unsupported.
+     */
+    void setLayoutVisibility(QLayout* layout, bool visible);
 }
