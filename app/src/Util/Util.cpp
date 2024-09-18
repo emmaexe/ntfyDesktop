@@ -3,6 +3,7 @@
 #include <curl/curl.h>
 #include <nlohmann/json.hpp>
 
+#include <QSpacerItem>
 #include <algorithm>
 #include <cstdlib>
 #include <memory>
@@ -48,4 +49,16 @@ namespace Util {
     bool isDomain(const std::string& domain) { return std::regex_match(domain, std::regex("^[.A-Za-z]+$")); }
 
     bool isTopic(const std::string& topic) { return std::regex_match(topic, std::regex("^[A-Za-z]+$")); }
+
+    void setLayoutVisibility(QLayout* layout, bool visible) {
+        for (int i = 0; i < layout->count(); i++) {
+            QWidget* widget = layout->itemAt(i)->widget();
+            QLayout* subLayout = layout->itemAt(i)->layout();
+            if (widget) {
+                widget->setVisible(visible);
+            } else if (subLayout) {
+                Util::setLayoutVisibility(subLayout, visible);
+            }
+        }
+    }
 }

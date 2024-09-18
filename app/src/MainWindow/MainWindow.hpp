@@ -30,7 +30,7 @@ class MainWindow: public QMainWindow {
         void exitAction();
         void trayIconPressed(QSystemTrayIcon::ActivationReason reason);
         void showHideAction();
-        void restartConfigAction();
+        void restartAction();
     protected:
         void closeEvent(QCloseEvent* event) override;
         void changeEvent(QEvent* event) override;
@@ -42,6 +42,5 @@ class MainWindow: public QMainWindow {
         QSystemTrayIcon* tray;
         QMenu* trayMenu;
         QAction* showHideQAction;
-        QAction* restartConfigQAction;
         KHelpMenu* helpMenu;
 };

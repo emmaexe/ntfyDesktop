@@ -14,6 +14,7 @@ MainWindow::MainWindow(std::shared_ptr<ThreadManager> threadManager, KAboutData&
     QObject::connect(this->ui->saveAction, &QAction::triggered, this, &MainWindow::saveAction);
     QObject::connect(this->ui->addAction, &QAction::triggered, this, &MainWindow::addAction);
     QObject::connect(this->ui->removeAction, &QAction::triggered, this, &MainWindow::removeAction);
+    QObject::connect(this->ui->restartAction, &QAction::triggered, this, &MainWindow::restartAction);
     QObject::connect(this->ui->exitAction, &QAction::triggered, this, &MainWindow::exitAction);
 
     nlohmann::json sources = Config::data()["sources"];
@@ -22,14 +23,20 @@ MainWindow::MainWindow(std::shared_ptr<ThreadManager> threadManager, KAboutData&
         this->ui->tabs->addTab(this->tabs.at(i), this->tabs.at(i)->getName().c_str());
     }
 
+    if (this->tabs.size() == 0) {
+        this->ui->tabs->hide();
+        Util::setLayoutVisibility(this->ui->noSourcesContainer, true);
+    } else {
+        this->ui->tabs->show();
+        Util::setLayoutVisibility(this->ui->noSourcesContainer, false);
+    }
+
     this->trayMenu = new QMenu(this);
 
     this->showHideQAction = new QAction(QIcon(":/icons/ntfy-symbolic.svg"), QAction::tr("Show/hide window"), this);
     QObject::connect(this->showHideQAction, &QAction::triggered, this, &MainWindow::showHideAction);
     this->trayMenu->addAction(this->showHideQAction);
-    this->restartConfigQAction = new QAction(QIcon::fromTheme("system-restart-symbolic"), QAction::tr("Restart"), this);
-    QObject::connect(this->restartConfigQAction, &QAction::triggered, this, &MainWindow::restartConfigAction);
-    this->trayMenu->addAction(this->restartConfigQAction);
+    this->trayMenu->addAction(this->ui->restartAction);
     this->trayMenu->addAction(this->ui->exitAction);
 
     this->tray = new QSystemTrayIcon(this);
@@ -42,8 +49,12 @@ MainWindow::MainWindow(std::shared_ptr<ThreadManager> threadManager, KAboutData&
     this->helpMenu->action(KHelpMenu::MenuId::menuAboutApp)->setIcon(QIcon(QStringLiteral(":/icons/ntfyDesktop.svg")));
     this->ui->menuBar->addMenu(this->helpMenu->menu());
 
-    this->ui->statusBar->showMessage(QStatusBar::tr("Ready"), 2000);
-    NotificationManager::startupNotification();
+    if (this->tabs.size() == 0) {
+        this->show();
+        this->ui->statusBar->showMessage(QStatusBar::tr("Ready"), 2000);
+    } else {
+        NotificationManager::startupNotification();
+    }
 }
 
 MainWindow::~MainWindow() { delete ui, tray; }
@@ -95,6 +106,10 @@ void MainWindow::saveAction() {
 }
 
 void MainWindow::addAction() {
+    if (this->tabs.size() == 0) {
+        this->ui->tabs->show();
+        Util::setLayoutVisibility(this->ui->noSourcesContainer, false);
+    }
     this->tabs.push_back(new ConfigTab("New Notification Source " + std::to_string(this->newTabCounter), "", "", this));
     this->newTabCounter++;
     this->ui->tabs->addTab(this->tabs.at(this->tabs.size() - 1), this->tabs.at(this->tabs.size() - 1)->getName().c_str());
@@ -107,6 +122,10 @@ void MainWindow::removeAction() {
         this->ui->tabs->removeTab(i);
         delete this->tabs.at(i);
         this->tabs.erase(this->tabs.begin() + i);
+    }
+    if (this->tabs.size() == 0) {
+        this->ui->tabs->hide();
+        Util::setLayoutVisibility(this->ui->noSourcesContainer, true);
     }
 }
 
@@ -153,14 +172,34 @@ void MainWindow::showHideAction() {
     }
 }
 
-void MainWindow::restartConfigAction() {
+void MainWindow::restartAction() {
     bool wasShown = !this->isHidden();
     if (wasShown) {
         this->hide();
         QApplication::processEvents();
     }
 
+    this->tabs.clear();
+    this->ui->tabs->clear();
+
+    Config::read();
+
+    nlohmann::json sources = Config::data()["sources"];
+    for (int i = 0; i < sources.size(); i++) {
+        this->tabs.push_back(new ConfigTab(sources[i]["name"], sources[i]["server"], sources[i]["topic"], this));
+        this->ui->tabs->addTab(this->tabs.at(i), this->tabs.at(i)->getName().c_str());
+    }
+
+    if (this->tabs.size() == 0) {
+        this->ui->tabs->hide();
+        Util::setLayoutVisibility(this->ui->noSourcesContainer, true);
+    } else {
+        this->ui->tabs->show();
+        Util::setLayoutVisibility(this->ui->noSourcesContainer, false);
+    }
+
     this->threadManager->restartConfig();
+    this->newTabCounter = 1;
 
     if (wasShown) { this->show(); }
 }
