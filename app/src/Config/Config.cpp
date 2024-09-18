@@ -63,6 +63,7 @@ bool Config::ready() {
 
 void Config::reset() {
     QFile::copy(":/config/defaultConfig.json", QString::fromStdString(Config::getConfigFile()));
+    QFile(QString::fromStdString(Config::getConfigFile())).setPermissions(QFileDevice::ReadOwner | QFileDevice::WriteOwner | QFileDevice::ReadGroup | QFileDevice::ReadOther);
     Config::read();
 }
 
