@@ -28,6 +28,19 @@
      <property name="formAlignment">
       <set>Qt::AlignmentFlag::AlignCenter</set>
      </property>
+     <item row="0" column="0">
+      <widget class="QLabel" name="nameLabel">
+       <property name="toolTip">
+        <string>The name of this notification source.</string>
+       </property>
+       <property name="whatsThis">
+        <string>This is the name of the notification source you are viewing.</string>
+       </property>
+       <property name="text">
+        <string>Name</string>
+       </property>
+      </widget>
+     </item>
      <item row="0" column="1">
       <widget class="QLineEdit" name="nameLineEdit">
        <property name="toolTip">
@@ -42,7 +55,7 @@
       </widget>
      </item>
      <item row="1" column="0">
-      <widget class="QLabel" name="serverLabel">
+      <widget class="QLabel" name="domainLabel">
        <property name="toolTip">
         <string>A valid domain or IP, with or without a port e.g. ntfy.sh, 192.168.1.69:8080, 91.198.174.192</string>
        </property>
@@ -55,7 +68,7 @@
       </widget>
      </item>
      <item row="1" column="1">
-      <widget class="QLineEdit" name="serverLineEdit">
+      <widget class="QLineEdit" name="domainLineEdit">
        <property name="toolTip">
         <string>A valid domain or IP, with or without a port e.g. ntfy.sh, 192.168.1.69:8080, 91.198.174.192</string>
        </property>
@@ -93,16 +106,32 @@
        </property>
       </widget>
      </item>
-     <item row="0" column="0">
-      <widget class="QLabel" name="nameLabel">
+     <item row="3" column="0">
+      <widget class="QLabel" name="secureLabel">
        <property name="toolTip">
-        <string>The name of this notification source.</string>
+        <string>Choose whether to use https or not.</string>
        </property>
        <property name="whatsThis">
-        <string>This is the name of the notification source you are viewing.</string>
+        <string>This is a checkbox that toggles between https (secure) and http (unsecure) modes for the server that is hosting ntfy, that you are connecting to. This is useful if you are selfhosting a server on a local network and can't or don't want to use https.</string>
        </property>
        <property name="text">
-        <string>Name</string>
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="1">
+      <widget class="QCheckBox" name="secureCheckBox">
+       <property name="toolTip">
+        <string>Choose whether to use https or not.</string>
+       </property>
+       <property name="whatsThis">
+        <string>This is a checkbox that toggles between https (secure) and http (unsecure) modes for the server that is hosting ntfy, that you are connecting to. This is useful if you are selfhosting a server on a local network and can't or don't want to use https.</string>
+       </property>
+       <property name="text">
+        <string>HTTPS</string>
+       </property>
+       <property name="icon">
+        <iconset theme="lock"/>
        </property>
       </widget>
      </item>
