@@ -50,4 +50,13 @@ namespace Util {
      * @warning Only works with widgets and layouts. Spacers and other elements are unsupported.
      */
     void setLayoutVisibility(QLayout* layout, bool visible);
+    /**
+     * @brief Compares three-part version strings in the format `major.minor.patch`.
+     *
+     * @param first The first version string used in the comparison
+     * @param second The second version string used in the comparison
+     * @return int - `-1` if `first` is bigger, `0` if they are equal and `1` if `second` is bigger.
+     * @throws std::invalid_argument - Thrown when either of the strings can't be recognised as a valid version.
+     */
+    int versionCompare(const std::string& first, const std::string& second);
 }
