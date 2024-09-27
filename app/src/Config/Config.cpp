@@ -88,7 +88,7 @@ void Config::updateToCurrent() {
         return;
     } else if (Util::versionCompare(ND_VERSION, version) > 0) {
         Config::ok = false;
-        1Config::internalError = "The config (" + Config::getConfigFile() + ") was created for a newer version of ntfyDesktop. Please downgrade your config manually, reset it to default values or update ntfyDesktop.";
+        Config::internalError = "The config (" + Config::getConfigFile() + ") was created for a newer version of ntfyDesktop. Please downgrade your config manually, reset it to default values or update ntfyDesktop.";
     } else if (Util::versionCompare(version, "1.0.0") >= 0) {
         // Version is 1.0.0 or older
         // Schema used is: {"version": string, "sources": [{"name": string, "server": string, "topic": string}, ...]}
