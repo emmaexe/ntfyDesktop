@@ -96,6 +96,25 @@
         </property>
        </spacer>
       </item>
+      <item>
+       <widget class="QToolButton" name="restartButton">
+        <property name="cursor">
+         <cursorShape>PointingHandCursor</cursorShape>
+        </property>
+        <property name="whatsThis">
+         <string>Saving the config does not automatically restart the background processes that handle delivering notifications. This is a button that triggers the restart action from the menu bar which then in turn reloads the config and restarts those background processes. It can also be used to discard any unsaved changes since it reloads the config from the disk.</string>
+        </property>
+        <property name="text">
+         <string>Restart</string>
+        </property>
+        <property name="icon">
+         <iconset theme="system-restart-panel"/>
+        </property>
+        <property name="toolButtonStyle">
+         <enum>Qt::ToolButtonStyle::ToolButtonTextBesideIcon</enum>
+        </property>
+       </widget>
+      </item>
      </layout>
     </item>
     <item>
@@ -138,13 +157,32 @@
       </item>
       <item>
        <layout class="QHBoxLayout" name="dummyAddContainer">
-        <property name="rightMargin">
-         <number>110</number>
+        <property name="sizeConstraint">
+         <enum>QLayout::SizeConstraint::SetFixedSize</enum>
         </property>
+        <item>
+         <widget class="QWidget" name="dummyAddSpacerLeft" native="true">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+         </widget>
+        </item>
         <item>
          <widget class="QLabel" name="dummyAddLabelLeft">
           <property name="enabled">
            <bool>false</bool>
+          </property>
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="whatsThis">
+           <string>This is the text that shows when there are no notification sources in the config file.</string>
           </property>
           <property name="text">
            <string># Click on the</string>
@@ -162,6 +200,9 @@
           <property name="enabled">
            <bool>false</bool>
           </property>
+          <property name="whatsThis">
+           <string>This is the text that shows when there are no notification sources in the config file.</string>
+          </property>
           <property name="text">
            <string>Add</string>
           </property>
@@ -178,11 +219,126 @@
           <property name="enabled">
            <bool>false</bool>
           </property>
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="whatsThis">
+           <string>This is the text that shows when there are no notification sources in the config file.</string>
+          </property>
           <property name="text">
            <string># button to get started</string>
           </property>
           <property name="textFormat">
            <enum>Qt::TextFormat::MarkdownText</enum>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QWidget" name="dummyAddSpacerRight" native="true">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="dummyRestartContainer">
+        <property name="sizeConstraint">
+         <enum>QLayout::SizeConstraint::SetFixedSize</enum>
+        </property>
+        <property name="leftMargin">
+         <number>0</number>
+        </property>
+        <item>
+         <widget class="QWidget" name="dummyRestartSpacerLeft" native="true">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="dummyRestartLabelLeft">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="whatsThis">
+           <string>This is the text that shows when there are no notification sources in the config file.</string>
+          </property>
+          <property name="text">
+           <string># After you're done, click on the</string>
+          </property>
+          <property name="textFormat">
+           <enum>Qt::TextFormat::MarkdownText</enum>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QToolButton" name="dummyRestartButton">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="whatsThis">
+           <string>This is the text that shows when there are no notification sources in the config file.</string>
+          </property>
+          <property name="text">
+           <string>Restart</string>
+          </property>
+          <property name="icon">
+           <iconset theme="system-restart-panel"/>
+          </property>
+          <property name="toolButtonStyle">
+           <enum>Qt::ToolButtonStyle::ToolButtonTextBesideIcon</enum>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="dummyRestartLabelRight">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="whatsThis">
+           <string>This is the text that shows when there are no notification sources in the config file.</string>
+          </property>
+          <property name="text">
+           <string># button</string>
+          </property>
+          <property name="textFormat">
+           <enum>Qt::TextFormat::MarkdownText</enum>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QWidget" name="dummyRestartSpacerRight" native="true">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
           </property>
          </widget>
         </item>
@@ -305,6 +461,14 @@
   </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
+ <tabstops>
+  <tabstop>saveButton</tabstop>
+  <tabstop>addButton</tabstop>
+  <tabstop>removeButton</tabstop>
+  <tabstop>restartButton</tabstop>
+  <tabstop>tabs</tabstop>
+  <tabstop>dummyAddButton</tabstop>
+ </tabstops>
  <resources>
   <include location="../../resources/resources.qrc"/>
  </resources>
@@ -332,8 +496,8 @@
    <slot>trigger()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>98</x>
-     <y>52</y>
+     <x>240</x>
+     <y>69</y>
     </hint>
     <hint type="destinationlabel">
      <x>-1</x>
@@ -348,8 +512,24 @@
    <slot>trigger()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>60</x>
-     <y>52</y>
+     <x>142</x>
+     <y>69</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>restartButton</sender>
+   <signal>clicked()</signal>
+   <receiver>restartAction</receiver>
+   <slot>trigger()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>750</x>
+     <y>53</y>
     </hint>
     <hint type="destinationlabel">
      <x>-1</x>
