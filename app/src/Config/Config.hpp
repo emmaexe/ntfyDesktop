@@ -39,10 +39,11 @@ class Config {
          */
         static const std::string& getError();
     private:
-        static bool initialized, ok;
+        static bool initialized, ok, updating;
         static nlohmann::json internalData;
         static std::string internalError;
         static int internalErrorCounter;
+        static void updateToCurrent();
         static const std::string getConfigPath();
         static const std::string getConfigFile();
 };

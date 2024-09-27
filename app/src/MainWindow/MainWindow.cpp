@@ -19,7 +19,7 @@ MainWindow::MainWindow(std::shared_ptr<ThreadManager> threadManager, KAboutData&
 
     nlohmann::json sources = Config::data()["sources"];
     for (int i = 0; i < sources.size(); i++) {
-        this->tabs.push_back(new ConfigTab(sources[i]["name"], sources[i]["server"], sources[i]["topic"], true, this));
+        this->tabs.push_back(new ConfigTab(sources[i]["name"], sources[i]["domain"], sources[i]["topic"], true, this));
         this->ui->tabs->addTab(this->tabs.at(i), this->tabs.at(i)->getName().c_str());
     }
 
@@ -96,7 +96,7 @@ void MainWindow::saveAction() {
             this->ui->tabs->setTabText(i, tab->getName().c_str());
             nlohmann::json tabData;
             tabData["name"] = tab->getName();
-            tabData["server"] = tab->getDomain();
+            tabData["domain"] = tab->getDomain();
             tabData["topic"] = tab->getTopic();
             Config::data()["sources"].push_back(tabData);
         }
@@ -186,7 +186,7 @@ void MainWindow::restartAction() {
 
     nlohmann::json sources = Config::data()["sources"];
     for (int i = 0; i < sources.size(); i++) {
-        this->tabs.push_back(new ConfigTab(sources[i]["name"], sources[i]["server"], sources[i]["topic"], true, this));
+        this->tabs.push_back(new ConfigTab(sources[i]["name"], sources[i]["domain"], sources[i]["topic"], true, this));
         this->ui->tabs->addTab(this->tabs.at(i), this->tabs.at(i)->getName().c_str());
     }
 

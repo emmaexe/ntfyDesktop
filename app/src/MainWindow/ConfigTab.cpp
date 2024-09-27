@@ -2,10 +2,10 @@
 
 #include "ui_ConfigTab.h"
 
-ConfigTab::ConfigTab(std::string name, std::string server, std::string topic, bool secure, QWidget* parent): QWidget(parent), ui(new Ui::ConfigTab) {
+ConfigTab::ConfigTab(std::string name, std::string domain, std::string topic, bool secure, QWidget* parent): QWidget(parent), ui(new Ui::ConfigTab) {
     this->ui->setupUi(this);
     this->ui->nameLineEdit->setText(QString::fromStdString(name));
-    this->ui->domainLineEdit->setText(QString::fromStdString(server));
+    this->ui->domainLineEdit->setText(QString::fromStdString(domain));
     this->ui->topicLineEdit->setText(QString::fromStdString(topic));
     this->ui->secureCheckBox->setChecked(secure);
 }
