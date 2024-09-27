@@ -51,10 +51,10 @@ void NotificationStore::configSync() {
     std::vector<std::string> hashes = {};
     for (nlohmann::json source: Config::data()["sources"]) {
         try {
-            std::string urlpart = std::string(source["server"]) + "/" + std::string(source["topic"]);
+            std::string urlpart = std::string(source["domain"]) + "/" + std::string(source["topic"]);
             hashes.push_back(QCryptographicHash::hash(QString::fromStdString(urlpart).toUtf8(), QCryptographicHash::Sha256).toHex().toStdString());
-            if (!NotificationStore::exists(std::string(source["server"]), std::string(source["topic"]))) {
-                NotificationStore::update(std::string(source["server"]), std::string(source["topic"]), "all");
+            if (!NotificationStore::exists(std::string(source["domain"]), std::string(source["topic"]))) {
+                NotificationStore::update(std::string(source["domain"]), std::string(source["topic"]), "all");
             }
         } catch (nlohmann::json::out_of_range e) { std::cerr << "Invalid source in config, ignoring: " << source << std::endl; }
     }

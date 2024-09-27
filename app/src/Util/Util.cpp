@@ -8,6 +8,7 @@
 #include <cstdlib>
 #include <memory>
 #include <regex>
+#include <stdexcept>
 
 size_t stringWriteCallback(char* ptr, size_t size, size_t nmemb, void* userdata) {
     std::string* rawData = static_cast<std::string*>(userdata);
@@ -59,6 +60,39 @@ namespace Util {
             } else if (subLayout) {
                 Util::setLayoutVisibility(subLayout, visible);
             }
+        }
+    }
+
+    int versionCompare(const std::string& first, const std::string& second) {
+        std::vector<std::string> firstParts = split(first, ".");
+        std::vector<std::string> secondParts = split(second, ".");
+        if (firstParts.size() != 3) { throw std::invalid_argument("Could not parse version: " + first); }
+        if (secondParts.size() != 3) { throw std::invalid_argument("Could not parse version: " + second); }
+
+        int firstMajor, firstMinor, firstPatch, secondMajor, secondMinor, secondPatch;
+        try {
+            firstMajor = std::stoi(firstParts[0]);
+            firstMinor = std::stoi(firstParts[1]);
+            firstPatch = std::stoi(firstParts[2]);
+        } catch (const std::invalid_argument& e) { throw std::invalid_argument("Could not parse version, NaN: " + first); } catch (const std::out_of_range& e) {
+            throw std::invalid_argument("Version number is too large: " + first);
+        }
+        try {
+            secondMajor = std::stoi(secondParts[0]);
+            secondMinor = std::stoi(secondParts[1]);
+            secondPatch = std::stoi(secondParts[2]);
+        } catch (const std::invalid_argument& e) { throw std::invalid_argument("Could not parse version, NaN: " + second); } catch (const std::out_of_range& e) {
+            throw std::invalid_argument("Version number is too large: " + second);
+        }
+
+        if (firstMajor != secondMajor) {
+            return firstMajor > secondMajor ? -1 : 1;
+        } else if (firstMinor != secondMinor) {
+            return firstMinor > secondMinor ? -1 : 1;
+        } else if (firstPatch != secondPatch) {
+            return firstPatch > secondPatch ? -1 : 1;
+        } else {
+            return 0;
         }
     }
 }

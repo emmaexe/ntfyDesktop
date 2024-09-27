@@ -19,7 +19,7 @@ MainWindow::MainWindow(std::shared_ptr<ThreadManager> threadManager, KAboutData&
 
     nlohmann::json sources = Config::data()["sources"];
     for (int i = 0; i < sources.size(); i++) {
-        this->tabs.push_back(new ConfigTab(sources[i]["name"], sources[i]["server"], sources[i]["topic"], this));
+        this->tabs.push_back(new ConfigTab(sources[i]["name"], sources[i]["domain"], sources[i]["topic"], sources[i]["secure"], this));
         this->ui->tabs->addTab(this->tabs.at(i), this->tabs.at(i)->getName().c_str());
     }
 
@@ -61,7 +61,7 @@ MainWindow::~MainWindow() { delete ui, tray; }
 
 void MainWindow::ntfyProtocolTriggered(ProtocolHandler url) {
     if (url.protocol() == "ntfy") {
-        this->tabs.push_back(new ConfigTab("New Notification Source " + std::to_string(this->newTabCounter), url.domain(), url.path()[0], this));
+        this->tabs.push_back(new ConfigTab("New Notification Source " + std::to_string(this->newTabCounter), url.domain(), url.path()[0], true, this));
         this->newTabCounter++;
         this->ui->tabs->addTab(this->tabs.at(this->tabs.size() - 1), this->tabs.at(this->tabs.size() - 1)->getName().c_str());
         this->ui->tabs->setCurrentIndex(this->tabs.size() - 1);
@@ -78,14 +78,14 @@ void MainWindow::saveAction() {
     std::vector<std::string> seen = {};
     for (int i = 0; i < this->tabs.size(); i++) {
         ConfigTab* tab = this->tabs.at(i);
-        std::string domainTopic = tab->getServer() + "/" + tab->getTopic();
+        std::string domainTopic = tab->getDomain() + "/" + tab->getTopic();
         if (std::find(seen.begin(), seen.end(), domainTopic) != seen.end()) {
             std::string tabName = "⚠️" + tab->getName();
             this->ui->tabs->setTabText(i, QString::fromStdString(tabName));
             this->ui->tabs->setCurrentIndex(i);
             this->ui->statusBar->showMessage(QStatusBar::tr("⚠️ Duplicate configuration found. Did not save."), 5000);
             return;
-        } else if (!Util::isDomain(tab->getServer()) || !Util::isTopic(tab->getTopic())) {
+        } else if (!Util::isDomain(tab->getDomain()) || !Util::isTopic(tab->getTopic())) {
             std::string tabName = "⚠️" + tab->getName();
             this->ui->tabs->setTabText(i, QString::fromStdString(tabName));
             this->ui->tabs->setCurrentIndex(i);
@@ -96,8 +96,9 @@ void MainWindow::saveAction() {
             this->ui->tabs->setTabText(i, tab->getName().c_str());
             nlohmann::json tabData;
             tabData["name"] = tab->getName();
-            tabData["server"] = tab->getServer();
+            tabData["domain"] = tab->getDomain();
             tabData["topic"] = tab->getTopic();
+            tabData["secure"] = tab->getSecure();
             Config::data()["sources"].push_back(tabData);
         }
     }
@@ -110,7 +111,7 @@ void MainWindow::addAction() {
         this->ui->tabs->show();
         Util::setLayoutVisibility(this->ui->noSourcesContainer, false);
     }
-    this->tabs.push_back(new ConfigTab("New Notification Source " + std::to_string(this->newTabCounter), "", "", this));
+    this->tabs.push_back(new ConfigTab("New Notification Source " + std::to_string(this->newTabCounter), "", "", true, this));
     this->newTabCounter++;
     this->ui->tabs->addTab(this->tabs.at(this->tabs.size() - 1), this->tabs.at(this->tabs.size() - 1)->getName().c_str());
     this->ui->tabs->setCurrentIndex(this->tabs.size() - 1);
@@ -186,7 +187,7 @@ void MainWindow::restartAction() {
 
     nlohmann::json sources = Config::data()["sources"];
     for (int i = 0; i < sources.size(); i++) {
-        this->tabs.push_back(new ConfigTab(sources[i]["name"], sources[i]["server"], sources[i]["topic"], this));
+        this->tabs.push_back(new ConfigTab(sources[i]["name"], sources[i]["domain"], sources[i]["topic"], sources[i]["secure"], this));
         this->ui->tabs->addTab(this->tabs.at(i), this->tabs.at(i)->getName().c_str());
     }
 
