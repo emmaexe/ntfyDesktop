@@ -6,8 +6,10 @@
 #include "ProtocolHandler/ProtocolHandler.hpp"
 #include "SingleInstanceManager/SingleInstanceManager.hpp"
 #include "ThreadManager/ThreadManager.hpp"
+#include "UnixSignalHandler/UnixSignalHandler.hpp"
 
 #include <curl/curl.h>
+#include <signal.h>
 
 #include <KAboutData>
 #include <KLocalizedString>
@@ -38,13 +40,7 @@ int main(int argc, char* argv[]) {
     );
     aboutData.setProgramLogo(QIcon(":/icons/ntfyDesktop.svg"));
     aboutData.setDesktopFileName("moe.emmaexe.ntfyDesktop");
-    aboutData.addAuthor(
-        QStringLiteral("emmaexe"),
-        i18n("Author"),
-        QStringLiteral("emma.git@emmaexe.moe"),
-        QStringLiteral("https://www.emmaexe.moe/"),
-        QStringLiteral("")
-    );
+    aboutData.addAuthor(QStringLiteral("emmaexe"), i18n("Author"), QStringLiteral("emma.git@emmaexe.moe"), QStringLiteral("https://www.emmaexe.moe/"), QStringLiteral(""));
     KAboutData::setApplicationData(aboutData);
 
     QCommandLineParser parser;
@@ -65,6 +61,7 @@ int main(int argc, char* argv[]) {
 
     std::shared_ptr<QMainWindow> window;
     std::shared_ptr<ThreadManager> threadManager;
+    std::shared_ptr<UnixSignalHandler> signalHandler;
     if (Config::ready()) {
         threadManager = std::make_shared<ThreadManager>();
         window = std::make_shared<MainWindow>(threadManager, aboutData);
@@ -79,6 +76,16 @@ int main(int argc, char* argv[]) {
                 }
             }
         };
+        signalHandler = std::make_shared<UnixSignalHandler>(
+            [threadManager, window](int signal) {
+                if (signal == SIGTERM || signal == SIGINT || signal == SIGHUP) {
+                    std::static_pointer_cast<MainWindow>(window).get()->hide();
+                    threadManager->stopAll();
+                    QApplication::quit();
+                }
+            },
+            window.get()
+        );
     } else {
         window = std::make_shared<ErrorWindow>(aboutData);
     }
