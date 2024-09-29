@@ -78,3 +78,12 @@ void NotificationManager::startupNotification() {
     notification->setIconName("ntfyDesktop");
     notification->sendEvent();
 }
+
+void NotificationManager::errorNotification(const std::string& title, const std::string& message) {
+    KNotification* notification = new KNotification("error");
+    notification->setTitle(QString::fromStdString(title));
+    notification->setText(QString::fromStdString(message));
+    notification->setUrgency(KNotification::Urgency::HighUrgency);
+    notification->setIconName(QStringLiteral("ntfyDesktop"));
+    notification->sendEvent();
+}
