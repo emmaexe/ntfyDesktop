@@ -15,3 +15,9 @@ Name=Startup Notifications
 Comment=Notification that is sent when the app starts.
 Action=Popup
 Urgency=Normal
+
+[Event/error]
+Name=Error Notifications
+Comment=Notifications sent for errors and other issues (e.g. when a server isn't responding). 
+Action=Popup
+Urgency=Normal
