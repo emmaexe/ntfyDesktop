@@ -11,8 +11,11 @@
 #include <QApplication>
 #include <iostream>
 
-NtfyThread::NtfyThread(std::string domain, std::string topic, bool secure, std::string lastNotificationID, std::mutex* mutex):
-    internalDomain(domain), internalTopic(topic), lastNotificationID(lastNotificationID), mutex(mutex) {
+const int maxRetries = 3;
+const int connectionLostTimeouts[] = { 1000, 1000, 5000 };
+
+NtfyThread::NtfyThread(std::string name, std::string domain, std::string topic, bool secure, std::string lastNotificationID, std::mutex* mutex):
+    internalName(name), internalDomain(domain), internalTopic(topic), internalSecure(secure), lastNotificationID(lastNotificationID), mutex(mutex) {
     this->url = (secure ? "https://" : "http://") + domain + "/" + topic + "/json";
     this->thread = std::thread(&NtfyThread::run, this);
 }
@@ -21,7 +24,6 @@ NtfyThread::~NtfyThread() { this->stop(); }
 
 void NtfyThread::run() {
     this->running = true;
-    bool firstRun = true;
 
     CURL* curlHandle = curl_easy_init();
 
@@ -33,18 +35,25 @@ void NtfyThread::run() {
     curl_easy_setopt(curlHandle, CURLOPT_NOSIGNAL, 1L);
     curl_easy_setopt(curlHandle, CURLOPT_USERAGENT, ND_USERAGENT);
 
-    while (this->running) {
-        if (!firstRun) { std::this_thread::sleep_for(std::chrono::milliseconds(CONNECTION_LOST_TIMEOUT)); }
-        firstRun = false;
+    while (this->running && this->internalErrorCounter <= maxRetries) {
+        if (this->internalErrorCounter > 0) { std::this_thread::sleep_for(std::chrono::milliseconds(connectionLostTimeouts[this->internalErrorCounter-1])); }
 
         std::string currentUrl = this->url + "?since=" + this->lastNotificationID;
         curl_easy_setopt(curlHandle, CURLOPT_URL, currentUrl.c_str());
 
         CURLcode res = curl_easy_perform(curlHandle);
         if (res != CURLE_OK && res != CURLE_ABORTED_BY_CALLBACK && res != CURLE_WRITE_ERROR) { std::cerr << "curl error: " << curl_easy_strerror(res) << std::endl; }
+        if (this->running) { this->internalErrorCounter++; }
     }
 
     curl_easy_cleanup(curlHandle);
+
+    if (internalErrorCounter > maxRetries) {
+        this->running = false;
+        const std::string title = "Unable to connect to " + this->internalName;
+        const std::string message = "Maximum retries exceeded for notification source \"" + this->internalName + "\" (" + this->url + ")";
+        QMetaObject::invokeMethod(qApp, NotificationManager::errorNotification, title, message);
+    }
 }
 
 const std::string& NtfyThread::stop() {
@@ -134,6 +143,10 @@ int NtfyThread::progressCallback(void* clientp, curl_off_t dltotal, curl_off_t d
     return 0;
 }
 
+const std::string& NtfyThread::name() { return this->internalName; }
+
 const std::string& NtfyThread::domain() { return this->internalDomain; }
 
 const std::string& NtfyThread::topic() { return this->internalTopic; }
+
+const bool NtfyThread::secure() { return this->internalSecure; }

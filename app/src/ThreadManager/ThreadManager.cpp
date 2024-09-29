@@ -23,10 +23,10 @@ void ThreadManager::restartConfig() {
     this->stopAll();
     for (nlohmann::json& source: Config::data()["sources"]) {
         try {
-            std::string lastNotificationID = "all", domain = std::string(source["domain"]), topic = std::string(source["topic"]);
+            std::string lastNotificationID = "all", name = std::string(source["name"]), domain = std::string(source["domain"]), topic = std::string(source["topic"]);
             bool secure = source["secure"];
             if (NotificationStore::exists(domain, topic)) { lastNotificationID = NotificationStore::get(domain, topic).value(); }
-            this->threads.push_back(std::make_unique<NtfyThread>(domain, topic, secure, lastNotificationID, &this->mutex));
+            this->threads.push_back(std::make_unique<NtfyThread>(name, domain, topic, secure, lastNotificationID, &this->mutex));
         } catch (nlohmann::json::out_of_range e) { std::cerr << "Invalid source in config, ignoring: " << source << std::endl; }
     }
 }
