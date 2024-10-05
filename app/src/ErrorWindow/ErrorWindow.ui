@@ -57,7 +57,7 @@
          <string>Reset Configuration</string>
         </property>
         <property name="icon">
-         <iconset theme="view-refresh"/>
+         <iconset theme="QIcon::ThemeIcon::ViewRefresh"/>
         </property>
        </widget>
       </item>
@@ -73,7 +73,7 @@
          <string>Exit</string>
         </property>
         <property name="icon">
-         <iconset theme="exit"/>
+         <iconset theme="QIcon::ThemeIcon::ApplicationExit"/>
         </property>
        </widget>
       </item>

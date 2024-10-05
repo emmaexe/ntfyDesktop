@@ -102,7 +102,7 @@
          <string>Restart</string>
         </property>
         <property name="icon">
-         <iconset theme="system-restart-panel"/>
+         <iconset theme="QIcon::ThemeIcon::ViewRefresh"/>
         </property>
         <property name="toolButtonStyle">
          <enum>Qt::ToolButtonStyle::ToolButtonTextBesideIcon</enum>
@@ -297,7 +297,7 @@
            <string>Restart</string>
           </property>
           <property name="icon">
-           <iconset theme="system-restart-panel"/>
+           <iconset theme="QIcon::ThemeIcon::ViewRefresh"/>
           </property>
           <property name="toolButtonStyle">
            <enum>Qt::ToolButtonStyle::ToolButtonTextBesideIcon</enum>
@@ -425,29 +425,15 @@
   </action>
   <action name="exitAction">
    <property name="icon">
-    <iconset theme="exit"/>
+    <iconset theme="QIcon::ThemeIcon::ApplicationExit"/>
    </property>
    <property name="text">
     <string>&amp;Exit</string>
    </property>
   </action>
-  <action name="reloadFromDiskAction">
-   <property name="icon">
-    <iconset theme="reload"/>
-   </property>
-   <property name="text">
-    <string>Reload &amp;from Disk</string>
-   </property>
-   <property name="statusTip">
-    <string>Reloads the configuration data from the disk, discarding any changes.</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+R</string>
-   </property>
-  </action>
   <action name="restartAction">
    <property name="icon">
-    <iconset theme="system-restart-panel"/>
+    <iconset theme="QIcon::ThemeIcon::ViewRefresh"/>
    </property>
    <property name="text">
     <string>&amp;Restart</string>
