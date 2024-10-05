@@ -30,9 +30,9 @@ void Config::read() {
     if (configStream.is_open()) {
         try {
             Config::internalData.update(nlohmann::json::parse(configStream));
-        } catch (nlohmann::json::parse_error e) {
+        } catch (const nlohmann::json::parse_error& e) {
             Config::ok = false;
-            Config::internalError = e.what();
+            Config::internalError = "Error thrown in Config::read(): " + std::string(e.what());
         }
     } else {
         if (Config::internalErrorCounter <= 3) {
@@ -82,33 +82,44 @@ const std::string& Config::getError() {
 void Config::updateToCurrent() {
     if (Config::updating) { return; }
     Config::updating = true;
-    std::string version = Config::internalData["version"];
-    if (Util::versionCompare(ND_VERSION, version) == 0) {
-        Config::updating = false;
-        return;
-    } else if (Util::versionCompare(ND_VERSION, version) > 0) {
+    try {
+        std::string version = Config::internalData["version"];
+        if (Util::versionCompare(ND_VERSION, version) == 0) {
+            Config::updating = false;
+            return;
+        } else if (Util::versionCompare(ND_VERSION, version) > 0) {
+            Config::ok = false;
+            Config::internalError = "The config (" + Config::getConfigFile() + ") was created for a newer version of ntfyDesktop. Please downgrade your config manually, reset it to default values or update ntfyDesktop.";
+        } else if (Util::versionCompare(version, "1.0.0") >= 0) {
+            // Version is 1.0.0 or older
+            // Schema used is: {"version": string, "sources": [{"name": string, "server": string, "topic": string}, ...]}
+
+            nlohmann::json data = Config::internalData;
+            while (!QFile::copy(QString::fromStdString(Config::getConfigFile()), QString::fromStdString(Config::getConfigFile() + ".bak"))) {
+                QFile::remove(QString::fromStdString(Config::getConfigFile() + ".bak"));
+            }
+            Config::reset();
+
+            for (nlohmann::json source: data["sources"]) {
+                nlohmann::json newSource = {};
+                newSource["name"] = source["name"];
+                newSource["domain"] = source["server"];
+                newSource["topic"] = source["topic"];
+                newSource["secure"] = true;
+                Config::data()["sources"].push_back(newSource);
+            }
+
+            Config::write();
+        }
+    } catch (const nlohmann::json::parse_error& e) {
         Config::ok = false;
-        Config::internalError = "The config (" + Config::getConfigFile() + ") was created for a newer version of ntfyDesktop. Please downgrade your config manually, reset it to default values or update ntfyDesktop.";
-    } else if (Util::versionCompare(version, "1.0.0") >= 0) {
-        // Version is 1.0.0 or older
-        // Schema used is: {"version": string, "sources": [{"name": string, "server": string, "topic": string}, ...]}
-
-        nlohmann::json data = Config::internalData;
-        while (!QFile::copy(QString::fromStdString(Config::getConfigFile()), QString::fromStdString(Config::getConfigFile() + ".bak"))) {
-            QFile::remove(QString::fromStdString(Config::getConfigFile() + ".bak"));
-        }
-        Config::reset();
-
-        for (nlohmann::json source: data["sources"]) {
-            nlohmann::json newSource = {};
-            newSource["name"] = source["name"];
-            newSource["domain"] = source["server"];
-            newSource["topic"] = source["topic"];
-            newSource["secure"] = true;
-            Config::data()["sources"].push_back(newSource);
-        }
-
-        Config::write();
+        Config::internalError = "Error thrown in Config::updateToCurrent(): " + std::string(e.what());
+    } catch (const nlohmann::json::type_error& e) {
+        Config::ok = false;
+        Config::internalError = "Error thrown in Config::updateToCurrent(): " + std::string(e.what());
+    } catch (const nlohmann::json::other_error& e) {
+        Config::ok = false;
+        Config::internalError = "Error thrown in Config::updateToCurrent(): " + std::string(e.what());
     }
     Config::updating = false;
 }
