@@ -1,5 +1,7 @@
 #pragma once
 
+#include <QThread>
+#include <QTimer>
 #include <QWidget>
 
 QT_BEGIN_NAMESPACE
@@ -17,6 +19,25 @@ class ConfigTab: public QWidget {
         std::string getDomain();
         std::string getTopic();
         bool getSecure();
+    public slots:
+        void testButton();
+        void testResults(const bool& result);
     private:
         Ui::ConfigTab* ui;
+        QTimer* testLabelTimer;
+};
+
+class ConnectionTester: public QObject {
+        Q_OBJECT
+    public:
+        ConnectionTester(const std::string& name, const std::string& domain, const std::string& topic, const bool& secure);
+    public slots:
+        void runTest();
+    signals:
+        void testFinished(const bool& success);
+    private:
+        std::string name, domain, topic;
+        bool secure;
+        std::atomic<bool> testSuccessful;
+        static size_t writeCallback(char* ptr, size_t size, size_t nmemb, void* userdata);
 };
