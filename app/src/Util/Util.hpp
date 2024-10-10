@@ -59,4 +59,12 @@ namespace Util {
      * @throws std::invalid_argument - Thrown when either of the strings can't be recognised as a valid version.
      */
     int versionCompare(const std::string& first, const std::string& second);
+    /**
+     * @brief Color related functions for dynamic theme handling
+     */
+    namespace Colors {
+        const QColor textColor();
+        const QColor textColorSuccess();
+        const QColor textColorFailure();
+    }
 }
