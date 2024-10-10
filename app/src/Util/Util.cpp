@@ -3,6 +3,7 @@
 #include <curl/curl.h>
 #include <nlohmann/json.hpp>
 
+#include <QApplication>
 #include <QSpacerItem>
 #include <algorithm>
 #include <cstdlib>
@@ -93,6 +94,42 @@ namespace Util {
             return firstPatch > secondPatch ? -1 : 1;
         } else {
             return 0;
+        }
+    }
+
+    namespace Colors {
+        const QColor textColor() { return QApplication::palette().color(QPalette::WindowText); }
+        const QColor textColorSuccess() {
+            float h, s, l, a;
+            textColor().getHslF(&h, &s, &l, &a);
+
+            h = 120.0/360.0; // Hue for green is 120°
+            s = std::min(1.0, s*1.2);
+            if (l > 0.5) {
+                l *= 0.85;
+            } else if (l < 0.5) {
+                l = std::min(1.0, l*1.15);
+            }
+
+            QColor color;
+            color.setHslF(h, s, l, a);
+            return color;
+        }
+        const QColor textColorFailure() {
+            float h, s, l, a;
+            textColor().getHslF(&h, &s, &l, &a);
+
+            h = 0.0; // Hue for red is 0°
+            s = std::min(1.0, s*1.2);
+            if (l > 0.5) {
+                l *= 0.85;
+            } else if (l < 0.5) {
+                l = std::min(1.0, l*1.15);
+            }
+
+            QColor color;
+            color.setHslF(h, s, l, a);
+            return color;
         }
     }
 }

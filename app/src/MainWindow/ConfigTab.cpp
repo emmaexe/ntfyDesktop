@@ -1,6 +1,5 @@
 #include "ConfigTab.hpp"
 
-#include "../ThreadManager/NtfyThread.hpp"
 #include "../Util/Util.hpp"
 #include "ntfyDesktop.hpp"
 #include "ui_ConfigTab.h"
@@ -38,7 +37,7 @@ bool ConfigTab::getSecure() { return this->ui->secureCheckBox->isChecked(); }
 void ConfigTab::testButton() {
     this->testLabelTimer->stop();
     this->ui->testButton->setEnabled(false);
-    this->ui->testLabel->setStyleSheet("font-weight: bold; color: white;");
+    this->ui->testLabel->setStyleSheet("font-weight: bold; color: " + Util::Colors::textColor().name() + ";");
     this->ui->testLabel->setText("Testing connection...");
     this->ui->testLabel->show();
 
@@ -58,11 +57,11 @@ void ConfigTab::testButton() {
 
 void ConfigTab::testResults(const bool& result) {
     if (result) {
-        this->ui->testLabel->setStyleSheet("font-weight: bold; color: green;");
-        this->ui->testLabel->setText("Topic is available and ntfy server is active.");
+        this->ui->testLabel->setStyleSheet("font-weight: bold; color: " + Util::Colors::textColorSuccess().name() + ";");
+        this->ui->testLabel->setText("Connection successful. Notification source is available.");
     } else {
-        this->ui->testLabel->setStyleSheet("font-weight: bold; color: red;");
-        this->ui->testLabel->setText("Failed to connect.");
+        this->ui->testLabel->setStyleSheet("font-weight: bold; color: " + Util::Colors::textColorFailure().name() + ";");
+        this->ui->testLabel->setText("Connection failed.");
     }
     this->ui->testLabel->show();
     this->ui->testButton->setEnabled(true);
