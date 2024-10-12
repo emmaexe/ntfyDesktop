@@ -76,8 +76,8 @@ void MainWindow::ntfyProtocolTriggered(ProtocolHandler url) {
 void MainWindow::saveAction() {
     Config::data()["sources"] = nlohmann::json::array();
     std::vector<std::string> seen = {};
-    for (int i = 0; i < this->tabs.size(); i++) {
-        ConfigTab* tab = this->tabs.at(i);
+    for (int i = 0; i < this->ui->tabs->count(); i++) {
+        ConfigTab* tab = static_cast<ConfigTab*>(this->ui->tabs->widget(i));
         std::string domainTopic = tab->getDomain() + "/" + tab->getTopic();
         if (std::find(seen.begin(), seen.end(), domainTopic) != seen.end()) {
             std::string tabName = "⚠️" + tab->getName();
