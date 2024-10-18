@@ -103,13 +103,12 @@ namespace Util {
             float h, s, l, a;
             textColor().getHslF(&h, &s, &l, &a);
 
-            h = 120.0/360.0; // Hue for green is 120°
-            s = std::min(1.0, s*1.2);
-            if (l > 0.5) {
-                l *= 0.85;
-            } else if (l < 0.5) {
-                l = std::min(1.0, l*1.15);
-            }
+            h = 120.0 / 360.0; // Hue for green is 120°
+
+            s = std::clamp(static_cast<float>(s * 1.2), 0.5F, 1.0F);
+
+            l *= (l > 0.5) ? 0.85 : 1.15;
+            l = std::clamp(l, 0.35F, 0.65F);
 
             QColor color;
             color.setHslF(h, s, l, a);
@@ -120,12 +119,11 @@ namespace Util {
             textColor().getHslF(&h, &s, &l, &a);
 
             h = 0.0; // Hue for red is 0°
-            s = std::min(1.0, s*1.2);
-            if (l > 0.5) {
-                l *= 0.85;
-            } else if (l < 0.5) {
-                l = std::min(1.0, l*1.15);
-            }
+
+            s = std::clamp(static_cast<float>(s * 1.2), 0.5F, 1.0F);
+
+            l *= (l > 0.5) ? 0.85 : 1.15;
+            l = std::clamp(l, 0.35F, 0.65F);
 
             QColor color;
             color.setHslF(h, s, l, a);
