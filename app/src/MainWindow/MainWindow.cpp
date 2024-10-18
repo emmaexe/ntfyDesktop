@@ -1,5 +1,6 @@
 #include "MainWindow.hpp"
 
+#include "../ImportDialog/ImportDialog.hpp"
 #include "../NotificationManager/NotificationManager.hpp"
 #include "../Util/Util.hpp"
 #include "ui_MainWindow.h"
@@ -14,6 +15,7 @@ MainWindow::MainWindow(std::shared_ptr<ThreadManager> threadManager, KAboutData&
     QObject::connect(this->ui->saveAction, &QAction::triggered, this, &MainWindow::saveAction);
     QObject::connect(this->ui->addAction, &QAction::triggered, this, &MainWindow::addAction);
     QObject::connect(this->ui->removeAction, &QAction::triggered, this, &MainWindow::removeAction);
+    QObject::connect(this->ui->importAction, &QAction::triggered, this, &MainWindow::importAction);
     QObject::connect(this->ui->restartAction, &QAction::triggered, this, &MainWindow::restartAction);
     QObject::connect(this->ui->exitAction, &QAction::triggered, this, &MainWindow::exitAction);
 
@@ -203,4 +205,12 @@ void MainWindow::restartAction() {
     this->newTabCounter = 1;
 
     if (wasShown) { this->show(); }
+}
+
+void MainWindow::importAction() {
+    ImportDialog* dialog = new ImportDialog(this);
+    if (dialog->exec()) {
+        this->restartAction();
+        this->ui->statusBar->showMessage("Ntfy Android backup merged into existing config.", 5000);
+    }
 }

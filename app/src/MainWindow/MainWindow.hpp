@@ -31,6 +31,7 @@ class MainWindow: public QMainWindow {
         void trayIconPressed(QSystemTrayIcon::ActivationReason reason);
         void showHideAction();
         void restartAction();
+        void importAction();
     protected:
         void closeEvent(QCloseEvent* event) override;
         void changeEvent(QEvent* event) override;

@@ -371,10 +371,12 @@
     </property>
     <addaction name="saveAction"/>
     <addaction name="separator"/>
+    <addaction name="importAction"/>
+    <addaction name="separator"/>
     <addaction name="restartAction"/>
     <addaction name="exitAction"/>
    </widget>
-   <widget class="QMenu" name="menu_Edit">
+   <widget class="QMenu" name="menuEdit">
     <property name="title">
      <string>&amp;Edit</string>
     </property>
@@ -382,7 +384,7 @@
     <addaction name="removeAction"/>
    </widget>
    <addaction name="menuFile"/>
-   <addaction name="menu_Edit"/>
+   <addaction name="menuEdit"/>
   </widget>
   <action name="saveAction">
    <property name="icon">
@@ -440,6 +442,19 @@
    </property>
    <property name="text">
     <string>&amp;Restart</string>
+   </property>
+  </action>
+  <action name="actionImport">
+   <property name="text">
+    <string>&amp;Import</string>
+   </property>
+  </action>
+  <action name="importAction">
+   <property name="icon">
+    <iconset theme="document-import"/>
+   </property>
+   <property name="text">
+    <string>&amp;Import</string>
    </property>
   </action>
  </widget>
