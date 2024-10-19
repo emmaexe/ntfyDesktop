@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.10)
 project(
     ntfyDesktop
     VERSION 1.1.0
-    DESCRIPTION "A desktop client for ntfy."
+    DESCRIPTION "A desktop client for ntfy"
     HOMEPAGE_URL "https://github.com/emmaexe/ntfyDesktop/"
     LANGUAGES C CXX
 )
@@ -28,19 +28,23 @@ include(KDEInstallDirs) # This is supposed to be KDEInstallDirs6 but KDEInstallD
 include(ECMInstallIcons)
 include(ECMAddAppIcon)
 
-# To update CPM.cmake, update the version number in the url and SHA hash as found in the most recent release asset.
-# https://github.com/cpm-cmake/CPM.cmake/wiki/Downloading-CPM.cmake-in-CMake
-file(
-    DOWNLOAD
-    https://github.com/cpm-cmake/CPM.cmake/releases/download/v0.40.2/CPM.cmake
-    ${CMAKE_CURRENT_BINARY_DIR}/cmake/CPM.cmake
-    EXPECTED_HASH SHA256=c8cdc32c03816538ce22781ed72964dc864b2a34a310d3b7104812a5ca2d835d
-)
-include(${CMAKE_CURRENT_BINARY_DIR}/cmake/CPM.cmake)
+if (ND_BUILD_TYPE STREQUAL "Flatpak")
+    find_package(nlohmann_json 3.11.3 REQUIRED)
+    find_package(emojicpp 2.0.1 REQUIRED)
+else()
+    # To update CPM.cmake, update the version number in the url and SHA hash as found in the most recent release asset.
+    # https://github.com/cpm-cmake/CPM.cmake/wiki/Downloading-CPM.cmake-in-CMake
+    file(
+        DOWNLOAD
+        https://github.com/cpm-cmake/CPM.cmake/releases/download/v0.40.2/CPM.cmake
+        ${CMAKE_CURRENT_BINARY_DIR}/cmake/CPM.cmake
+        EXPECTED_HASH SHA256=c8cdc32c03816538ce22781ed72964dc864b2a34a310d3b7104812a5ca2d835d
+    )
+    include(${CMAKE_CURRENT_BINARY_DIR}/cmake/CPM.cmake)
+    CPMAddPackage("gh:nlohmann/json@3.11.3")
+    CPMAddPackage("gh:emmaexe/emojicpp@2.0.1")
+endif()
 
-CPMAddPackage("gh:nlohmann/json@3.11.3")
-CPMAddPackage("gh:emmaexe/emojicpp@2.0.0")
-include_directories("${emojicpp_SOURCE_DIR}")
 find_package(CURL REQUIRED)
 find_package(Boost REQUIRED COMPONENTS serialization)
 find_package(Qt6 REQUIRED COMPONENTS
@@ -62,7 +66,7 @@ set(CPACK_GENERATOR "RPM;DEB;TGZ")
 set(CPACK_PACKAGE_NAME "${CMAKE_PROJECT_NAME}")
 set(CPACK_PACKAGE_VERSION "${PROJECT_VERSION}")
 set(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION}")
-set(CPACK_PACKAGE_DESCRIPTION "${CMAKE_PROJECT_DESCRIPTION} Allows you to subscribe to topics from any ntfy server and recieve notifications natively on the desktop.")
+set(CPACK_PACKAGE_DESCRIPTION "${CMAKE_PROJECT_DESCRIPTION}. Allows you to subscribe to topics from any ntfy server and recieve notifications natively on the desktop.")
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "${CMAKE_PROJECT_DESCRIPTION}")
 set(CPACK_PACKAGE_CHECKSUM "SHA256")
 set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_SOURCE_DIR}/LICENSE")
@@ -86,6 +90,7 @@ set(CPACK_COMPONENTS_ALL ON)
 # Configure files
 configure_file("${SRC_DIR}/ntfyDesktop.hpp.in" "${GEN_DIR}/ntfyDesktop.hpp" @ONLY)
 configure_file("${APP_DIR}/moe.emmaexe.ntfyDesktop.notifyrc.in" "${GEN_DIR}/moe.emmaexe.ntfyDesktop.notifyrc" @ONLY)
+configure_file("${APP_DIR}/moe.emmaexe.ntfyDesktop.metainfo.xml.in" "${GEN_DIR}/moe.emmaexe.ntfyDesktop.metainfo.xml" @ONLY)
 configure_file("${APP_DIR}/moe.emmaexe.ntfyDesktop.desktop.in" "${GEN_DIR}/moe.emmaexe.ntfyDesktop.desktop" @ONLY)
 
 # Enable MOC
@@ -103,15 +108,18 @@ qt_add_executable(${CMAKE_PROJECT_NAME} ${SRC_FILES} ${MOC_FILES} ${RES_FILES})
 target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE nlohmann_json::nlohmann_json emojicpp CURL::libcurl Boost::serialization Qt6::Core Qt6::Gui Qt6::Widgets KF6::CoreAddons KF6::I18n KF6::Notifications KF6::XmlGui)
 
 # Install files
-file(GLOB ICONS_SRC "${ICON_DIR}/*.png")
-ecm_add_app_icon(${CMAKE_PROJECT_NAME} ICONS ${ICONS_SRC})
+file(GLOB ICONS_SRC "${ICON_DIR}/*.svg")
 ecm_install_icons(ICONS ${ICONS_SRC} DESTINATION ${KDE_INSTALL_ICONDIR})
 
 install(FILES "${GEN_DIR}/moe.emmaexe.ntfyDesktop.notifyrc" DESTINATION "${KDE_INSTALL_DATAROOTDIR}/knotifications6")
+
+install(FILES "${GEN_DIR}/moe.emmaexe.ntfyDesktop.metainfo.xml" DESTINATION "${KDE_INSTALL_DATAROOTDIR}/metainfo")
 
 install(PROGRAMS "${GEN_DIR}/moe.emmaexe.ntfyDesktop.desktop" DESTINATION ${KDE_INSTALL_APPDIR})
 
 install(TARGETS ${CMAKE_PROJECT_NAME} ${KDE_INSTALL_TARGETS_DEFAULT_ARGS})
 
 # Package
-include(CPack)
+if (NOT ND_BUILD_TYPE STREQUAL "Flatpak")
+    include(CPack)
+endif()

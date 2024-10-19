@@ -17,7 +17,7 @@
    <string>Import from backup</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="../../resources/resources.qrc">
+   <iconset theme="moe.emmaexe.ntfyDesktop" resource="../../resources/resources.qrc">
     <normaloff>:/icons/ntfyDesktop.svg</normaloff>:/icons/ntfyDesktop.svg</iconset>
   </property>
   <property name="modal">

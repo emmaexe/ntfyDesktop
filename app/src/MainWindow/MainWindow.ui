@@ -14,7 +14,8 @@
    <string>Ntfy Desktop</string>
   </property>
   <property name="windowIcon">
-   <iconset theme="ntfyDesktop"/>
+   <iconset theme="moe.emmaexe.ntfyDesktop" resource="../../resources/resources.qrc">
+    <normaloff>:/icons/ntfyDesktop.svg</normaloff>:/icons/ntfyDesktop.svg</iconset>
   </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QVBoxLayout" name="verticalLayout">

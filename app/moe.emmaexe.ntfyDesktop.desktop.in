@@ -1,9 +1,9 @@
 [Desktop Entry]
 Type=Application
 Name=Ntfy Desktop
-Categories=Utility;
-Keywords=notification;
+Categories=Utility;Network;
+Keywords=notifications;
 Comment=@CMAKE_PROJECT_DESCRIPTION@
 Exec=@CMAKE_PROJECT_NAME@ %u
-Icon=ntfyDesktop
+Icon=moe.emmaexe.ntfyDesktop
 MimeType=x-scheme-handler/ntfy;

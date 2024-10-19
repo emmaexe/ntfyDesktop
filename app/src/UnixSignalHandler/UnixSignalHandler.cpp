@@ -55,23 +55,23 @@ UnixSignalHandler::UnixSignalHandler(std::function<void(int)> fun, QObject* pare
 
 void UnixSignalHandler::hupSignalHandler(int) {
     char a = 1;
-    write(UnixSignalHandler::sighupFileDescriptor[0], &a, sizeof(a));
+    ssize_t n = write(UnixSignalHandler::sighupFileDescriptor[0], &a, sizeof(a));
 }
 
 void UnixSignalHandler::intSignalHandler(int) {
     char a = 1;
-    write(UnixSignalHandler::sigintFileDescriptor[0], &a, sizeof(a));
+    ssize_t n = write(UnixSignalHandler::sigintFileDescriptor[0], &a, sizeof(a));
 }
 
 void UnixSignalHandler::termSignalHandler(int) {
     char a = 1;
-    write(UnixSignalHandler::sigtermFileDescriptor[0], &a, sizeof(a));
+    ssize_t n = write(UnixSignalHandler::sigtermFileDescriptor[0], &a, sizeof(a));
 }
 
 void UnixSignalHandler::handleSigHup() {
     this->sighupNotifier->setEnabled(false);
     char tmp;
-    read(this->sighupFileDescriptor[1], &tmp, sizeof(tmp));
+    ssize_t n = read(this->sighupFileDescriptor[1], &tmp, sizeof(tmp));
 
     this->fun(SIGHUP);
 
@@ -81,7 +81,7 @@ void UnixSignalHandler::handleSigHup() {
 void UnixSignalHandler::handleSigInt() {
     this->sigintNotifier->setEnabled(false);
     char tmp;
-    read(this->sigintFileDescriptor[1], &tmp, sizeof(tmp));
+    ssize_t n = read(this->sigintFileDescriptor[1], &tmp, sizeof(tmp));
 
     this->fun(SIGINT);
 
@@ -91,7 +91,7 @@ void UnixSignalHandler::handleSigInt() {
 void UnixSignalHandler::handleSigTerm() {
     this->sigtermNotifier->setEnabled(false);
     char tmp;
-    read(this->sigtermFileDescriptor[1], &tmp, sizeof(tmp));
+    ssize_t n = read(this->sigtermFileDescriptor[1], &tmp, sizeof(tmp));
 
     this->fun(SIGTERM);
 

@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>moe.emmaexe.ntfyDesktop</id>
+  
+  <name>Ntfy Desktop</name>
+  <summary>@CPACK_PACKAGE_DESCRIPTION_SUMMARY@</summary>
+  
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>GPL-3.0-only</project_license>
+  
+  <description>
+    <p>
+      @CPACK_PACKAGE_DESCRIPTION@
+    </p>
+  </description>
+
+  <developer id="moe.emmaexe">
+    <name>emmaexe</name>
+  </developer>
+  
+  <url type="bugtracker">@CMAKE_PROJECT_HOMEPAGE_URL@issues/</url>
+  <url type="homepage">@CMAKE_PROJECT_HOMEPAGE_URL@</url>
+  <url type="contribute">@CMAKE_PROJECT_HOMEPAGE_URL@</url>
+
+  <launchable type="desktop-id">moe.emmaexe.ntfyDesktop.desktop</launchable>
+
+  <icon type="stock">moe.emmaexe.ntfyDesktop</icon>
+
+  <screenshots>
+    <screenshot type="default">
+      <image>https://raw.githubusercontent.com/emmaexe/ntfyDesktop/main/assets/screenshot1.png</image>
+      <caption>The main screen of the app.</caption>
+    </screenshot>
+    <screenshot>
+      <image>https://raw.githubusercontent.com/emmaexe/ntfyDesktop/main/assets/screenshot2.png</image>
+      <caption>The main screen after adding some notification sources.</caption>
+    </screenshot>
+    <screenshot>
+      <image>https://raw.githubusercontent.com/emmaexe/ntfyDesktop/main/assets/screenshot3.png</image>
+      <caption>A notification arriving after being sent using cURL.</caption>
+    </screenshot>
+  </screenshots>
+
+  <branding>
+    <color type="primary" scheme_preference="light">#6fbcab</color>
+    <color type="primary" scheme_preference="dark">#196353</color>
+  </branding>
+
+  <content_rating type="oars-1.1" />
+
+    <categories>
+      <category>Utility</category>
+      <category>Network</category>
+    </categories>
+
+    <keywords>
+      <keyword>notifications</keyword>
+    </keywords>
+
+  <releases>
+    <release version="1.1.0" date="2024-09-29">
+      <url type="details">https://github.com/emmaexe/ntfyDesktop/releases/tag/v1.1.0</url>
+      <description>
+        <p>Release v1.1.0</p>
+          <ul>
+            <li>Added a HTTP/HTTPS toggle for notification sources</li>
+            <li>Added a restart button to the main UI</li>
+            <li>The app now gracefully handles shutdowns via unix signals</li>
+            <li>Limit the number retries after failed connections</li>
+          </ul>
+      </description>
+    </release>
+    <release version="1.0.0" date="2024-09-19">
+      <url type="details">https://github.com/emmaexe/ntfyDesktop/releases/tag/v1.0.0</url>
+      <description>
+        <p>First release</p>
+          <ul>
+            <li>Created the first release of the app</li>
+          </ul>
+      </description>
+    </release>
+  </releases>
+</component>
