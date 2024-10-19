@@ -107,8 +107,7 @@ qt_add_executable(${CMAKE_PROJECT_NAME} ${SRC_FILES} ${MOC_FILES} ${RES_FILES})
 target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE nlohmann_json::nlohmann_json emojicpp CURL::libcurl Boost::serialization Qt6::Core Qt6::Gui Qt6::Widgets KF6::CoreAddons KF6::I18n KF6::Notifications KF6::XmlGui)
 
 # Install files
-file(GLOB ICONS_SRC "${ICON_DIR}/*.png")
-ecm_add_app_icon(${CMAKE_PROJECT_NAME} ICONS ${ICONS_SRC})
+file(GLOB ICONS_SRC "${ICON_DIR}/*.svg")
 ecm_install_icons(ICONS ${ICONS_SRC} DESTINATION ${KDE_INSTALL_ICONDIR})
 
 install(FILES "${GEN_DIR}/moe.emmaexe.ntfyDesktop.notifyrc" DESTINATION "${KDE_INSTALL_DATAROOTDIR}/knotifications6")
