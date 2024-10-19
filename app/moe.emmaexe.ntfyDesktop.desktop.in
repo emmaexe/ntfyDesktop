@@ -5,5 +5,5 @@ Categories=Utility;
 Keywords=notification;
 Comment=@CMAKE_PROJECT_DESCRIPTION@
 Exec=@CMAKE_PROJECT_NAME@ %u
-Icon=ntfyDesktop
+Icon=moe.emmaexe.ntfyDesktop
 MimeType=x-scheme-handler/ntfy;

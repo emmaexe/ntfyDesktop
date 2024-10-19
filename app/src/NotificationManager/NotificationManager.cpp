@@ -45,7 +45,7 @@ void NotificationManager::generalNotification(
 
     notification->setTitle(title.c_str());
     notification->setText(message.c_str());
-    notification->setIconName("ntfyDesktop");
+    notification->setIconName("moe.emmaexe.ntfyDesktop");
 
     if (attachment.has_value()) {
         QUrl tempFileUrl = FileManager::urlToTempFile(QUrl(QString::fromStdString(attachment->url)));
@@ -75,7 +75,7 @@ void NotificationManager::startupNotification() {
     notification->setUrgency(KNotification::Urgency::LowUrgency);
     notification->setTitle("Ntfy Desktop");
     notification->setText("Ntfy Desktop is running in the background.");
-    notification->setIconName("ntfyDesktop");
+    notification->setIconName("moe.emmaexe.ntfyDesktop");
     notification->sendEvent();
 }
 
@@ -84,6 +84,6 @@ void NotificationManager::errorNotification(const std::string& title, const std:
     notification->setTitle(QString::fromStdString(title));
     notification->setText(QString::fromStdString(message));
     notification->setUrgency(KNotification::Urgency::HighUrgency);
-    notification->setIconName(QStringLiteral("ntfyDesktop"));
+    notification->setIconName(QStringLiteral("moe.emmaexe.ntfyDesktop"));
     notification->sendEvent();
 }

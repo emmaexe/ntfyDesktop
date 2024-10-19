@@ -1,6 +1,6 @@
 [Global]
 Name=Ntfy Desktop
-IconName=ntfyDesktop
+IconName=moe.emmaexe.ntfyDesktop
 Comment=@CMAKE_PROJECT_DESCRIPTION@
 DesktopEntry=moe.emmaexe.ntfyDesktop.desktop
 
