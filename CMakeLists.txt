@@ -113,7 +113,7 @@ ecm_install_icons(ICONS ${ICONS_SRC} DESTINATION ${KDE_INSTALL_ICONDIR})
 
 install(FILES "${GEN_DIR}/moe.emmaexe.ntfyDesktop.notifyrc" DESTINATION "${KDE_INSTALL_DATAROOTDIR}/knotifications6")
 
-install(FILES "${GEN_DIR}/moe.emmaexe.ntfyDesktop.metainfo.xml" DESTINATION "/usr/share/metainfo")
+install(FILES "${GEN_DIR}/moe.emmaexe.ntfyDesktop.metainfo.xml" DESTINATION "${KDE_INSTALL_DATAROOTDIR}/metainfo")
 
 install(PROGRAMS "${GEN_DIR}/moe.emmaexe.ntfyDesktop.desktop" DESTINATION ${KDE_INSTALL_APPDIR})
 
