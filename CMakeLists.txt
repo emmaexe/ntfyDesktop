@@ -43,7 +43,6 @@ else()
     include(${CMAKE_CURRENT_BINARY_DIR}/cmake/CPM.cmake)
     CPMAddPackage("gh:nlohmann/json@3.11.3")
     CPMAddPackage("gh:emmaexe/emojicpp@2.0.1")
-    include_directories("${emojicpp_SOURCE_DIR}")
 endif()
 
 find_package(CURL REQUIRED)
