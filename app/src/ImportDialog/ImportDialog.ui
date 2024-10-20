@@ -112,7 +112,7 @@
           <string>Select a File</string>
          </property>
          <property name="icon">
-          <iconset theme="QIcon::ThemeIcon::DocumentOpen"/>
+          <iconset theme="document-open"/>
          </property>
          <property name="toolButtonStyle">
           <enum>Qt::ToolButtonStyle::ToolButtonTextBesideIcon</enum>
