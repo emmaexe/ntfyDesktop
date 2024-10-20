@@ -52,7 +52,7 @@ void NtfyThread::run() {
         this->running = false;
         const std::string title = "Unable to connect to " + this->internalName;
         const std::string message = "Maximum retries exceeded for notification source \"" + this->internalName + "\" (" + this->url + ")";
-        QMetaObject::invokeMethod(qApp, NotificationManager::errorNotification, title, message);
+        NotificationManager::errorNotification(title, message);
     }
 }
 
@@ -123,7 +123,7 @@ size_t NtfyThread::writeCallback(char* ptr, size_t size, size_t nmemb, void* use
                     for (nlohmann::json element: jsonData["actions"]) { actions.value().push_back(NotificationAction(element)); }
                 }
 
-                QMetaObject::invokeMethod(qApp, NotificationManager::generalNotification, title, message, priority, attachment, actions);
+                NotificationManager::generalNotification(title, message, priority, attachment, actions);
             }
         } catch (nlohmann::json::parse_error e) {
             this_p->mutex->lock();
