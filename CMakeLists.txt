@@ -79,8 +79,7 @@ set(CPACK_RPM_PACKAGE_DESCRIPTION "${CPACK_PACKAGE_DESCRIPTION}")
 set(CPACK_RPM_PACKAGE_AUTOREQ TRUE)
 
 set(CPACK_DEBIAN_FILE_NAME "${CPACK_PACKAGE_FILE_NAME}.deb")
-# TODO: Depends on Qt6/KF6, boost and libcurl, needs setting up for debian
-#set(CPACK_DEBIAN_PACKAGE_DEPENDS "")
+set(CPACK_DEBIAN_PACKAGE_DEPENDS "libboost-serialization1.83.0")
 set(CPACK_DEBIAN_PACKAGE_MAINTAINER "emmaexe <emma.git@emmaexe.moe>")
 set(CPACK_DEBIAN_PACKAGE_SECTION "utils")
 set(CPACK_DEBIAN_PACKAGE_PRIORITY "optional")

@@ -36,7 +36,7 @@ void NtfyThread::run() {
     curl_easy_setopt(curlHandle, CURLOPT_USERAGENT, ND_USERAGENT);
 
     while (this->running && this->internalErrorCounter <= maxRetries) {
-        if (this->internalErrorCounter > 0) { std::this_thread::sleep_for(std::chrono::milliseconds(connectionLostTimeouts[this->internalErrorCounter-1])); }
+        if (this->internalErrorCounter > 0) { std::this_thread::sleep_for(std::chrono::milliseconds(connectionLostTimeouts[this->internalErrorCounter - 1])); }
 
         std::string currentUrl = this->url + "?since=" + this->lastNotificationID;
         curl_easy_setopt(curlHandle, CURLOPT_URL, currentUrl.c_str());
@@ -52,7 +52,7 @@ void NtfyThread::run() {
         this->running = false;
         const std::string title = "Unable to connect to " + this->internalName;
         const std::string message = "Maximum retries exceeded for notification source \"" + this->internalName + "\" (" + this->url + ")";
-        QMetaObject::invokeMethod(qApp, NotificationManager::errorNotification, title, message);
+        QMetaObject::invokeMethod(QApplication::instance(), [title, message]() { NotificationManager::errorNotification(title, message); });
     }
 }
 
@@ -123,7 +123,9 @@ size_t NtfyThread::writeCallback(char* ptr, size_t size, size_t nmemb, void* use
                     for (nlohmann::json element: jsonData["actions"]) { actions.value().push_back(NotificationAction(element)); }
                 }
 
-                QMetaObject::invokeMethod(qApp, NotificationManager::generalNotification, title, message, priority, attachment, actions);
+                QMetaObject::invokeMethod(QApplication::instance(), [title, message, priority, attachment, actions]() {
+                    NotificationManager::generalNotification(title, message, priority, attachment, actions);
+                });
             }
         } catch (nlohmann::json::parse_error e) {
             this_p->mutex->lock();

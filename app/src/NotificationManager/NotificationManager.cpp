@@ -79,7 +79,7 @@ void NotificationManager::startupNotification() {
     notification->sendEvent();
 }
 
-void NotificationManager::errorNotification(const std::string& title, const std::string& message) {
+void NotificationManager::errorNotification(const std::string title, const std::string message) {
     KNotification* notification = new KNotification("error");
     notification->setTitle(QString::fromStdString(title));
     notification->setText(QString::fromStdString(message));

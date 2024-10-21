@@ -37,5 +37,5 @@ class NotificationManager {
             std::optional<std::vector<NotificationAction>> actions = std::nullopt
         );
         static void startupNotification();
-        static void errorNotification(const std::string& title, const std::string& message);
+        static void errorNotification(const std::string title, const std::string message);
 };
