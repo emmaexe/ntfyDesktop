@@ -14,12 +14,6 @@ A desktop client for [ntfy](https://github.com/binwiederhier/ntfy). Allows you t
 
 ℹ️ Flatpak support coming soon.
 
-<details>
-<summary>⚠️ Ubuntu warning</summary>
-This app will only start working on Ubuntu after 24.10 releases (and with it KDE Frameworks 6 which this app uses).
-</details>
-<br>
-
 You can also download the [latest release](https://github.com/emmaexe/ntfyDesktop/releases/latest) for manual installation.
 
 ## Screenshots
@@ -48,8 +42,6 @@ dnf install gcc-c++ cmake extra-cmake-modules boost-devel libcurl-devel qt6-qtba
 ```
 
 #### Ubuntu
-
-⚠️ Until Ubuntu 24.10 releases, KDE Frameworks 6 will not be available on it, and you won't be able to build the project.
 
 ```bash
 apt install git g++ cmake extra-cmake-modules libboost-serialization-dev libcurl4-openssl-dev qt6-base-dev libkf6coreaddons-dev libkf6i18n-dev libkf6notifications-dev libkf6xmlgui-dev
