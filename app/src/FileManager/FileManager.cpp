@@ -1,8 +1,10 @@
 #include "FileManager.hpp"
 
 #include "../Util/Util.hpp"
+#include "ntfyDesktop.hpp"
 
 #include <curl/curl.h>
+#include <unistd.h>
 
 #include <QApplication>
 #include <fstream>
@@ -34,7 +36,9 @@ QUrl FileManager::urlToTempFile(QUrl url) {
     } else {
         throw FileManagerException("Unable to create libcurl handle.");
     }
-    return QUrl::fromLocalFile(file->fileName());
+    QString fileName = file->fileName();
+    // if (ND_BUILD_TYPE == "Flatpak") { fileName.prepend(QString::fromStdString("/run/user/" + std::to_string(getuid()) + "/.flatpak/moe.emmaexe.ntfyDesktop")); }
+    return QUrl::fromLocalFile(fileName);
 }
 
 size_t FileManager::urlToTempFileWriteCallback(char* ptr, size_t size, size_t nmemb, void* userdata) {
