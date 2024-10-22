@@ -58,6 +58,19 @@
     </keywords>
 
   <releases>
+    <release version="1.2.0" date="2024-10-22">
+      <url type="details">https://github.com/emmaexe/ntfyDesktop/releases/tag/v1.2.0</url>
+      <description>
+        <p>Release v1.2.0</p>
+          <ul>
+            <li>Added a notification source testing system</li>
+            <li>Added the ability to reorder notification sources</li>
+            <li>Import system for ntfy android backups</li>
+            <li>Added support for Flatpak</li>
+            <li>Added proper Ubuntu support</li>
+          </ul>
+      </description>
+    </release>
     <release version="1.1.0" date="2024-09-29">
       <url type="details">https://github.com/emmaexe/ntfyDesktop/releases/tag/v1.1.0</url>
       <description>
