@@ -1,6 +1,7 @@
 #include "NotificationManager.hpp"
 
 #include "../FileManager/FileManager.hpp"
+#include "ntfyDesktop.hpp"
 
 #include <KNotification>
 #include <QDesktopServices>
@@ -48,8 +49,14 @@ void NotificationManager::generalNotification(
     notification->setIconName("moe.emmaexe.ntfyDesktop");
 
     if (attachment.has_value()) {
-        QUrl tempFileUrl = FileManager::urlToTempFile(QUrl(QString::fromStdString(attachment->url)));
-        notification->setUrls(QList<QUrl>({ tempFileUrl }));
+        if (ND_BUILD_TYPE == "Flatpak") {
+            QUrl fileUrl = QUrl(QString::fromStdString(attachment->url));
+            KNotificationAction* knaction = notification->addAction(QStringLiteral("Open Attachment"));
+            KNotificationAction::connect(knaction, &KNotificationAction::activated, [fileUrl]() { QDesktopServices::openUrl(fileUrl); });
+        } else {
+            QUrl tempFileUrl = FileManager::urlToTempFile(QUrl(QString::fromStdString(attachment->url)));
+            notification->setUrls({ tempFileUrl });
+        }
     }
 
     if (actions.has_value()) {
@@ -58,6 +65,8 @@ void NotificationManager::generalNotification(
             KNotificationAction* knaction;
 
             if (action.type == NotificationActionType::CLICK) {
+                KNotificationAction* bknaction = notification->addAction(QString::fromStdString(action.label));
+                KNotificationAction::connect(bknaction, &KNotificationAction::activated, [actionUrl = action.url]() { QDesktopServices::openUrl(QUrl(QString::fromStdString(actionUrl))); });
                 knaction = notification->addDefaultAction(QString::fromStdString(action.label));
             } else if (action.type == NotificationActionType::BUTTON) {
                 knaction = notification->addAction(QString::fromStdString(action.label));
