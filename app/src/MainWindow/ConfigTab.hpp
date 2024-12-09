@@ -10,6 +10,15 @@ namespace Ui {
 }
 QT_END_NAMESPACE
 
+enum AuthType {
+    NONE, USERNAME_PASSWORD, TOKEN
+};
+
+struct AuthConfig {
+    AuthType type;
+    std::string username, password, token;
+};
+
 class ConfigTab: public QWidget {
         Q_OBJECT
     public:
@@ -19,9 +28,11 @@ class ConfigTab: public QWidget {
         std::string getDomain();
         std::string getTopic();
         bool getSecure();
+        AuthConfig getAuth();
     public slots:
         void testButton();
         void testResults(const bool& result);
+        void authTypeChanged(int index);
     private:
         Ui::ConfigTab* ui;
         QTimer* testLabelTimer;
