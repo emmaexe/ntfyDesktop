@@ -9,7 +9,7 @@
 
 #include <iostream>
 
-ConfigTab::ConfigTab(std::string name, std::string domain, std::string topic, bool secure, QWidget* parent): QWidget(parent), ui(new Ui::ConfigTab) {
+ConfigTab::ConfigTab(std::string name, std::string domain, std::string topic, AuthConfig authConfig, bool secure, QWidget* parent): QWidget(parent), ui(new Ui::ConfigTab) {
     this->ui->setupUi(this);
     this->ui->nameLineEdit->setText(QString::fromStdString(name));
     this->ui->domainLineEdit->setText(QString::fromStdString(domain));
@@ -18,15 +18,17 @@ ConfigTab::ConfigTab(std::string name, std::string domain, std::string topic, bo
 
     this->ui->authUsernameLabel->hide();
     this->ui->authUsernameLineEdit->hide();
+    this->ui->authUsernameLineEdit->setText(QString::fromStdString(authConfig.username));
     this->ui->authPasswordLabel->hide();
     this->ui->authPasswordLineEdit->hide();
+    this->ui->authPasswordLineEdit->setText(QString::fromStdString(authConfig.password));
     this->ui->authTokenLabel->hide();
     this->ui->authTokenLineEdit->hide();
+    this->ui->authTokenLineEdit->setText(QString::fromStdString(authConfig.token));
 
     this->ui->authTypeComboBox->addItems({ "None", "Username/Password", "Token" });
-    this->ui->authTypeComboBox->setCurrentIndex(0);
-
     QObject::connect(this->ui->authTypeComboBox, &QComboBox::currentIndexChanged, this, &ConfigTab::authTypeChanged);
+    this->ui->authTypeComboBox->setCurrentIndex(authConfig.type);
 
     QObject::connect(this->ui->testButton, &QToolButton::clicked, this, &ConfigTab::testButton);
 
@@ -53,6 +55,20 @@ AuthConfig ConfigTab::getAuth() {
     config.password = this->ui->authPasswordLineEdit->text().toStdString();
     config.token = this->ui->authTokenLineEdit->text().toStdString();
     return config;
+}
+
+void ConfigTab::clearInvisible() {
+    AuthType type = static_cast<AuthType>(this->ui->authTypeComboBox->currentIndex());
+    if (type == AuthType::NONE) {
+        this->ui->authUsernameLineEdit->setText(QStringLiteral(""));
+        this->ui->authPasswordLineEdit->setText(QStringLiteral(""));
+        this->ui->authTokenLineEdit->setText(QStringLiteral(""));
+    } else if (type == AuthType::USERNAME_PASSWORD) {
+        this->ui->authTokenLineEdit->setText(QStringLiteral(""));
+    } else if (type == AuthType::TOKEN) {
+        this->ui->authUsernameLineEdit->setText(QStringLiteral(""));
+        this->ui->authPasswordLineEdit->setText(QStringLiteral(""));
+    }
 }
 
 void ConfigTab::testButton() {

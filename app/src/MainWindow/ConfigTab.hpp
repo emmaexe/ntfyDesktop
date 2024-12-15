@@ -1,5 +1,7 @@
 #pragma once
 
+#include "../DataBase/DataBase.hpp"
+
 #include <QThread>
 #include <QTimer>
 #include <QWidget>
@@ -10,25 +12,17 @@ namespace Ui {
 }
 QT_END_NAMESPACE
 
-enum AuthType {
-    NONE, USERNAME_PASSWORD, TOKEN
-};
-
-struct AuthConfig {
-    AuthType type;
-    std::string username, password, token;
-};
-
 class ConfigTab: public QWidget {
         Q_OBJECT
     public:
-        ConfigTab(std::string name = "", std::string domain = "", std::string topic = "", bool secure = true, QWidget* parent = nullptr);
+        ConfigTab(std::string name = "", std::string domain = "", std::string topic = "", AuthConfig authConfig = AuthConfig(), bool secure = true, QWidget* parent = nullptr);
         ~ConfigTab();
         std::string getName();
         std::string getDomain();
         std::string getTopic();
         bool getSecure();
         AuthConfig getAuth();
+        void clearInvisible();
     public slots:
         void testButton();
         void testResults(const bool& result);
