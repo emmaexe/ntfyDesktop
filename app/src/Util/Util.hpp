@@ -17,6 +17,7 @@ namespace Util {
      * @return int - The random number.
      */
     int random(int min, int max);
+
     /**
      * @brief Get a random, commonly used user agent.
      *
@@ -24,6 +25,7 @@ namespace Util {
      * @return std::string - The user agent.
      */
     std::string getRandomUA(int limit = 3);
+
     /**
      * @brief Split a string into a vector of strings based on a delimiter.
      * Does not remove trailing empty strings if the source string ends with the delimiter.
@@ -33,6 +35,7 @@ namespace Util {
      * @return std::vector<std::string> - The resulting vector of strings.
      */
     std::vector<std::string> split(const std::string& string, const std::string& delimiter);
+
     /**
      * @brief Check if a string contains a valid ntfy domain
      *
@@ -45,11 +48,13 @@ namespace Util {
      * @param topic The topic to check
      */
     bool isTopic(const std::string& topic);
+
     /**
      * @brief Change the visibility of an entire Qt layout.
      * @warning Only works with widgets and layouts. Spacers and other elements are unsupported.
      */
     void setLayoutVisibility(QLayout* layout, bool visible);
+
     /**
      * @brief Compares three-part version strings in the format `major.minor.patch`.
      *
@@ -59,6 +64,7 @@ namespace Util {
      * @throws std::invalid_argument - Thrown when either of the strings can't be recognised as a valid version.
      */
     int versionCompare(const std::string& first, const std::string& second);
+
     /**
      * @brief Color related functions for dynamic theme handling
      */
@@ -67,4 +73,13 @@ namespace Util {
         const QColor textColorSuccess();
         const QColor textColorFailure();
     }
+
+    /**
+     * @brief Generate hash representing a topic of a specific ntfy server.
+     *
+     * @param domain The domain of the ntfy server
+     * @param topic The topic on the ntfy server
+     * @return std::string - hash
+     */
+    std::string topicHash(const std::string& domain, const std::string& topic);
 }
