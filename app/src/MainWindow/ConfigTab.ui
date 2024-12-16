@@ -164,6 +164,9 @@
      </item>
      <item row="3" column="0">
       <widget class="QLabel" name="authTypeLabel">
+       <property name="whatsThis">
+        <string>This is the authentication selector. It lets you pick your method of authentication to the ntfy server.</string>
+       </property>
        <property name="text">
         <string>Authentication</string>
        </property>
@@ -174,6 +177,9 @@
        <property name="cursor">
         <cursorShape>PointingHandCursor</cursorShape>
        </property>
+       <property name="whatsThis">
+        <string>This is the authentication selector. It lets you pick your method of authentication to the ntfy server.</string>
+       </property>
        <property name="placeholderText">
         <string>Authentication</string>
        </property>
@@ -181,16 +187,26 @@
      </item>
      <item row="4" column="0">
       <widget class="QLabel" name="authUsernameLabel">
+       <property name="whatsThis">
+        <string>This is the username field.</string>
+       </property>
        <property name="text">
         <string>Username:</string>
        </property>
       </widget>
      </item>
      <item row="4" column="1">
-      <widget class="QLineEdit" name="authUsernameLineEdit"/>
+      <widget class="QLineEdit" name="authUsernameLineEdit">
+       <property name="whatsThis">
+        <string>This is the username field.</string>
+       </property>
+      </widget>
      </item>
      <item row="5" column="0">
       <widget class="QLabel" name="authPasswordLabel">
+       <property name="whatsThis">
+        <string>This is the password field.</string>
+       </property>
        <property name="text">
         <string>Password:</string>
        </property>
@@ -198,6 +214,9 @@
      </item>
      <item row="6" column="0">
       <widget class="QLabel" name="authTokenLabel">
+       <property name="whatsThis">
+        <string>This is the token field.</string>
+       </property>
        <property name="text">
         <string>Token:</string>
        </property>
@@ -233,10 +252,24 @@
       </widget>
      </item>
      <item row="5" column="1">
-      <widget class="KPasswordLineEdit" name="authPasswordLineEdit"/>
+      <widget class="KPasswordLineEdit" name="authPasswordLineEdit">
+       <property name="cursor">
+        <cursorShape>IBeamCursor</cursorShape>
+       </property>
+       <property name="whatsThis">
+        <string>This is the password field.</string>
+       </property>
+      </widget>
      </item>
      <item row="6" column="1">
-      <widget class="KPasswordLineEdit" name="authTokenLineEdit"/>
+      <widget class="KPasswordLineEdit" name="authTokenLineEdit">
+       <property name="cursor">
+        <cursorShape>IBeamCursor</cursorShape>
+       </property>
+       <property name="whatsThis">
+        <string>This is the token field.</string>
+       </property>
+      </widget>
      </item>
     </layout>
    </item>
