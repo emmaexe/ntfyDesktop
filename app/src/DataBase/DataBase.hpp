@@ -19,6 +19,7 @@ class DataBase {
         ~DataBase();
 
         void setAuth(const std::string& topicHash, const AuthConfig& authConfig);
+        void multiSetAuth(const std::map<std::string, AuthConfig>& data);
         AuthConfig getAuth(const std::string& topicHash);
 
         void executeQuery(const std::string& query);

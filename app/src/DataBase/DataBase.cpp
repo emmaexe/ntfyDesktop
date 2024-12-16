@@ -55,14 +55,14 @@ void DataBase::setAuth(const std::string& topicHash, const AuthConfig& authConfi
     if (authConfig.type == AuthType::NONE) {
         query.prepare(R"(
             INSERT OR REPLACE INTO Auth (TopicHash, AuthType)
-            VALUES (?, ?)
+            VALUES (?, ?);
         )");
         query.addBindValue(QString::fromStdString(topicHash));
         query.addBindValue(authConfig.type);
     } else if (authConfig.type == AuthType::USERNAME_PASSWORD) {
         query.prepare(R"(
             INSERT OR REPLACE INTO Auth (TopicHash, AuthType, Username, Password)
-            VALUES (?, ?, ?, ?)
+            VALUES (?, ?, ?, ?);
         )");
         query.addBindValue(QString::fromStdString(topicHash));
         query.addBindValue(authConfig.type);
@@ -71,7 +71,7 @@ void DataBase::setAuth(const std::string& topicHash, const AuthConfig& authConfi
     } else if (authConfig.type == AuthType::TOKEN) {
         query.prepare(R"(
             INSERT OR REPLACE INTO Auth (TopicHash, AuthType, Token)
-            VALUES (?, ?, ?)
+            VALUES (?, ?, ?);
         )");
         query.addBindValue(QString::fromStdString(topicHash));
         query.addBindValue(authConfig.type);
@@ -79,6 +79,57 @@ void DataBase::setAuth(const std::string& topicHash, const AuthConfig& authConfi
     }
     if (!query.exec()) {
         std::cerr << "DataBase query failed: " << query.lastError().text().toStdString() << std::endl;
+    }
+}
+
+void DataBase::multiSetAuth(const std::map<std::string, AuthConfig>& data) {
+    QSqlQuery query(this->db);
+    this->db.transaction();
+    bool failure = false;
+
+    failure = failure ? true : !query.exec(R"(
+        DELETE FROM Auth;
+    )");
+
+    for (const std::pair<std::string, AuthConfig>& topic: data) {
+        if (failure) { break; }
+
+        if (topic.second.type == AuthType::NONE) {
+            query.prepare(R"(
+                INSERT OR REPLACE INTO Auth (TopicHash, AuthType)
+                VALUES (:topic_hash, :auth_type);
+            )");
+            query.bindValue(":topic_hash", QString::fromStdString(topic.first));
+            query.bindValue(":auth_type", topic.second.type);
+        } else if (topic.second.type == AuthType::USERNAME_PASSWORD) {
+            query.prepare(R"(
+                INSERT OR REPLACE INTO Auth (TopicHash, AuthType, Username, Password)
+                VALUES (:topic_hash, :auth_type, :username, :password);
+            )");
+            query.bindValue(":topic_hash", QString::fromStdString(topic.first));
+            query.bindValue(":auth_type", topic.second.type);
+            query.bindValue(":username", QString::fromStdString(topic.second.username));
+            query.bindValue(":password", QString::fromStdString(topic.second.password));
+            failure = failure ? true : !query.exec();
+        } else if (topic.second.type == AuthType::TOKEN) {
+            query.prepare(R"(
+                INSERT OR REPLACE INTO Auth (TopicHash, AuthType, Token)
+                VALUES (:topic_hash, :auth_type, :token)
+            )");
+            query.bindValue(":topic_hash", QString::fromStdString(topic.first));
+            query.bindValue(":auth_type", topic.second.type);
+            query.bindValue(":token", QString::fromStdString(topic.second.token));
+        }
+
+        failure = failure ? true : !query.exec();
+        query.clear();
+    }
+
+    if (!failure) {
+        this->db.commit();
+    } else {
+        std::cerr << "DataBase query failed: " << query.lastError().text().toStdString() << std::endl;
+        this->db.rollback();
     }
 }
 

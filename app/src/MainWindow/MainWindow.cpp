@@ -82,14 +82,14 @@ void MainWindow::ntfyProtocolTriggered(ProtocolHandler url) {
 }
 
 void MainWindow::saveAction() {
-    DataBase db;
     Config::data()["sources"] = nlohmann::json::array();
-    std::vector<std::string> seen = {};
-    
+    std::map<std::string, AuthConfig> seen;
+
     for (int i = 0; i < this->ui->tabs->count(); i++) {
         ConfigTab* tab = static_cast<ConfigTab*>(this->ui->tabs->widget(i));
-        std::string domainTopic = tab->getDomain() + "/" + tab->getTopic();
-        if (std::find(seen.begin(), seen.end(), domainTopic) != seen.end()) {
+        std::string topicHash = Util::topicHash(tab->getDomain(), tab->getTopic());
+        //std::string domainTopic = tab->getDomain() + "/" + tab->getTopic();
+        if (seen.find(topicHash) != seen.end()) {
             std::string tabName = "⚠️" + tab->getName();
             this->ui->tabs->setTabText(i, QString::fromStdString(tabName));
             this->ui->tabs->setCurrentIndex(i);
@@ -102,7 +102,7 @@ void MainWindow::saveAction() {
             this->ui->statusBar->showMessage(QStatusBar::tr("⚠️ Invalid domain or topic. Did not save."), 5000);
             return;
         } else {
-            seen.push_back(domainTopic);
+            seen[topicHash] = tab->getAuth();
             this->ui->tabs->setTabText(i, tab->getName().c_str());
             nlohmann::json tabData;
             tabData["name"] = tab->getName();
@@ -110,7 +110,6 @@ void MainWindow::saveAction() {
             tabData["topic"] = tab->getTopic();
             tabData["secure"] = tab->getSecure();
             Config::data()["sources"].push_back(tabData);
-            db.setAuth(Util::topicHash(tab->getDomain(), tab->getTopic()), tab->getAuth());
         }
     }
     for (int i = 0; i < this->ui->tabs->count(); i++) {
@@ -119,6 +118,8 @@ void MainWindow::saveAction() {
     }
 
     Config::write();
+    DataBase db;
+    db.multiSetAuth(seen);
 
     this->ui->statusBar->showMessage(QStatusBar::tr("Configuration saved."), 2000);
 }
