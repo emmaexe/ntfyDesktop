@@ -9,13 +9,14 @@
 
 #include <KLocalizedString>
 #include <QApplication>
+#include <QString>
 #include <iostream>
 
 const int maxRetries = 3;
 const int connectionLostTimeouts[] = { 1000, 1000, 5000 };
 
-NtfyThread::NtfyThread(std::string name, std::string domain, std::string topic, bool secure, std::string lastNotificationID, std::mutex* mutex):
-    internalName(name), internalDomain(domain), internalTopic(topic), internalSecure(secure), lastNotificationID(lastNotificationID), mutex(mutex) {
+NtfyThread::NtfyThread(std::string name, std::string domain, std::string topic, AuthConfig authConfig, bool secure, std::string lastNotificationID, std::mutex* mutex):
+    internalName(name), internalDomain(domain), internalTopic(topic), internalAuthConfig(authConfig), internalSecure(secure), lastNotificationID(lastNotificationID), mutex(mutex) {
     this->url = (secure ? "https://" : "http://") + domain + "/" + topic + "/json";
     this->thread = std::thread(&NtfyThread::run, this);
 }
@@ -26,6 +27,16 @@ void NtfyThread::run() {
     this->running = true;
 
     CURL* curlHandle = curl_easy_init();
+    curl_slist* headers = NULL;
+
+    if (this->internalAuthConfig.type == AuthType::USERNAME_PASSWORD) {
+        QByteArray base64 = QString::fromStdString(this->internalAuthConfig.username + ":" + this->internalAuthConfig.password).toUtf8().toBase64();
+        std::string header = "Authorization: Basic " + std::string(base64.constData(), base64.length());
+        headers = curl_slist_append(headers, header.c_str());
+    } else if (this->internalAuthConfig.type == AuthType::TOKEN) {
+        std::string header = "Authorization: Bearer " + this->internalAuthConfig.token;
+        headers = curl_slist_append(headers, header.c_str());
+    }
 
     curl_easy_setopt(curlHandle, CURLOPT_WRITEFUNCTION, &NtfyThread::writeCallback);
     curl_easy_setopt(curlHandle, CURLOPT_WRITEDATA, this);
@@ -34,6 +45,7 @@ void NtfyThread::run() {
     curl_easy_setopt(curlHandle, CURLOPT_NOPROGRESS, 0L);
     curl_easy_setopt(curlHandle, CURLOPT_NOSIGNAL, 1L);
     curl_easy_setopt(curlHandle, CURLOPT_USERAGENT, ND_USERAGENT);
+    curl_easy_setopt(curlHandle, CURLOPT_HTTPHEADER, headers);
 
     while (this->running && this->internalErrorCounter <= maxRetries) {
         if (this->internalErrorCounter > 0) { std::this_thread::sleep_for(std::chrono::milliseconds(connectionLostTimeouts[this->internalErrorCounter - 1])); }
@@ -150,5 +162,7 @@ const std::string& NtfyThread::name() { return this->internalName; }
 const std::string& NtfyThread::domain() { return this->internalDomain; }
 
 const std::string& NtfyThread::topic() { return this->internalTopic; }
+
+const AuthConfig& NtfyThread::authConfig() { return this->internalAuthConfig; }
 
 const bool NtfyThread::secure() { return this->internalSecure; }
