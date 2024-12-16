@@ -19,12 +19,16 @@ ConfigTab::ConfigTab(std::string name, std::string domain, std::string topic, Au
     this->ui->authUsernameLabel->hide();
     this->ui->authUsernameLineEdit->hide();
     this->ui->authUsernameLineEdit->setText(QString::fromStdString(authConfig.username));
+
     this->ui->authPasswordLabel->hide();
     this->ui->authPasswordLineEdit->hide();
-    this->ui->authPasswordLineEdit->setText(QString::fromStdString(authConfig.password));
+    this->ui->authPasswordLineEdit->setRevealPasswordMode(KPassword::RevealMode::Always);
+    this->ui->authPasswordLineEdit->setPassword(QString::fromStdString(authConfig.password));
+
     this->ui->authTokenLabel->hide();
     this->ui->authTokenLineEdit->hide();
-    this->ui->authTokenLineEdit->setText(QString::fromStdString(authConfig.token));
+    this->ui->authTokenLineEdit->setRevealPasswordMode(KPassword::RevealMode::Always);
+    this->ui->authTokenLineEdit->setPassword(QString::fromStdString(authConfig.token));
 
     this->ui->authTypeComboBox->addItems({ "None", "Username/Password", "Token" });
     QObject::connect(this->ui->authTypeComboBox, &QComboBox::currentIndexChanged, this, &ConfigTab::authTypeChanged);
@@ -52,8 +56,8 @@ AuthConfig ConfigTab::getAuth() {
     AuthConfig config;
     config.type = static_cast<AuthType>(this->ui->authTypeComboBox->currentIndex());
     config.username = this->ui->authUsernameLineEdit->text().toStdString();
-    config.password = this->ui->authPasswordLineEdit->text().toStdString();
-    config.token = this->ui->authTokenLineEdit->text().toStdString();
+    config.password = this->ui->authPasswordLineEdit->password().toStdString();
+    config.token = this->ui->authTokenLineEdit->password().toStdString();
     return config;
 }
 
@@ -61,13 +65,13 @@ void ConfigTab::clearInvisible() {
     AuthType type = static_cast<AuthType>(this->ui->authTypeComboBox->currentIndex());
     if (type == AuthType::NONE) {
         this->ui->authUsernameLineEdit->setText(QStringLiteral(""));
-        this->ui->authPasswordLineEdit->setText(QStringLiteral(""));
-        this->ui->authTokenLineEdit->setText(QStringLiteral(""));
+        this->ui->authPasswordLineEdit->setPassword(QStringLiteral(""));
+        this->ui->authTokenLineEdit->setPassword(QStringLiteral(""));
     } else if (type == AuthType::USERNAME_PASSWORD) {
-        this->ui->authTokenLineEdit->setText(QStringLiteral(""));
+        this->ui->authTokenLineEdit->setPassword(QStringLiteral(""));
     } else if (type == AuthType::TOKEN) {
         this->ui->authUsernameLineEdit->setText(QStringLiteral(""));
-        this->ui->authPasswordLineEdit->setText(QStringLiteral(""));
+        this->ui->authPasswordLineEdit->setPassword(QStringLiteral(""));
     }
 }
 
