@@ -9,12 +9,30 @@
 
 #include <iostream>
 
-ConfigTab::ConfigTab(std::string name, std::string domain, std::string topic, bool secure, QWidget* parent): QWidget(parent), ui(new Ui::ConfigTab) {
+ConfigTab::ConfigTab(std::string name, std::string domain, std::string topic, AuthConfig authConfig, bool secure, QWidget* parent): QWidget(parent), ui(new Ui::ConfigTab) {
     this->ui->setupUi(this);
     this->ui->nameLineEdit->setText(QString::fromStdString(name));
     this->ui->domainLineEdit->setText(QString::fromStdString(domain));
     this->ui->topicLineEdit->setText(QString::fromStdString(topic));
     this->ui->secureCheckBox->setChecked(secure);
+
+    this->ui->authUsernameLabel->hide();
+    this->ui->authUsernameLineEdit->hide();
+    this->ui->authUsernameLineEdit->setText(QString::fromStdString(authConfig.username));
+
+    this->ui->authPasswordLabel->hide();
+    this->ui->authPasswordLineEdit->hide();
+    this->ui->authPasswordLineEdit->setRevealPasswordMode(KPassword::RevealMode::Always);
+    this->ui->authPasswordLineEdit->setPassword(QString::fromStdString(authConfig.password));
+
+    this->ui->authTokenLabel->hide();
+    this->ui->authTokenLineEdit->hide();
+    this->ui->authTokenLineEdit->setRevealPasswordMode(KPassword::RevealMode::Always);
+    this->ui->authTokenLineEdit->setPassword(QString::fromStdString(authConfig.token));
+
+    this->ui->authTypeComboBox->addItems({ "None", "Username/Password", "Token" });
+    QObject::connect(this->ui->authTypeComboBox, &QComboBox::currentIndexChanged, this, &ConfigTab::authTypeChanged);
+    this->ui->authTypeComboBox->setCurrentIndex(authConfig.type);
 
     QObject::connect(this->ui->testButton, &QToolButton::clicked, this, &ConfigTab::testButton);
 
@@ -33,6 +51,29 @@ std::string ConfigTab::getDomain() { return this->ui->domainLineEdit->text().toS
 std::string ConfigTab::getTopic() { return this->ui->topicLineEdit->text().toStdString(); }
 
 bool ConfigTab::getSecure() { return this->ui->secureCheckBox->isChecked(); }
+
+AuthConfig ConfigTab::getAuth() {
+    AuthConfig config;
+    config.type = static_cast<AuthType>(this->ui->authTypeComboBox->currentIndex());
+    config.username = this->ui->authUsernameLineEdit->text().toStdString();
+    config.password = this->ui->authPasswordLineEdit->password().toStdString();
+    config.token = this->ui->authTokenLineEdit->password().toStdString();
+    return config;
+}
+
+void ConfigTab::clearInvisible() {
+    AuthType type = static_cast<AuthType>(this->ui->authTypeComboBox->currentIndex());
+    if (type == AuthType::NONE) {
+        this->ui->authUsernameLineEdit->setText(QStringLiteral(""));
+        this->ui->authPasswordLineEdit->setPassword(QStringLiteral(""));
+        this->ui->authTokenLineEdit->setPassword(QStringLiteral(""));
+    } else if (type == AuthType::USERNAME_PASSWORD) {
+        this->ui->authTokenLineEdit->setPassword(QStringLiteral(""));
+    } else if (type == AuthType::TOKEN) {
+        this->ui->authUsernameLineEdit->setText(QStringLiteral(""));
+        this->ui->authPasswordLineEdit->setPassword(QStringLiteral(""));
+    }
+}
 
 void ConfigTab::testButton() {
     this->testLabelTimer->stop();
@@ -66,6 +107,32 @@ void ConfigTab::testResults(const bool& result) {
     this->ui->testLabel->show();
     this->ui->testButton->setEnabled(true);
     this->testLabelTimer->start(5000);
+}
+
+void ConfigTab::authTypeChanged(int index) {
+    AuthType authType = static_cast<AuthType>(index);
+    if (authType == AuthType::NONE) {
+        this->ui->authUsernameLabel->hide();
+        this->ui->authUsernameLineEdit->hide();
+        this->ui->authPasswordLabel->hide();
+        this->ui->authPasswordLineEdit->hide();
+        this->ui->authTokenLabel->hide();
+        this->ui->authTokenLineEdit->hide();
+    } else if (authType == AuthType::USERNAME_PASSWORD) {
+        this->ui->authUsernameLabel->show();
+        this->ui->authUsernameLineEdit->show();
+        this->ui->authPasswordLabel->show();
+        this->ui->authPasswordLineEdit->show();
+        this->ui->authTokenLabel->hide();
+        this->ui->authTokenLineEdit->hide();
+    } else if (authType == AuthType::TOKEN) {
+        this->ui->authUsernameLabel->hide();
+        this->ui->authUsernameLineEdit->hide();
+        this->ui->authPasswordLabel->hide();
+        this->ui->authPasswordLineEdit->hide();
+        this->ui->authTokenLabel->show();
+        this->ui->authTokenLineEdit->show();
+    }
 }
 
 ConnectionTester::ConnectionTester(const std::string& name, const std::string& domain, const std::string& topic, const bool& secure): name(name), domain(domain), topic(topic), secure(secure) {}

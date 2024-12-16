@@ -1,11 +1,13 @@
 #include "MainWindow.hpp"
 
+#include "../DataBase/DataBase.hpp"
 #include "../ImportDialog/ImportDialog.hpp"
 #include "../NotificationManager/NotificationManager.hpp"
 #include "../Util/Util.hpp"
 #include "ui_MainWindow.h"
 
 #include <QCloseEvent>
+#include <QCryptographicHash>
 #include <QEvent>
 #include <QIcon>
 #include <algorithm>
@@ -19,9 +21,13 @@ MainWindow::MainWindow(std::shared_ptr<ThreadManager> threadManager, KAboutData&
     QObject::connect(this->ui->restartAction, &QAction::triggered, this, &MainWindow::restartAction);
     QObject::connect(this->ui->exitAction, &QAction::triggered, this, &MainWindow::exitAction);
 
+    DataBase db;
+
     nlohmann::json sources = Config::data()["sources"];
     for (int i = 0; i < sources.size(); i++) {
-        this->tabs.push_back(new ConfigTab(sources[i]["name"], sources[i]["domain"], sources[i]["topic"], sources[i]["secure"], this));
+        this->tabs.push_back(
+            new ConfigTab(sources[i]["name"], sources[i]["domain"], sources[i]["topic"], db.getAuth(Util::topicHash(sources[i]["domain"], sources[i]["topic"])), sources[i]["secure"], this)
+        );
         this->ui->tabs->addTab(this->tabs.at(i), this->tabs.at(i)->getName().c_str());
     }
 
@@ -63,7 +69,7 @@ MainWindow::~MainWindow() { delete ui, tray; }
 
 void MainWindow::ntfyProtocolTriggered(ProtocolHandler url) {
     if (url.protocol() == "ntfy") {
-        this->tabs.push_back(new ConfigTab("New Notification Source " + std::to_string(this->newTabCounter), url.domain(), url.path()[0], true, this));
+        this->tabs.push_back(new ConfigTab("New Notification Source " + std::to_string(this->newTabCounter), url.domain(), url.path()[0], AuthConfig(), true, this));
         this->newTabCounter++;
         this->ui->tabs->addTab(this->tabs.at(this->tabs.size() - 1), this->tabs.at(this->tabs.size() - 1)->getName().c_str());
         this->ui->tabs->setCurrentIndex(this->tabs.size() - 1);
@@ -77,11 +83,13 @@ void MainWindow::ntfyProtocolTriggered(ProtocolHandler url) {
 
 void MainWindow::saveAction() {
     Config::data()["sources"] = nlohmann::json::array();
-    std::vector<std::string> seen = {};
+    std::map<std::string, AuthConfig> seen;
+
     for (int i = 0; i < this->ui->tabs->count(); i++) {
         ConfigTab* tab = static_cast<ConfigTab*>(this->ui->tabs->widget(i));
-        std::string domainTopic = tab->getDomain() + "/" + tab->getTopic();
-        if (std::find(seen.begin(), seen.end(), domainTopic) != seen.end()) {
+        std::string topicHash = Util::topicHash(tab->getDomain(), tab->getTopic());
+        //std::string domainTopic = tab->getDomain() + "/" + tab->getTopic();
+        if (seen.find(topicHash) != seen.end()) {
             std::string tabName = "⚠️" + tab->getName();
             this->ui->tabs->setTabText(i, QString::fromStdString(tabName));
             this->ui->tabs->setCurrentIndex(i);
@@ -94,7 +102,7 @@ void MainWindow::saveAction() {
             this->ui->statusBar->showMessage(QStatusBar::tr("⚠️ Invalid domain or topic. Did not save."), 5000);
             return;
         } else {
-            seen.push_back(domainTopic);
+            seen[topicHash] = tab->getAuth();
             this->ui->tabs->setTabText(i, tab->getName().c_str());
             nlohmann::json tabData;
             tabData["name"] = tab->getName();
@@ -104,7 +112,15 @@ void MainWindow::saveAction() {
             Config::data()["sources"].push_back(tabData);
         }
     }
+    for (int i = 0; i < this->ui->tabs->count(); i++) {
+        ConfigTab* tab = static_cast<ConfigTab*>(this->ui->tabs->widget(i));
+        tab->clearInvisible();
+    }
+
     Config::write();
+    DataBase db;
+    db.multiSetAuth(seen);
+
     this->ui->statusBar->showMessage(QStatusBar::tr("Configuration saved."), 2000);
 }
 
@@ -113,7 +129,7 @@ void MainWindow::addAction() {
         this->ui->tabs->show();
         Util::setLayoutVisibility(this->ui->noSourcesContainer, false);
     }
-    this->tabs.push_back(new ConfigTab("New Notification Source " + std::to_string(this->newTabCounter), "", "", true, this));
+    this->tabs.push_back(new ConfigTab("New Notification Source " + std::to_string(this->newTabCounter), "", "", AuthConfig(), true, this));
     this->newTabCounter++;
     this->ui->tabs->addTab(this->tabs.at(this->tabs.size() - 1), this->tabs.at(this->tabs.size() - 1)->getName().c_str());
     this->ui->tabs->setCurrentIndex(this->tabs.size() - 1);
@@ -185,11 +201,14 @@ void MainWindow::restartAction() {
     this->tabs.clear();
     this->ui->tabs->clear();
 
+    DataBase db;
     Config::read();
 
     nlohmann::json sources = Config::data()["sources"];
     for (int i = 0; i < sources.size(); i++) {
-        this->tabs.push_back(new ConfigTab(sources[i]["name"], sources[i]["domain"], sources[i]["topic"], sources[i]["secure"], this));
+        this->tabs.push_back(
+            new ConfigTab(sources[i]["name"], sources[i]["domain"], sources[i]["topic"], db.getAuth(Util::topicHash(sources[i]["domain"], sources[i]["topic"])), sources[i]["secure"], this)
+        );
         this->ui->tabs->addTab(this->tabs.at(i), this->tabs.at(i)->getName().c_str());
     }
 

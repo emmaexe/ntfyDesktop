@@ -4,6 +4,7 @@
 #include <nlohmann/json.hpp>
 
 #include <QApplication>
+#include <QCryptographicHash>
 #include <QSpacerItem>
 #include <algorithm>
 #include <cstdlib>
@@ -129,5 +130,9 @@ namespace Util {
             color.setHslF(h, s, l, a);
             return color;
         }
+    }
+
+    std::string topicHash(const std::string& domain, const std::string& topic) {
+        return QCryptographicHash::hash(QString::fromStdString(domain + "/" + topic).toUtf8(), QCryptographicHash::Sha256).toHex().toStdString();
     }
 }

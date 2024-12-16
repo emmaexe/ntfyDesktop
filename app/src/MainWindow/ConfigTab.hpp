@@ -1,5 +1,7 @@
 #pragma once
 
+#include "../DataBase/DataBase.hpp"
+
 #include <QThread>
 #include <QTimer>
 #include <QWidget>
@@ -13,15 +15,18 @@ QT_END_NAMESPACE
 class ConfigTab: public QWidget {
         Q_OBJECT
     public:
-        ConfigTab(std::string name = "", std::string domain = "", std::string topic = "", bool secure = true, QWidget* parent = nullptr);
+        ConfigTab(std::string name = "", std::string domain = "", std::string topic = "", AuthConfig authConfig = AuthConfig(), bool secure = true, QWidget* parent = nullptr);
         ~ConfigTab();
         std::string getName();
         std::string getDomain();
         std::string getTopic();
         bool getSecure();
+        AuthConfig getAuth();
+        void clearInvisible();
     public slots:
         void testButton();
         void testResults(const bool& result);
+        void authTypeChanged(int index);
     private:
         Ui::ConfigTab* ui;
         QTimer* testLabelTimer;
