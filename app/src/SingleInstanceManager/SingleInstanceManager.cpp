@@ -11,7 +11,7 @@ SingleInstanceManager::SingleInstanceManager(std::function<void(std::optional<st
     if (!sessionBus.registerService("moe.emmaexe.ntfyDesktop")) {
         QDBusMessage message = QDBusMessage::createMethodCall("moe.emmaexe.ntfyDesktop", "/SingleInstanceManager", "moe.emmaexe.ntfyDesktop.SingleInstanceManager", "newInstanceStarted");
         if (url.has_value()) {
-            message << QString(url.value().c_str());
+            message << QString::fromStdString(url.value());
         } else {
             message << "";
         }
@@ -24,6 +24,8 @@ SingleInstanceManager::SingleInstanceManager(std::function<void(std::optional<st
         std::cerr << "Failed to register DBus object: " << sessionBus.lastError().message().toStdString() << std::endl;
         exit(1);
     }
+
+    if (url.has_value()) { this->newInstanceStarted(QString::fromStdString(url.value())); }
 }
 
 SingleInstanceManager::~SingleInstanceManager() {}
