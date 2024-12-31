@@ -1,8 +1,8 @@
 #pragma once
 
 #include "../Config/Config.hpp"
-#include "../ProtocolHandler/ProtocolHandler.hpp"
 #include "../ThreadManager/ThreadManager.hpp"
+#include "../Util/ParsedURL.hpp"
 #include "ConfigTab.hpp"
 
 #include <KHelpMenu>
@@ -23,7 +23,7 @@ class MainWindow: public QMainWindow {
         MainWindow(std::shared_ptr<ThreadManager> threadManager, KAboutData& aboutData, QWidget* parent = nullptr);
         ~MainWindow();
     public slots:
-        void ntfyProtocolTriggered(ProtocolHandler url);
+        void ntfyProtocolTriggered(ParsedURL url);
         void saveAction();
         void addAction();
         void removeAction();

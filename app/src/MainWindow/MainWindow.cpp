@@ -67,7 +67,7 @@ MainWindow::MainWindow(std::shared_ptr<ThreadManager> threadManager, KAboutData&
 
 MainWindow::~MainWindow() { delete ui, tray; }
 
-void MainWindow::ntfyProtocolTriggered(ProtocolHandler url) {
+void MainWindow::ntfyProtocolTriggered(ParsedURL url) {
     if (url.protocol() == "ntfy") {
         this->tabs.push_back(new ConfigTab("New Notification Source " + std::to_string(this->newTabCounter), url.domain(), url.path()[0], AuthConfig(), true, this));
         this->newTabCounter++;
@@ -88,7 +88,6 @@ void MainWindow::saveAction() {
     for (int i = 0; i < this->ui->tabs->count(); i++) {
         ConfigTab* tab = static_cast<ConfigTab*>(this->ui->tabs->widget(i));
         std::string topicHash = Util::topicHash(tab->getDomain(), tab->getTopic());
-        //std::string domainTopic = tab->getDomain() + "/" + tab->getTopic();
         if (seen.find(topicHash) != seen.end()) {
             std::string tabName = "⚠️" + tab->getName();
             this->ui->tabs->setTabText(i, QString::fromStdString(tabName));

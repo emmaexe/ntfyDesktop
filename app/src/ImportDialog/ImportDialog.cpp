@@ -1,7 +1,7 @@
 #include "ImportDialog.hpp"
 
 #include "../Config/Config.hpp"
-#include "../ProtocolHandler/ProtocolHandler.hpp"
+#include "../Util/ParsedURL.hpp"
 #include "../Util/Util.hpp"
 #include "ntfyDesktop.hpp"
 #include "ui_ImportDialog.h"
@@ -37,7 +37,7 @@ void ImportDialog::fileSelectButton() {
                     int entryCounter = 1;
 
                     for (nlohmann::json source: data["subscriptions"]) {
-                        ProtocolHandler parsedUrl(source["baseUrl"]);
+                        ParsedURL parsedUrl(source["baseUrl"]);
                         nlohmann::json entry = nlohmann::json::object();
                         entry["name"] = source.contains("displayName") ? std::string(source["displayName"]) : "Imported Notification Source " + std::to_string(entryCounter);
                         entry["domain"] = parsedUrl.domain();
