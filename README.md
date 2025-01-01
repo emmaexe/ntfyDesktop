@@ -36,13 +36,13 @@ You can also download the [latest release](https://github.com/emmaexe/ntfyDeskto
 
 ```bash
 dnf groupinstall "Development Tools"
-dnf install gcc-c++ cmake extra-cmake-modules boost-devel libcurl-devel qt6-qtbase-devel kf6-kcoreaddons-devel kf6-ki18n-devel kf6-knotifications-devel kf6-kxmlgui-devel rpm-build
+dnf install gcc-c++ cmake extra-cmake-modules libcurl-devel qt6-qtbase-devel kf6-kcoreaddons-devel kf6-ki18n-devel kf6-knotifications-devel kf6-kxmlgui-devel rpm-build
 ```
 
 #### Ubuntu
 
 ```bash
-apt install git g++ cmake extra-cmake-modules libboost-serialization-dev libcurl4-openssl-dev qt6-base-dev libkf6coreaddons-dev libkf6i18n-dev libkf6notifications-dev libkf6xmlgui-dev
+apt install git g++ cmake extra-cmake-modules libcurl4-openssl-dev qt6-base-dev libkf6coreaddons-dev libkf6i18n-dev libkf6notifications-dev libkf6xmlgui-dev
 ```
 
 #### Others
@@ -53,8 +53,7 @@ You will need the following:
 - A C++ compiler (e.g. g++)
 - CMake (with [ECM](https://api.kde.org/frameworks/extra-cmake-modules/html/index.html))
 - libcurl development libraries
-- boost development libraries
-- Base Qt6 development libraries
+- Base Qt6 development libraries (with SQLite support)
 - KDE Frameworks' KCoreAddons, Ki18n, KNotifications and KXmlGui development libraries
 
 ### Clone the repository
