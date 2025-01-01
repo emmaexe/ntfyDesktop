@@ -80,6 +80,8 @@ size_t NtfyThread::writeCallback(char* ptr, size_t size, size_t nmemb, void* use
 
     if (!this_p->running) { return 0; }
 
+    DataBase db;
+
     for (std::string& line: data) {
         if (line.empty()) { continue; }
         try {
@@ -87,64 +89,26 @@ size_t NtfyThread::writeCallback(char* ptr, size_t size, size_t nmemb, void* use
             if (jsonData["event"] == "message") {
                 std::string notificationID(jsonData["id"]);
                 this_p->lastNotificationID = notificationID;
-
-                std::string title(jsonData.contains("title") ? jsonData["title"] : jsonData["topic"]);
-                std::string message(jsonData["message"]);
-
-                if (jsonData.contains("tags")) {
-                    bool seenTag = false;
-                    for (nlohmann::json item: jsonData["tags"]) {
-                        std::string tag = static_cast<std::string>(item);
-                        std::string ptag = emojicpp::emoji::parse(":" + tag + ":");
-                        if (":" + tag + ":" == ptag) {
-                            if (!seenTag) {
-                                seenTag = true;
-                                message += " Tags: ";
-                            }
-                            message += tag + " ";
-                        } else {
-                            title = ptag + " " + title;
-                        }
-                    }
+                try {
+                    NtfyNotification notification(jsonData, this_p->internalDomain, this_p->internalTopic);
+                    QMetaObject::invokeMethod(QApplication::instance(), [notification]() {
+                        NotificationManager::generalNotification(notification);
+                    });
+                    db.enqueueNotification(notification);
+                } catch (const NtfyNotificationException& e) {
+                    this_p->mutex->lock();
+                    std::cerr << "Failed to parse notification: " << e.what() << std::endl;
+                    this_p->mutex->unlock();
                 }
-
-                std::optional<NotificationPriority> priority = std::nullopt;
-                if (jsonData.contains("priority")) { priority = static_cast<NotificationPriority>(jsonData["priority"].get<int>()); }
-
-                std::optional<NotificationAttachment> attachment = std::nullopt;
-                if (jsonData.contains("icon")) {
-                    attachment = NotificationAttachment();
-                    attachment.value().type = NotificationAttachmentType::ICON;
-                    attachment.value().url = jsonData["icon"];
-                }
-                if (jsonData.contains("attachment")) {
-                    attachment = NotificationAttachment();
-                    attachment.value().type = NotificationAttachmentType::IMAGE;
-                    attachment.value().name = jsonData["attachment"]["name"];
-                    attachment.value().url = jsonData["attachment"]["url"];
-                    attachment.value().native = jsonData["attachment"].contains("type");
-                }
-
-                std::optional<std::vector<NotificationAction>> actions = std::nullopt;
-                if (jsonData.contains("click")) {
-                    if (!actions.has_value()) { actions = std::vector<NotificationAction>({}); }
-                    actions.value().push_back(NotificationAction(static_cast<std::string>(jsonData["click"])));
-                }
-                if (jsonData.contains("actions")) {
-                    if (!actions.has_value()) { actions = std::vector<NotificationAction>({}); }
-                    for (nlohmann::json element: jsonData["actions"]) { actions.value().push_back(NotificationAction(element)); }
-                }
-
-                QMetaObject::invokeMethod(QApplication::instance(), [title, message, priority, attachment, actions]() {
-                    NotificationManager::generalNotification(title, message, priority, attachment, actions);
-                });
             }
-        } catch (nlohmann::json::parse_error e) {
+        } catch (const nlohmann::json::parse_error& e) {
             this_p->mutex->lock();
-            std::cerr << "Malformed JSON data from notification source: " << this_p->url + "?since=" + this_p->lastNotificationID << '\n' << e.what() << std::endl;
+            std::cerr << "Malformed JSON data from notification source: " << this_p->url << '\n' << e.what() << std::endl;
             this_p->mutex->unlock();
         }
     }
+
+    db.commitNotificationQueue();
 
     return size * nmemb;
 }

@@ -1,6 +1,5 @@
 #include "Config.hpp"
 
-#include "../NotificationStore/NotificationStore.hpp"
 #include "../Util/Util.hpp"
 #include "ntfyDesktop.hpp"
 
@@ -49,7 +48,6 @@ void Config::read() {
         Config::updateToCurrent();
         Config::initialized = true;
         Config::internalErrorCounter = 0;
-        NotificationStore::configSync();
     }
 }
 
@@ -60,7 +58,6 @@ void Config::write() {
     std::ofstream configStream(Config::getConfigFile(), std::ios::trunc);
     configStream << configSerialized;
     configStream.close();
-    if (!Config::updating) { NotificationStore::configSync(); }
 }
 
 bool Config::ready() {
