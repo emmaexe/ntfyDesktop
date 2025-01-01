@@ -2,8 +2,8 @@
 
 #include "ntfyDesktop.hpp"
 
-#include <QUuid>
 #include <QStandardPaths>
+#include <QUuid>
 #include <QtSql/QSqlError>
 #include <iostream>
 
@@ -35,6 +35,16 @@ DataBase::DataBase() {
                 Password TEXT,
                 Token TEXT
             );
+        )") &&
+        query.exec(R"(
+            CREATE TABLE IF NOT EXISTS Notifications (
+                Id TEXT NOT NULL PRIMARY KEY,
+                TopicHash TEXT NOT NULL,
+                Time INT NOT NULL,
+                Title TEXT NOT NULL,
+                Message TEXT NOT NULL,
+                RawData TEXT NOT NULL
+            );
         )")
     ) {
         this->db.commit();
@@ -45,6 +55,7 @@ DataBase::DataBase() {
 }
 
 DataBase::~DataBase() {
+    if (!this->notificationQueue.empty()) { this->commitNotificationQueue(); }
     if (this->db.isOpen()) { this->db.close(); }
     this->db = QSqlDatabase(); // Qt logs unhappy messages when there is a QSqlDatabase object still connected to a db that is being removed.
     QSqlDatabase::removeDatabase(QString::fromStdString(this->connectionName));
@@ -157,6 +168,59 @@ AuthConfig DataBase::getAuth(const std::string& topicHash) {
     }
 
     return authConfig;
+}
+
+void DataBase::enqueueNotification(const NtfyNotification notification) {
+    this->notificationQueue.push_back(notification);
+}
+
+void DataBase::commitNotificationQueue() {
+    QSqlQuery query(this->db);
+    this->db.transaction();
+    bool failure = false;
+
+    for (NtfyNotification notification: this->notificationQueue) {
+        if (failure) { break; }
+
+        query.prepare(R"(
+            INSERT OR REPLACE INTO Notifications (Id, TopicHash, Time, Title, Message, RawData)
+            VALUES (:id, :topic_hash, :time, :title, :message, :rawdata)
+        )");
+        query.bindValue(":id", QString::fromStdString(notification.id()));
+        query.bindValue(":topic_hash", QString::fromStdString(notification.topicHash()));
+        query.bindValue(":time", notification.time());
+        query.bindValue(":title", QString::fromStdString(notification.title()));
+        query.bindValue(":message", QString::fromStdString(notification.message()));
+        query.bindValue(":rawdata", QString::fromStdString(notification.rawData()));
+
+        failure = failure ? true : !query.exec();
+        query.clear();
+    }
+
+    if (!failure) {
+        this->db.commit();
+    } else {
+        std::cerr << "DataBase query failed: " << query.lastError().text().toStdString() << std::endl;
+        this->db.rollback();
+    }
+    this->notificationQueue.clear();
+}
+
+const std::optional<NtfyNotification> DataBase::getLastNotification(const std::string& topicHash) {
+    QSqlQuery query(this->db);
+    query.prepare(R"(
+        SELECT RawData
+        FROM Notifications
+        WHERE TopicHash = :topic_hash
+        ORDER BY Time DESC
+        LIMIT 1
+    )");
+    query.bindValue(":topic_hash", QString::fromStdString(topicHash));
+
+    if (query.exec() && query.next()) {
+        return std::make_optional<NtfyNotification>(NtfyNotification(query.value(0).toString().toStdString(), topicHash));
+    }
+    return std::nullopt;
 }
 
 void DataBase::executeQuery(const std::string& queryText) {
