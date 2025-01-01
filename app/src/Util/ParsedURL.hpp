@@ -1,17 +1,24 @@
 #pragma once
 
-#include "ProtocolParseException.hpp"
-
+#include <exception>
 #include <map>
 #include <string>
 #include <vector>
 
-/**
- * @brief Class for handling the `ntfy://` protocol and other URLs in general. Creates an immutable object that holds parsed data from a URL.
- */
-class ProtocolHandler {
+class ParsedURLException: public std::exception {
     public:
-        ProtocolHandler(const std::string& url);
+        ParsedURLException(const char* message);
+        const char* what() const throw();
+    private:
+        std::string message;
+};
+
+/**
+ * @brief Struct representing a URL. Creates an immutable object that holds parsed data from a URL.
+ */
+struct ParsedURL {
+    public:
+        ParsedURL(const std::string& url);
         /**
          * @brief The protocol of the parsed URL. (e.g. for `https://www.example.org/some/path/?help=true&data=abc` this would be `https`)
          */

@@ -83,7 +83,7 @@ void ConfigTab::testButton() {
     this->ui->testLabel->show();
 
     QThread* thread = new QThread;
-    ConnectionTester* tester = new ConnectionTester(this->getName(), this->getDomain(), this->getTopic(), this->getSecure());
+    ConnectionTester* tester = new ConnectionTester(this->getName(), this->getDomain(), this->getTopic(), this->getAuth(), this->getSecure(), this->lastTestMessage);
     tester->moveToThread(thread);
 
     connect(thread, &QThread::started, tester, &ConnectionTester::runTest);
@@ -99,11 +99,10 @@ void ConfigTab::testButton() {
 void ConfigTab::testResults(const bool& result) {
     if (result) {
         this->ui->testLabel->setStyleSheet("font-weight: bold; color: " + Util::Colors::textColorSuccess().name() + ";");
-        this->ui->testLabel->setText("Connection successful. Notification source is available.");
     } else {
         this->ui->testLabel->setStyleSheet("font-weight: bold; color: " + Util::Colors::textColorFailure().name() + ";");
-        this->ui->testLabel->setText("Connection failed.");
     }
+    this->ui->testLabel->setText(QString::fromStdString(this->lastTestMessage));
     this->ui->testLabel->show();
     this->ui->testButton->setEnabled(true);
     this->testLabelTimer->start(5000);
@@ -135,14 +134,25 @@ void ConfigTab::authTypeChanged(int index) {
     }
 }
 
-ConnectionTester::ConnectionTester(const std::string& name, const std::string& domain, const std::string& topic, const bool& secure): name(name), domain(domain), topic(topic), secure(secure) {}
+ConnectionTester::ConnectionTester(const std::string& name, const std::string& domain, const std::string& topic, const AuthConfig& authConfig, const bool& secure, std::string& testMessage): name(name), domain(domain), topic(topic), authConfig(authConfig), secure(secure), testMessage(testMessage) {}
 
 void ConnectionTester::runTest() {
     this->testSuccessful = false;
+    this->testMessage = "Connection failed.";
     std::string url = (this->secure ? "https://" : "http://") + this->domain + "/" + this->topic + "/json";
 
     CURL* curlHandle = curl_easy_init();
     char curlError[CURL_ERROR_SIZE] = "";
+    curl_slist* headers = NULL;
+
+    if (this->authConfig.type == AuthType::USERNAME_PASSWORD) {
+        QByteArray base64 = QString::fromStdString(this->authConfig.username + ":" + this->authConfig.password).toUtf8().toBase64();
+        std::string header = "Authorization: Basic " + std::string(base64.constData(), base64.length());
+        headers = curl_slist_append(headers, header.c_str());
+    } else if (this->authConfig.type == AuthType::TOKEN) {
+        std::string header = "Authorization: Bearer " + this->authConfig.token;
+        headers = curl_slist_append(headers, header.c_str());
+    }
 
     curl_easy_setopt(curlHandle, CURLOPT_ERRORBUFFER, curlError);
     curl_easy_setopt(curlHandle, CURLOPT_WRITEFUNCTION, &ConnectionTester::writeCallback);
@@ -150,6 +160,7 @@ void ConnectionTester::runTest() {
     curl_easy_setopt(curlHandle, CURLOPT_NOSIGNAL, 1L);
     curl_easy_setopt(curlHandle, CURLOPT_TIMEOUT, 10L);
     curl_easy_setopt(curlHandle, CURLOPT_USERAGENT, ND_USERAGENT);
+    curl_easy_setopt(curlHandle, CURLOPT_HTTPHEADER, headers);
     curl_easy_setopt(curlHandle, CURLOPT_URL, url.c_str());
 
     curl_easy_perform(curlHandle);
@@ -167,6 +178,16 @@ size_t ConnectionTester::writeCallback(char* ptr, size_t size, size_t nmemb, voi
             nlohmann::json jsonData = nlohmann::json::parse(line);
             if (jsonData["event"] == "open") {
                 this_p->testSuccessful = true;
+                this_p->testMessage = "Connection successful. Notification source is available.";
+                return 0;
+            } else if (jsonData.contains("code")) {
+                this_p->testSuccessful = false;
+                std::string code = std::to_string(static_cast<int>(jsonData["code"]));
+                if (code.rfind("401", 0) == 0) {
+                    this_p->testMessage = "Connection failed (Error " + code + "). Check your authentication method.";
+                } else {
+                    this_p->testMessage = "Connection failed (Error " + code + ").";
+                }
                 return 0;
             }
         } catch (nlohmann::json::parse_error ignored) {}

@@ -5,6 +5,7 @@
 #include <QThread>
 #include <QTimer>
 #include <QWidget>
+#include <atomic>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -30,18 +31,21 @@ class ConfigTab: public QWidget {
     private:
         Ui::ConfigTab* ui;
         QTimer* testLabelTimer;
+        std::string lastTestMessage;
 };
 
 class ConnectionTester: public QObject {
         Q_OBJECT
     public:
-        ConnectionTester(const std::string& name, const std::string& domain, const std::string& topic, const bool& secure);
+        ConnectionTester(const std::string& name, const std::string& domain, const std::string& topic, const AuthConfig& authConfig, const bool& secure, std::string& testMessage);
     public slots:
         void runTest();
     signals:
         void testFinished(const bool& success);
     private:
+        std::string& testMessage;
         std::string name, domain, topic;
+        AuthConfig authConfig;
         bool secure;
         std::atomic<bool> testSuccessful;
         static size_t writeCallback(char* ptr, size_t size, size_t nmemb, void* userdata);

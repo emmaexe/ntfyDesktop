@@ -3,10 +3,11 @@
 #include "Config/Config.hpp"
 #include "ErrorWindow/ErrorWindow.hpp"
 #include "MainWindow/MainWindow.hpp"
-#include "ProtocolHandler/ProtocolHandler.hpp"
+#include "NotificationManager/NotificationManager.hpp"
 #include "SingleInstanceManager/SingleInstanceManager.hpp"
 #include "ThreadManager/ThreadManager.hpp"
 #include "UnixSignalHandler/UnixSignalHandler.hpp"
+#include "Util/ParsedURL.hpp"
 
 #include <curl/curl.h>
 #include <signal.h>
@@ -67,7 +68,11 @@ int main(int argc, char* argv[]) {
         window = std::make_shared<MainWindow>(threadManager, aboutData);
         singleInstanceManager.onNewInstanceStarted = [&](std::optional<std::string> url) {
             if (url.has_value()) {
-                std::static_pointer_cast<MainWindow>(window).get()->ntfyProtocolTriggered(ProtocolHandler(url.value()));
+                try {
+                    std::static_pointer_cast<MainWindow>(window).get()->ntfyProtocolTriggered(ParsedURL(url.value()));
+                } catch (ParsedURLException e) {
+                    NotificationManager::errorNotification("An invalid url was passed to ntfyDesktop", e.what());
+                }
             } else {
                 if (window->isHidden()) {
                     window->show();
