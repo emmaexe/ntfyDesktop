@@ -9,8 +9,8 @@ A desktop client for [ntfy](https://github.com/binwiederhier/ntfy). Allows you t
 ## Installation
 
 [<img alt="flathub" height="56" src="https://raw.githubusercontent.com/emmaexe/devins-badges/v3/assets/cozy/available/flathub_vector.svg">](https://flathub.org/apps/moe.emmaexe.ntfyDesktop)
-[<img alt="fedora" height="56" src="https://raw.githubusercontent.com/emmaexe/devins-badges/v3/assets/cozy/available/fedora_vector.svg">](https://github.com/emmaexe/ntfyDesktop/releases/download/v1.2.0/ntfyDesktop-1.2.0.rpm)
-[<img alt="ubuntu" height="56" src="https://raw.githubusercontent.com/emmaexe/devins-badges/v3/assets/cozy/available/ubuntu_vector.svg">](https://github.com/emmaexe/ntfyDesktop/releases/download/v1.2.0/ntfyDesktop-1.2.0.deb)
+[<img alt="fedora" height="56" src="https://raw.githubusercontent.com/emmaexe/devins-badges/v3/assets/cozy/available/fedora_vector.svg">](https://github.com/emmaexe/ntfyDesktop/releases/download/v1.3.0/ntfyDesktop-1.3.0.rpm)
+[<img alt="ubuntu" height="56" src="https://raw.githubusercontent.com/emmaexe/devins-badges/v3/assets/cozy/available/ubuntu_vector.svg">](https://github.com/emmaexe/ntfyDesktop/releases/download/v1.3.0/ntfyDesktop-1.3.0.deb)
 
 You can also download the [latest release](https://github.com/emmaexe/ntfyDesktop/releases/latest) for manual installation.
 
