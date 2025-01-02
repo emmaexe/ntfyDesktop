@@ -8,7 +8,49 @@ A desktop client for [ntfy](https://github.com/binwiederhier/ntfy). Allows you t
 
 ## Installation
 
+### Flatpak
+
+Ntfy Desktop is available on flathub:
+
 [<img alt="flathub" height="56" src="https://flathub.org/api/badge?svg&locale=en">](https://flathub.org/apps/moe.emmaexe.ntfyDesktop)
+
+### Fedora
+
+To install Ntfy Desktop on Fedora, first add the repository:
+
+```bash
+sudo dnf config-manager addrepo --from-repofile=https://pkg.emmaexe.moe/rpm/emmas-pkgs.repo
+```
+
+Then install the app:
+
+```bash
+sudo dnf install ntfydesktop
+```
+
+### Ubuntu
+
+To install Ntfy Desktop on Ubuntu, first import the gpg key:
+
+```bash
+curl -fsSL https://pkg.emmaexe.moe/emmas-packages.pub | sudo gpg --dearmor -o /usr/share/keyrings/emmas-packages.gpg
+```
+
+Then add the repository:
+
+```bash
+echo "deb [signed-by=/usr/share/keyrings/emmas-packages.gpg] https://pkg.emmaexe.moe/apt stable main" | sudo tee /etc/apt/sources.list.d/emmas-packages.list
+```
+
+And finally, install the app:
+
+```bash
+sudo apt update
+sudo apt install ntfydesktop
+```
+
+### Manual installation
+
 [<img alt="fedora" height="56" src="https://raw.githubusercontent.com/emmaexe/devins-badges/v3/assets/cozy/available/fedora_vector.svg">](https://github.com/emmaexe/ntfyDesktop/releases/download/v1.3.0/ntfyDesktop-1.3.0.rpm)
 [<img alt="ubuntu" height="56" src="https://raw.githubusercontent.com/emmaexe/devins-badges/v3/assets/cozy/available/ubuntu_vector.svg">](https://github.com/emmaexe/ntfyDesktop/releases/download/v1.3.0/ntfyDesktop-1.3.0.deb)
 
