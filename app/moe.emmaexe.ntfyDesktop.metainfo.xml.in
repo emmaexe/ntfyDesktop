@@ -58,6 +58,15 @@
     </keywords>
 
   <releases>
+    <release version="1.3.1" date="2025-01-01">
+      <url type="details">https://github.com/emmaexe/ntfyDesktop/releases/tag/v1.3.1</url>
+      <description>
+        <p>Release v1.3.1</p>
+          <ul>
+            <li>Fixed bug that did not allow domains with hyphens to be used in the UI</li>
+          </ul>
+      </description>
+    </release>
     <release version="1.3.0" date="2025-01-01">
       <url type="details">https://github.com/emmaexe/ntfyDesktop/releases/tag/v1.3.0</url>
       <description>

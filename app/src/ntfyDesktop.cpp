@@ -41,7 +41,7 @@ int main(int argc, char* argv[]) {
     );
     aboutData.setProgramLogo(QIcon(":/icons/ntfyDesktop.svg"));
     aboutData.setDesktopFileName("moe.emmaexe.ntfyDesktop");
-    aboutData.addAuthor(QStringLiteral("emmaexe"), i18n("Author"), QStringLiteral("emma.git@emmaexe.moe"), QStringLiteral("https://www.emmaexe.moe/"), QStringLiteral(""));
+    aboutData.addAuthor(QStringLiteral("emmaexe"), i18n("Author"), QStringLiteral("contact@emmaexe.moe"), QStringLiteral("https://www.emmaexe.moe/"), QStringLiteral(""));
     KAboutData::setApplicationData(aboutData);
 
     QCommandLineParser parser;
