@@ -8,6 +8,7 @@
 #include <QSpacerItem>
 #include <algorithm>
 #include <cstdlib>
+#include <iomanip>
 #include <memory>
 #include <regex>
 #include <stdexcept>
@@ -134,5 +135,11 @@ namespace Util {
 
     std::string topicHash(const std::string& domain, const std::string& topic) {
         return QCryptographicHash::hash(QString::fromStdString(domain + "/" + topic).toUtf8(), QCryptographicHash::Sha256).toHex().toStdString();
+    }
+
+    std::string timeToString(const std::time_t& time) {
+        std::ostringstream stream;
+        stream << std::put_time(std::localtime(&time), "%Y-%m-%d %H:%M:%S");
+        return stream.str();
     }
 }

@@ -1,5 +1,7 @@
 #include "DataBase.hpp"
 
+#include "../Config/Config.hpp"
+#include "../Util/Util.hpp"
 #include "ntfyDesktop.hpp"
 
 #include <QStandardPaths>
@@ -221,6 +223,63 @@ const std::optional<NtfyNotification> DataBase::getLastNotification(const std::s
         return std::make_optional<NtfyNotification>(NtfyNotification(query.value(0).toString().toStdString(), topicHash));
     }
     return std::nullopt;
+}
+
+std::vector<std::unique_ptr<NotificationListItem>> DataBase::getAllNotifications(QWidget* parent) {
+    std::vector<std::unique_ptr<NotificationListItem>> notifications = {};
+    QSqlQuery query(this->db);
+    query.prepare(R"(
+        SELECT Id, TopicHash, Time, Title, Message, RawData
+        FROM Notifications
+        ORDER BY Time DESC
+    )");
+    if (query.exec()) {
+        std::map<std::string, std::pair<std::string, std::string>> hashes = {};
+        nlohmann::json sources = Config::data()["sources"];
+        for (int i = 0; i < sources.size(); i++) {
+            std::string server = sources[i]["domain"];
+            std::string topic = sources[i]["topic"];
+            hashes.emplace(std::make_pair(Util::topicHash(server, topic), std::make_pair(server, topic)));
+        }
+
+        while (query.next()) {
+            const std::string id = query.value(0).toString().toStdString();
+            const std::string topicHash = query.value(1).toString().toStdString();
+            const std::string server = hashes[topicHash].first, topic = hashes[topicHash].second;
+            const int timestamp = query.value(2).toInt();
+            const std::string title = query.value(3).toString().toStdString();
+            const std::string message = query.value(4).toString().toStdString();
+            const std::string rawData = query.value(5).toString().toStdString();
+
+            notifications.push_back(std::make_unique<NotificationListItem>(id, server, topic, timestamp, title, message, rawData, parent));
+        }
+    }
+    return notifications;
+}
+
+bool DataBase::hasRows(const std::string& table) {
+    QSqlQuery query(this->db);
+    query.prepare(QString(R"(
+        SELECT 1
+        FROM %1
+        LIMIT 1
+    )").arg(QString::fromStdString(table)));
+    if (query.exec() && query.next()) {
+        return true;
+    }
+    return false;
+}
+
+int DataBase::countRows(const std::string& table) {
+    QSqlQuery query(this->db);
+    query.prepare(QString(R"(
+        SELECT COUNT(*)
+        FROM %1
+    )").arg(QString::fromStdString(table)));
+    if (query.exec() && query.next()) {
+        return query.value(0).toInt();
+    }
+    return 0;
 }
 
 void DataBase::executeQuery(const std::string& queryText) {

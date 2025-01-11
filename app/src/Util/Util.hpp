@@ -2,6 +2,7 @@
 
 #include <QLayout>
 #include <QWidget>
+#include <ctime>
 #include <string>
 #include <vector>
 
@@ -82,4 +83,12 @@ namespace Util {
      * @return std::string - hash
      */
     std::string topicHash(const std::string& domain, const std::string& topic);
+
+    /**
+     * @brief Convert unix time to a formatted string for display.
+     *
+     * @param time Some unix time
+     * @return std::string - A formatted string of the given unix time
+     */
+    std::string timeToString(const std::time_t& time);
 }

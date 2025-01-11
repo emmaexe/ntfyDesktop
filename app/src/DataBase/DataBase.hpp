@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../NotificationManager/NtfyNotification.hpp"
+#include "../HistoryDialog/HistoryDialog.hpp"
 
 #include <QtSql/QSqlDatabase>
 #include <QtSql/QSqlQuery>
@@ -28,8 +29,11 @@ class DataBase {
         void enqueueNotification(const NtfyNotification notification);
         void commitNotificationQueue();
         const std::optional<NtfyNotification> getLastNotification(const std::string& topicHash);
+        std::vector<std::unique_ptr<NotificationListItem>> getAllNotifications(QWidget* parent = nullptr);
 
         void executeQuery(const std::string& query);
+        bool hasRows(const std::string& table);
+        int countRows(const std::string& table);
     private:
         QSqlDatabase db;
         std::vector<NtfyNotification> notificationQueue = {};
