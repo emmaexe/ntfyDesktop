@@ -47,8 +47,12 @@ class AsyncCurlRequest: public QObject {
     public slots:
         void run();
     signals:
-        void completed();
+        void completed(bool success);
     private:
+        static size_t writeCallback(char* ptr, size_t size, size_t nmemb, void* userdata);
         bool ready = false;
         CURL* handle;
+        curl_slist* headers;
+        std::string url, method, body;
+        std::vector<std::string> rawHeaders;
 };

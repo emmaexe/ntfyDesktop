@@ -90,7 +90,19 @@ NotificationListItem::NotificationListItem(
                                 request->moveToThread(thread);
 
                                 connect(thread, &QThread::started, request, &AsyncCurlRequest::run);
-                                connect(request, &AsyncCurlRequest::completed, this, [this, button]() { button->setEnabled(true); }, Qt::QueuedConnection);
+                                connect(
+                                    request,
+                                    &AsyncCurlRequest::completed,
+                                    this,
+                                    [this, &button](bool success) {
+                                        QPalette palette = button->palette();
+                                        palette.setColor(QPalette::Button, (success ? Util::Colors::buttonColorSuccess() : Util::Colors::buttonColorFailure()));
+                                        palette.setColor(QPalette::ButtonText, (success ? Util::Colors::buttonTextColorSuccess() : Util::Colors::buttonTextColorFailure()));
+                                        button->setPalette(palette);
+                                        button->setEnabled(true);
+                                    },
+                                    Qt::QueuedConnection
+                                );
 
                                 connect(request, &AsyncCurlRequest::completed, request, &AsyncCurlRequest::deleteLater);
                                 connect(request, &AsyncCurlRequest::completed, thread, &QThread::quit);
@@ -102,10 +114,12 @@ NotificationListItem::NotificationListItem(
                         );
                     }
                     this->ui->buttons->addWidget(button);
-                } catch (const nlohmann::json::parse_error& e) {} catch (const nlohmann::json::type_error& e) {}
+                } catch (const nlohmann::json::parse_error& ignored) {
+                } catch (const nlohmann::json::type_error& ignored) {}
             }
         }
-    } catch (const nlohmann::json::parse_error& e) {} catch (const nlohmann::json::type_error& e) {}
+    } catch (const nlohmann::json::parse_error& ignored) {
+    } catch (const nlohmann::json::type_error& ignored) {}
 }
 
 NotificationListItem::~NotificationListItem() { delete ui; }
@@ -118,53 +132,64 @@ void PixmapFetcher::fetchThumbnail() {
     emit thumbnailFetched(image.scaled(128, 128, Qt::KeepAspectRatio, Qt::FastTransformation));
 }
 
-#include <iostream> // tmp
-
 AsyncCurlRequest::AsyncCurlRequest(const nlohmann::json& action, QObject* parent): QObject(parent) {
     try {
         this->handle = curl_easy_init();
-        curl_slist* headers = NULL;
+        this->headers = NULL;
 
-        std::string url = static_cast<std::string>(action["url"]);
+        this->url = static_cast<std::string>(action["url"]);
 
         if (action.contains("headers") && action["headers"].is_object()) {
             for (const auto& [key, value]: action["headers"].items()) {
-                std::string header = key + ": " + static_cast<std::string>(value);
-                headers = curl_slist_append(headers, header.c_str());
+                rawHeaders.push_back(key + ": " + static_cast<std::string>(value));
+                headers = curl_slist_append(headers, this->rawHeaders.at(this->rawHeaders.size() - 1).c_str());
             }
         }
 
         if (action.contains("method") && action["method"].is_string()) {
-            std::string method = static_cast<std::string>(action["method"]);
-            if (method == "POST") {
-                curl_easy_setopt(handle, CURLOPT_POST, 1L);
-            } else if (method == "GET") {
-                curl_easy_setopt(handle, CURLOPT_HTTPGET, 1L);
-            } else if (method == "HEAD") {
-                curl_easy_setopt(handle, CURLOPT_NOBODY, 1L);
+            this->method = static_cast<std::string>(action["method"]);
+            if (this->method == "POST") {
+                curl_easy_setopt(this->handle, CURLOPT_POST, 1L);
+            } else if (this->method == "GET") {
+                curl_easy_setopt(this->handle, CURLOPT_HTTPGET, 1L);
+            } else if (this->method == "HEAD") {
+                curl_easy_setopt(this->handle, CURLOPT_NOBODY, 1L);
             } else {
-                curl_easy_setopt(handle, CURLOPT_CUSTOMREQUEST, method.c_str());
+                curl_easy_setopt(this->handle, CURLOPT_CUSTOMREQUEST, this->method.c_str());
             }
         } else {
-            curl_easy_setopt(handle, CURLOPT_POST, 1L);
+            curl_easy_setopt(this->handle, CURLOPT_POST, 1L);
         }
 
         if (action.contains("body") && action["body"].is_string()) {
-            std::string body = static_cast<std::string>(action["body"]);
-            curl_easy_setopt(handle, CURLOPT_POSTFIELDS, body.c_str());
-            std::cerr << "Set body to \"" << body << "\"" << std::endl;
+            this->body = static_cast<std::string>(action["body"]);
+            curl_easy_setopt(this->handle, CURLOPT_POSTFIELDS, this->body.c_str());
         }
 
-        curl_easy_setopt(handle, CURLOPT_URL, url.c_str());
-        curl_easy_setopt(handle, CURLOPT_HTTPHEADER, headers);
-        curl_easy_setopt(handle, CURLOPT_USERAGENT, ND_USERAGENT);
-        curl_easy_setopt(handle, CURLOPT_NOSIGNAL, 1L);
-        curl_easy_setopt(handle, CURLOPT_TIMEOUT, 120L);
+        curl_easy_setopt(this->handle, CURLOPT_WRITEFUNCTION, &AsyncCurlRequest::writeCallback);
+        curl_easy_setopt(this->handle, CURLOPT_WRITEDATA, this);
+        curl_easy_setopt(this->handle, CURLOPT_URL, this->url.c_str());
+        curl_easy_setopt(this->handle, CURLOPT_HTTPHEADER, headers);
+        curl_easy_setopt(this->handle, CURLOPT_USERAGENT, ND_USERAGENT);
+        curl_easy_setopt(this->handle, CURLOPT_NOSIGNAL, 1L);
+        curl_easy_setopt(this->handle, CURLOPT_TIMEOUT, 120L);
         this->ready = true;
     } catch (const nlohmann::json::parse_error& e) {}
 }
 
 void AsyncCurlRequest::run() {
-    if (this->ready) { curl_easy_perform(this->handle); }
-    emit completed();
+    if (this->ready) {
+        CURLcode res = curl_easy_perform(this->handle);
+        if (res == CURLE_OK) {
+            long httpCode = 0;
+            curl_easy_getinfo(this->handle, CURLINFO_RESPONSE_CODE, &httpCode);
+            if (200 <= httpCode && httpCode <= 299) {
+                emit completed(true);
+                return;
+            }
+        }
+    }
+    emit completed(false);
 }
+
+size_t AsyncCurlRequest::writeCallback(char* ptr, size_t size, size_t nmemb, void* userdata) { return size * nmemb; }

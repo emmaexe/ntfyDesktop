@@ -100,10 +100,9 @@ namespace Util {
     }
 
     namespace Colors {
-        const QColor textColor() { return QApplication::palette().color(QPalette::WindowText); }
-        const QColor textColorSuccess() {
+        const QColor colorShiftSuccess(const QColor& base) {
             float h, s, l, a;
-            textColor().getHslF(&h, &s, &l, &a);
+            base.getHslF(&h, &s, &l, &a);
 
             h = 120.0 / 360.0; // Hue for green is 120°
 
@@ -116,7 +115,8 @@ namespace Util {
             color.setHslF(h, s, l, a);
             return color;
         }
-        const QColor textColorFailure() {
+
+        const QColor colorShiftFailure(const QColor& base) {
             float h, s, l, a;
             textColor().getHslF(&h, &s, &l, &a);
 
@@ -131,6 +131,16 @@ namespace Util {
             color.setHslF(h, s, l, a);
             return color;
         }
+
+        const QColor textColor() { return QApplication::palette().color(QPalette::WindowText); }
+        const QColor textColorSuccess() { return colorShiftSuccess(textColor()); }
+        const QColor textColorFailure() { return colorShiftFailure(textColor()); }
+        const QColor buttonColor() { return QApplication::palette().color(QPalette::Button); }
+        const QColor buttonColorSuccess() { return colorShiftSuccess(buttonColor()); }
+        const QColor buttonColorFailure() { return colorShiftFailure(buttonColor()); }
+        const QColor buttonTextColor() { return QApplication::palette().color(QPalette::ButtonText); }
+        const QColor buttonTextColorSuccess() { return buttonTextColor(); }
+        const QColor buttonTextColorFailure() { return buttonTextColor(); }
     }
 
     std::string topicHash(const std::string& domain, const std::string& topic) {

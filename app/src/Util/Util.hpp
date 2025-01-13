@@ -73,6 +73,12 @@ namespace Util {
         const QColor textColor();
         const QColor textColorSuccess();
         const QColor textColorFailure();
+        const QColor buttonColor();
+        const QColor buttonColorSuccess();
+        const QColor buttonColorFailure();
+        const QColor buttonTextColor();
+        const QColor buttonTextColorSuccess();
+        const QColor buttonTextColorFailure();
     }
 
     /**
