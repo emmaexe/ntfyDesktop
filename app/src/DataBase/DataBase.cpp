@@ -251,7 +251,8 @@ std::vector<std::unique_ptr<NotificationListItem>> DataBase::getAllNotifications
             const std::string message = query.value(4).toString().toStdString();
             const std::string rawData = query.value(5).toString().toStdString();
 
-            notifications.push_back(std::make_unique<NotificationListItem>(id, server, topic, timestamp, title, message, rawData, parent));
+            std::unique_ptr<NotificationListItem> notification = std::make_unique<NotificationListItem>(id, server, topic, timestamp, title, message, rawData, parent);
+            if (notification->valid()) { notifications.push_back(notification); }
         }
     }
     return notifications;

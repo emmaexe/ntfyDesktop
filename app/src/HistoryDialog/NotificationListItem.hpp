@@ -20,12 +20,14 @@ class NotificationListItem: public QWidget {
             QWidget* parent = nullptr
         );
         ~NotificationListItem();
+        const bool& valid();
     signals:
         void sizeChanged(const QSize sizeHint);
     private:
         Ui::NotificationListItem* ui;
         std::string internalId, internalServer, internalTopic, internalTitle, internalMessage;
         int internalTimestamp;
+        bool internalValid = false;
 };
 
 class PixmapFetcher: public QObject {

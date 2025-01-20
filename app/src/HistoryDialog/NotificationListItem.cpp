@@ -118,11 +118,15 @@ NotificationListItem::NotificationListItem(
                 } catch (const nlohmann::json::type_error& ignored) {}
             }
         }
+
+        this->internalValid = true;
     } catch (const nlohmann::json::parse_error& ignored) {
     } catch (const nlohmann::json::type_error& ignored) {}
 }
 
 NotificationListItem::~NotificationListItem() { delete ui; }
+
+const bool& NotificationListItem::valid() { return this->internalValid; }
 
 PixmapFetcher::PixmapFetcher(std::string url, QObject* parent): url(url), QObject(parent) {}
 
