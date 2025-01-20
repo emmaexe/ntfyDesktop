@@ -21,6 +21,10 @@ class FileManager {
     public:
         FileManager() = delete;
         /**
+         * @brief Initialize the FileManager
+         */
+        static void init();
+        /**
          * @brief Temporarly download a file from the web.
          *
          * @param url Url to a file on the web.
@@ -28,6 +32,7 @@ class FileManager {
          */
         static QUrl urlToTempFile(QUrl url, bool outsidePath = false);
     private:
+        static void cleanup();
         static size_t urlToTempFileWriteCallback(char* ptr, size_t size, size_t nmemb, void* userdata);
         static std::map<QUrl, std::pair<std::unique_ptr<std::mutex>, QTemporaryFile*>> tempFileHolder;
         static std::mutex tempFileHolderLock;

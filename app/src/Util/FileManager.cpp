@@ -17,6 +17,10 @@ const char* FileManagerException::what() const throw() { return this->message.c_
 std::map<QUrl, std::pair<std::unique_ptr<std::mutex>, QTemporaryFile*>> FileManager::tempFileHolder = {};
 std::mutex FileManager::tempFileHolderLock = std::mutex();
 
+void FileManager::init() {
+    QObject::connect(QCoreApplication::instance(), &QCoreApplication::aboutToQuit, []() { FileManager::cleanup(); });
+}
+
 QUrl FileManager::urlToTempFile(QUrl url, bool outsidePath) {
     FileManager::tempFileHolderLock.lock();
     auto target = FileManager::tempFileHolder.find(url);
@@ -31,19 +35,15 @@ QUrl FileManager::urlToTempFile(QUrl url, bool outsidePath) {
         return QUrl::fromLocalFile(fileName);
     }
 
-    QTemporaryFile* file = nullptr;
+    QTemporaryFile* file = new QTemporaryFile();
     FileManager::tempFileHolderLock.lock();
     auto [iterator, inserted] = FileManager::tempFileHolder.emplace(url, std::make_pair(std::make_unique<std::mutex>(), file));
     FileManager::tempFileHolderLock.unlock();
 
     std::lock_guard<std::mutex> guard(*iterator->second.first);
 
-    QMetaObject::invokeMethod(QApplication::instance(), [&file]() {
-        file = new QTemporaryFile(QApplication::instance());
-    }, Qt::BlockingQueuedConnection);
     if (!file->open()) { throw FileManagerException("Unable to create temporary file."); }
     file->setAutoRemove(true);
-    iterator->second.second = file;
 
     std::ofstream fileStream(file->fileName().toStdString(), std::ios::binary);
     CURL* curl = curl_easy_init();
@@ -69,6 +69,16 @@ QUrl FileManager::urlToTempFile(QUrl url, bool outsidePath) {
     QString fileName = file->fileName();
     if (ND_BUILD_TYPE == "Flatpak" && outsidePath) { fileName.prepend(QString::fromStdString("/run/user/" + std::to_string(getuid()) + "/.flatpak/moe.emmaexe.ntfyDesktop")); }
     return QUrl::fromLocalFile(fileName);
+}
+
+void FileManager::cleanup() {
+    for (auto& [url, file]: FileManager::tempFileHolder) {
+        if (file.second) {
+            delete file.second;
+            file.second = nullptr;
+        }
+    }
+    FileManager::tempFileHolder.clear();
 }
 
 size_t FileManager::urlToTempFileWriteCallback(char* ptr, size_t size, size_t nmemb, void* userdata) {

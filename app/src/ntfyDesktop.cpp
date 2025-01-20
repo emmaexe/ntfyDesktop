@@ -7,6 +7,7 @@
 #include "SingleInstanceManager/SingleInstanceManager.hpp"
 #include "ThreadManager/ThreadManager.hpp"
 #include "UnixSignalHandler/UnixSignalHandler.hpp"
+#include "Util/FileManager.hpp"
 #include "Util/ParsedURL.hpp"
 
 #include <curl/curl.h>
@@ -60,6 +61,8 @@ int main(int argc, char* argv[]) {
     std::srand(std::time(0));
     curl_global_init(CURL_GLOBAL_DEFAULT);
 
+    FileManager::init();
+
     std::shared_ptr<QMainWindow> window;
     std::shared_ptr<ThreadManager> threadManager;
     std::shared_ptr<UnixSignalHandler> signalHandler;
@@ -70,9 +73,7 @@ int main(int argc, char* argv[]) {
             if (url.has_value()) {
                 try {
                     std::static_pointer_cast<MainWindow>(window).get()->ntfyProtocolTriggered(ParsedURL(url.value()));
-                } catch (ParsedURLException e) {
-                    NotificationManager::errorNotification("An invalid url was passed to ntfyDesktop", e.what());
-                }
+                } catch (ParsedURLException e) { NotificationManager::errorNotification("An invalid url was passed to ntfyDesktop", e.what()); }
             } else {
                 if (window->isHidden()) {
                     window->show();
