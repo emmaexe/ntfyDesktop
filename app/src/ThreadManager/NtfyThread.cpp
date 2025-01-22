@@ -15,8 +15,8 @@
 const int maxRetries = 3;
 const int connectionLostTimeouts[] = { 1000, 1000, 5000 };
 
-NtfyThread::NtfyThread(std::string name, std::string domain, std::string topic, AuthConfig authConfig, bool secure, std::string lastNotificationID, std::mutex* mutex):
-    internalName(name), internalDomain(domain), internalTopic(topic), internalAuthConfig(authConfig), internalSecure(secure), lastNotificationID(lastNotificationID), mutex(mutex) {
+NtfyThread::NtfyThread(std::string name, std::string domain, std::string topic, AuthConfig authConfig, bool secure, int lastTimestamp, std::mutex* mutex):
+    internalName(name), internalDomain(domain), internalTopic(topic), internalAuthConfig(authConfig), internalSecure(secure), lastTimestamp(lastTimestamp), mutex(mutex) {
     this->url = (secure ? "https://" : "http://") + domain + "/" + topic + "/json";
     this->thread = std::thread(&NtfyThread::run, this);
 }
@@ -50,8 +50,11 @@ void NtfyThread::run() {
     while (this->running && this->internalErrorCounter <= maxRetries) {
         if (this->internalErrorCounter > 0) { std::this_thread::sleep_for(std::chrono::milliseconds(connectionLostTimeouts[this->internalErrorCounter - 1])); }
 
-        std::string currentUrl = this->url + "?since=" + this->lastNotificationID;
-        curl_easy_setopt(curlHandle, CURLOPT_URL, currentUrl.c_str());
+        std::string currentUrl = this->url;
+        if (this->lastTimestamp > 0) {
+            currentUrl += "?since=" + std::to_string(this->lastTimestamp + 1);
+            curl_easy_setopt(curlHandle, CURLOPT_URL, currentUrl.c_str());
+        }
 
         CURLcode res = curl_easy_perform(curlHandle);
         if (res != CURLE_OK && res != CURLE_ABORTED_BY_CALLBACK && res != CURLE_WRITE_ERROR) { std::cerr << "curl error: " << curl_easy_strerror(res) << std::endl; }
@@ -68,10 +71,9 @@ void NtfyThread::run() {
     }
 }
 
-const std::string& NtfyThread::stop() {
+void NtfyThread::stop() {
     this->running = false;
     if (this->thread.joinable()) { this->thread.join(); }
-    return this->lastNotificationID;
 }
 
 size_t NtfyThread::writeCallback(char* ptr, size_t size, size_t nmemb, void* userdata) {
@@ -87,8 +89,7 @@ size_t NtfyThread::writeCallback(char* ptr, size_t size, size_t nmemb, void* use
         try {
             nlohmann::json jsonData = nlohmann::json::parse(line);
             if (jsonData["event"] == "message") {
-                std::string notificationID(jsonData["id"]);
-                this_p->lastNotificationID = notificationID;
+                this_p->lastTimestamp = jsonData["time"].get<int>();
                 try {
                     NtfyNotification notification(jsonData, this_p->internalDomain, this_p->internalTopic);
                     QMetaObject::invokeMethod(QApplication::instance(), [notification]() {
@@ -116,9 +117,7 @@ size_t NtfyThread::writeCallback(char* ptr, size_t size, size_t nmemb, void* use
 int NtfyThread::progressCallback(void* clientp, curl_off_t dltotal, curl_off_t dlnow, curl_off_t ultotal, curl_off_t ulnow) {
     NtfyThread* this_p = static_cast<NtfyThread*>(clientp);
 
-    if (!this_p->running) { return 1; }
-
-    return 0;
+    return this_p->running ? 0 : 1;
 }
 
 const std::string& NtfyThread::name() { return this->internalName; }
