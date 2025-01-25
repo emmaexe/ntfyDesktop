@@ -18,7 +18,8 @@ class HistoryDialog: public QDialog {
         ~HistoryDialog();
     public slots:
         void historySettingsButton();
-        void clearHistoryButton();
+        void deleteButton();
+        void selectionChanged();
     private:
         Ui::HistoryDialog* ui;
         std::vector<std::unique_ptr<NotificationListItem>> notifications = {};

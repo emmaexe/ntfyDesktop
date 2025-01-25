@@ -21,6 +21,12 @@ class NotificationListItem: public QWidget {
         );
         ~NotificationListItem();
         const bool& valid();
+        const std::string& id();
+        const std::string& server();
+        const std::string& topic();
+        const int& timestamp();
+        const std::string& title();
+        const std::string& message();
     signals:
         void sizeChanged(const QSize sizeHint);
     private:

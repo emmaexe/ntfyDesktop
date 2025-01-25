@@ -128,6 +128,13 @@ NotificationListItem::~NotificationListItem() { delete ui; }
 
 const bool& NotificationListItem::valid() { return this->internalValid; }
 
+const std::string& NotificationListItem::id() { return this->internalId; }
+const std::string& NotificationListItem::server() { return this->internalServer; }
+const std::string& NotificationListItem::topic() { return this->internalTopic; }
+const int& NotificationListItem::timestamp() { return this->internalTimestamp; }
+const std::string& NotificationListItem::title() { return this->internalTitle; }
+const std::string& NotificationListItem::message() { return this->internalMessage; }
+
 PixmapFetcher::PixmapFetcher(std::string url, QObject* parent): url(url), QObject(parent) {}
 
 void PixmapFetcher::fetchThumbnail() {

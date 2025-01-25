@@ -29,11 +29,13 @@ class DataBase {
         void enqueueNotification(const NtfyNotification notification);
         void commitNotificationQueue();
         const std::optional<NtfyNotification> getLastNotification(const std::string& topicHash);
-        std::vector<std::unique_ptr<NotificationListItem>> getAllNotifications(QWidget* parent = nullptr);
+        std::vector<std::unique_ptr<NotificationListItem>> getNotificationsAsListItem(QWidget* parent = nullptr);
+        void deleteNotification(const std::string& id);
+        void deleteNotifications(const std::vector<std::string>& ids);
 
-        void executeQuery(const std::string& query);
         bool hasRows(const std::string& table);
         int countRows(const std::string& table);
+        void executeQuery(const std::string& query);
     private:
         QSqlDatabase db;
         std::vector<NtfyNotification> notificationQueue = {};

@@ -90,9 +90,7 @@ void DataBase::setAuth(const std::string& topicHash, const AuthConfig& authConfi
         query.addBindValue(authConfig.type);
         query.addBindValue(QString::fromStdString(authConfig.token));
     }
-    if (!query.exec()) {
-        std::cerr << "DataBase query failed: " << query.lastError().text().toStdString() << std::endl;
-    }
+    if (!query.exec()) { std::cerr << "DataBase query failed: " << query.lastError().text().toStdString() << std::endl; }
 }
 
 void DataBase::multiSetAuth(const std::map<std::string, AuthConfig>& data) {
@@ -172,9 +170,7 @@ AuthConfig DataBase::getAuth(const std::string& topicHash) {
     return authConfig;
 }
 
-void DataBase::enqueueNotification(const NtfyNotification notification) {
-    this->notificationQueue.push_back(notification);
-}
+void DataBase::enqueueNotification(const NtfyNotification notification) { this->notificationQueue.push_back(notification); }
 
 void DataBase::commitNotificationQueue() {
     QSqlQuery query(this->db);
@@ -219,13 +215,11 @@ const std::optional<NtfyNotification> DataBase::getLastNotification(const std::s
     )");
     query.bindValue(":topic_hash", QString::fromStdString(topicHash));
 
-    if (query.exec() && query.next()) {
-        return std::make_optional<NtfyNotification>(NtfyNotification(query.value(0).toString().toStdString(), topicHash));
-    }
+    if (query.exec() && query.next()) { return std::make_optional<NtfyNotification>(NtfyNotification(query.value(0).toString().toStdString(), topicHash)); }
     return std::nullopt;
 }
 
-std::vector<std::unique_ptr<NotificationListItem>> DataBase::getAllNotifications(QWidget* parent) {
+std::vector<std::unique_ptr<NotificationListItem>> DataBase::getNotificationsAsListItem(QWidget* parent) {
     std::vector<std::unique_ptr<NotificationListItem>> notifications = {};
     QSqlQuery query(this->db);
     query.prepare(R"(
@@ -258,6 +252,41 @@ std::vector<std::unique_ptr<NotificationListItem>> DataBase::getAllNotifications
     return notifications;
 }
 
+void DataBase::deleteNotification(const std::string& id) {
+    QSqlQuery query(this->db);
+    query.prepare(R"(
+        DELETE FROM Notifications
+        WHERE Id = :id
+    )");
+    query.bindValue(":id", QString::fromStdString(id));
+    if (!query.exec()) { std::cerr << "DataBase query failed: " << query.lastError().text().toStdString() << std::endl; }
+}
+
+void DataBase::deleteNotifications(const std::vector<std::string>& ids) {
+    QSqlQuery query(this->db);
+    this->db.transaction();
+    bool failure = false;
+
+    for (std::string id: ids) {
+        if (failure) { break; }
+        query.prepare(R"(
+            DELETE FROM Notifications
+            WHERE Id = :id
+        )");
+        query.bindValue(":id", QString::fromStdString(id));
+
+        failure = failure ? true : !query.exec();
+        query.clear();
+    }
+
+    if (!failure) {
+        this->db.commit();
+    } else {
+        std::cerr << "DataBase query failed: " << query.lastError().text().toStdString() << std::endl;
+        this->db.rollback();
+    }
+}
+
 bool DataBase::hasRows(const std::string& table) {
     QSqlQuery query(this->db);
     query.prepare(QString(R"(
@@ -265,9 +294,7 @@ bool DataBase::hasRows(const std::string& table) {
         FROM %1
         LIMIT 1
     )").arg(QString::fromStdString(table)));
-    if (query.exec() && query.next()) {
-        return true;
-    }
+    if (query.exec() && query.next()) { return true; }
     return false;
 }
 
@@ -277,17 +304,13 @@ int DataBase::countRows(const std::string& table) {
         SELECT COUNT(*)
         FROM %1
     )").arg(QString::fromStdString(table)));
-    if (query.exec() && query.next()) {
-        return query.value(0).toInt();
-    }
+    if (query.exec() && query.next()) { return query.value(0).toInt(); }
     return 0;
 }
 
 void DataBase::executeQuery(const std::string& queryText) {
     QSqlQuery query(QString::fromStdString(queryText), this->db);
-    if (!query.exec()) {
-        std::cerr << "DataBase query failed: " << query.lastError().text().toStdString() << std::endl;
-    }
+    if (!query.exec()) { std::cerr << "DataBase query failed: " << query.lastError().text().toStdString() << std::endl; }
 }
 
 const std::string DataBase::getDBPath() { return QStandardPaths::writableLocation(QStandardPaths::AppDataLocation).toStdString(); }

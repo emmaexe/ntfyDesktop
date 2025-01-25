@@ -29,6 +29,22 @@
      <item>
       <layout class="QHBoxLayout" name="buttons">
        <item>
+        <widget class="QToolButton" name="deleteButton">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="text">
+          <string>Delete</string>
+         </property>
+         <property name="icon">
+          <iconset theme="edit-delete"/>
+         </property>
+         <property name="toolButtonStyle">
+          <enum>Qt::ToolButtonStyle::ToolButtonTextBesideIcon</enum>
+         </property>
+        </widget>
+       </item>
+       <item>
         <spacer name="horizontalSpacer">
          <property name="orientation">
           <enum>Qt::Orientation::Horizontal</enum>
@@ -48,19 +64,6 @@
          </property>
          <property name="icon">
           <iconset theme="configure"/>
-         </property>
-         <property name="toolButtonStyle">
-          <enum>Qt::ToolButtonStyle::ToolButtonTextBesideIcon</enum>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QToolButton" name="clearHistoryButton">
-         <property name="text">
-          <string>Clear History</string>
-         </property>
-         <property name="icon">
-          <iconset theme="edit-clear-history"/>
          </property>
          <property name="toolButtonStyle">
           <enum>Qt::ToolButtonStyle::ToolButtonTextBesideIcon</enum>
