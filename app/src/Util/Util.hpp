@@ -97,4 +97,20 @@ namespace Util {
      * @return std::string - A formatted string of the given unix time
      */
     std::string timeToString(const std::time_t& time);
+
+    /**
+     * @brief Transform a string to upper case.
+     *
+     * @param str The string
+     * @return std::string - The string but upper case.
+     */
+    void toUpper(std::string& str);
+
+    /**
+     * @brief Transform a string to lower case.
+     *
+     * @param str The string
+     * @return std::string - The string but lower case.
+     */
+    void toLower(std::string& str);
 }

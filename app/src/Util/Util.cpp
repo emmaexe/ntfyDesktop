@@ -152,4 +152,12 @@ namespace Util {
         stream << std::put_time(std::localtime(&time), "%Y-%m-%d %H:%M:%S");
         return stream.str();
     }
+
+    void toUpper(std::string& str) {
+        for (char& c: str) { c = toupper(c); }
+    }
+
+    void toLower(std::string& str) {
+        for (char& c: str) { c = tolower(c); }
+    }
 }

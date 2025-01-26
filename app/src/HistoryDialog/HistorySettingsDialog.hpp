@@ -15,6 +15,12 @@ class HistorySettingsDialog: public QDialog {
         ~HistorySettingsDialog();
     public slots:
         void applyButton();
+        void keepHistoryChanged(int index);
     private:
         Ui::HistorySettingsDialog* ui;
+        static const std::array<std::string, 4> modes;
+        static const std::array<std::string, 7> recentModes;
+        int mode = 0, numberValue = 5000, recentValue = 2, recentMode = 4;
+        void fetchFromConfig();
+        void updateToConfig();
 };
