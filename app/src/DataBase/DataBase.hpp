@@ -28,7 +28,7 @@ class DataBase {
 
         void enqueueNotification(const NtfyNotification notification);
         void commitNotificationQueue();
-        const std::optional<NtfyNotification> getLastNotification(const std::string& topicHash);
+        const std::optional<int> getLastTimestamp(const std::string& topicHash);
         std::vector<std::unique_ptr<NotificationListItem>> getNotificationsAsListItem(QWidget* parent = nullptr);
         void deleteNotification(const std::string& id);
         void deleteNotifications(const std::vector<std::string>& ids);

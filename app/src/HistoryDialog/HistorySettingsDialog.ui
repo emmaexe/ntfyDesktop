@@ -36,6 +36,43 @@
        </property>
       </widget>
      </item>
+     <item row="0" column="2" colspan="3">
+      <widget class="QComboBox" name="keepHistoryComboBox">
+       <item>
+        <property name="text">
+         <string>all notifications</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>a number of notifications</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>recent notifications</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>no notifications</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item row="2" column="2">
+      <widget class="QSpinBox" name="recentSpinBox">
+       <property name="minimum">
+        <number>1</number>
+       </property>
+       <property name="maximum">
+        <number>2147483647</number>
+       </property>
+       <property name="value">
+        <number>2</number>
+       </property>
+      </widget>
+     </item>
      <item row="0" column="1">
       <widget class="QLabel" name="keepHistoryLabel">
        <property name="text">
@@ -46,7 +83,69 @@
        </property>
       </widget>
      </item>
-     <item row="2" column="3">
+     <item row="2" column="1">
+      <widget class="QLabel" name="recentLabel">
+       <property name="text">
+        <string>Within the last:</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="2" colspan="3">
+      <widget class="QSpinBox" name="aNumberSpinBox">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="minimum">
+        <number>1</number>
+       </property>
+       <property name="maximum">
+        <number>2147483647</number>
+       </property>
+       <property name="value">
+        <number>15000</number>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="5">
+      <spacer name="spacerRight">
+       <property name="orientation">
+        <enum>Qt::Orientation::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item row="0" column="0">
+      <spacer name="spacerLeft">
+       <property name="orientation">
+        <enum>Qt::Orientation::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item row="3" column="3" colspan="2">
+      <widget class="QRadioButton" name="sourcePickerGlobal">
+       <property name="text">
+        <string>for a&amp;ll sources</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="3" colspan="2">
       <widget class="QComboBox" name="recentComboBox">
        <property name="currentIndex">
         <number>4</number>
@@ -88,96 +187,14 @@
        </item>
       </widget>
      </item>
-     <item row="0" column="4">
-      <spacer name="spacerRight">
-       <property name="orientation">
-        <enum>Qt::Orientation::Horizontal</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>40</width>
-         <height>20</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-     <item row="2" column="1">
-      <widget class="QLabel" name="recentLabel">
+     <item row="3" column="1" colspan="2">
+      <widget class="QRadioButton" name="sourcePickerIndividual">
        <property name="text">
-        <string>Within the last:</string>
+        <string>&amp;for each source individually</string>
        </property>
-       <property name="alignment">
-        <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+       <property name="checked">
+        <bool>true</bool>
        </property>
-      </widget>
-     </item>
-     <item row="2" column="2">
-      <widget class="QSpinBox" name="recentSpinBox">
-       <property name="minimum">
-        <number>1</number>
-       </property>
-       <property name="maximum">
-        <number>2147483647</number>
-       </property>
-       <property name="value">
-        <number>2</number>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="0">
-      <spacer name="spacerLeft">
-       <property name="orientation">
-        <enum>Qt::Orientation::Horizontal</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>40</width>
-         <height>20</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-     <item row="1" column="2" colspan="2">
-      <widget class="QSpinBox" name="aNumberSpinBox">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="minimum">
-        <number>1</number>
-       </property>
-       <property name="maximum">
-        <number>2147483647</number>
-       </property>
-       <property name="value">
-        <number>15000</number>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="2" colspan="2">
-      <widget class="QComboBox" name="keepHistoryComboBox">
-       <item>
-        <property name="text">
-         <string>all notifications</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>a number of notifications</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>recent notifications</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>no notifications</string>
-        </property>
-       </item>
       </widget>
      </item>
     </layout>

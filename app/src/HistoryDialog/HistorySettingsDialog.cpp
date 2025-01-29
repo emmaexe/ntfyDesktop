@@ -21,6 +21,13 @@ HistorySettingsDialog::HistorySettingsDialog(QWidget* parent): QDialog(parent), 
     this->ui->recentComboBox->setCurrentIndex(this->recentMode);
     this->ui->recentComboBox->hide();
 
+    this->ui->sourcePickerIndividual->hide();
+    this->ui->sourcePickerGlobal->hide();
+    this->sourceButtons = new QButtonGroup(this);
+    this->sourceButtons->addButton(this->ui->sourcePickerIndividual, 0);
+    this->sourceButtons->addButton(this->ui->sourcePickerGlobal, 1);
+    this->sourceButtons->button(this->sourceMode)->setChecked(true);
+
     QObject::connect(this->ui->keepHistoryComboBox, &QComboBox::currentIndexChanged, this, &HistorySettingsDialog::keepHistoryChanged);
     this->ui->keepHistoryComboBox->setCurrentIndex(this->mode);
 }
@@ -32,6 +39,7 @@ void HistorySettingsDialog::applyButton() {
     this->numberValue = this->ui->aNumberSpinBox->value();
     this->recentValue = this->ui->recentSpinBox->value();
     this->recentMode = this->ui->recentComboBox->currentIndex();
+    this->sourceMode = this->sourceButtons->checkedId();
     this->updateToConfig();
     this->accept();
 }
@@ -43,23 +51,30 @@ void HistorySettingsDialog::keepHistoryChanged(int index) {
         this->ui->recentLabel->hide();
         this->ui->recentSpinBox->hide();
         this->ui->recentComboBox->hide();
+        this->ui->sourcePickerIndividual->show();
+        this->ui->sourcePickerGlobal->show();
     } else if (index == 2) {
         this->ui->aNumberLabel->hide();
         this->ui->aNumberSpinBox->hide();
         this->ui->recentLabel->show();
         this->ui->recentSpinBox->show();
         this->ui->recentComboBox->show();
+        this->ui->sourcePickerIndividual->hide();
+        this->ui->sourcePickerGlobal->hide();
     } else {
         this->ui->aNumberLabel->hide();
         this->ui->aNumberSpinBox->hide();
         this->ui->recentLabel->hide();
         this->ui->recentSpinBox->hide();
         this->ui->recentComboBox->hide();
+        this->ui->sourcePickerIndividual->hide();
+        this->ui->sourcePickerGlobal->hide();
     }
 }
 
 const std::array<std::string, 4> HistorySettingsDialog::modes = {"All", "Number", "Recent", "None"};
 const std::array<std::string, 7> HistorySettingsDialog::recentModes = {"Seconds", "Minutes", "Hours", "Days", "Weeks", "Months", "Years"};
+const std::array<std::string, 2> HistorySettingsDialog::sourceModes = {"Individual", "All"};
 
 void HistorySettingsDialog::fetchFromConfig() {
     Config::read();
@@ -96,6 +111,15 @@ void HistorySettingsDialog::fetchFromConfig() {
             } else if (mode == "none") {
                 this->mode = 3;
             }
+            if (historyConfig["sourceMode"].is_string()) {
+                std::string mode = historyConfig["sourceMode"].get<std::string>();
+                Util::toLower(mode);
+                if (mode == "individual") {
+                    this->sourceMode = 0;
+                } else if (mode == "all") {
+                    this->sourceMode = 1;
+                }
+            }
         }
     } catch (const nlohmann::json::type_error& ignored) {}
 }
@@ -106,6 +130,7 @@ void HistorySettingsDialog::updateToConfig() {
     historyConfig["numberValue"] = this->numberValue;
     historyConfig["recentValue"] = this->recentValue;
     historyConfig["recentMode"] = this->recentModes[this->recentMode];
+    historyConfig["sourceMode"] = this->sourceModes[this->sourceMode];
     Config::data()["history"] = historyConfig;
     Config::write();
 }

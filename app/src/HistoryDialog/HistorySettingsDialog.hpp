@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QDialog>
+#include <QButtonGroup>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -18,9 +19,11 @@ class HistorySettingsDialog: public QDialog {
         void keepHistoryChanged(int index);
     private:
         Ui::HistorySettingsDialog* ui;
+        QButtonGroup* sourceButtons;
         static const std::array<std::string, 4> modes;
         static const std::array<std::string, 7> recentModes;
-        int mode = 0, numberValue = 5000, recentValue = 2, recentMode = 4;
+        static const std::array<std::string, 2> sourceModes;
+        int mode = 0, numberValue = 5000, recentValue = 2, recentMode = 4, sourceMode = 0;
         void fetchFromConfig();
         void updateToConfig();
 };
