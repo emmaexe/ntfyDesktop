@@ -50,12 +50,9 @@ void NtfyThread::run() {
     while (this->running && this->internalErrorCounter <= maxRetries) {
         if (this->internalErrorCounter > 0) { std::this_thread::sleep_for(std::chrono::milliseconds(connectionLostTimeouts[this->internalErrorCounter - 1])); }
 
-        std::string currentUrl = this->url;
-        if (this->lastTimestamp > 0) {
-            currentUrl += "?since=" + std::to_string(this->lastTimestamp + 1);
-            curl_easy_setopt(curlHandle, CURLOPT_URL, currentUrl.c_str());
-        }
-
+        std::string currentUrl = this->url + "?since=" + (this->lastTimestamp > 0 ? std::to_string(this->lastTimestamp + 1) : "all");
+        curl_easy_setopt(curlHandle, CURLOPT_URL, currentUrl.c_str());
+        
         CURLcode res = curl_easy_perform(curlHandle);
         if (res != CURLE_OK && res != CURLE_ABORTED_BY_CALLBACK && res != CURLE_WRITE_ERROR) { std::cerr << "curl error: " << curl_easy_strerror(res) << std::endl; }
         if (this->running) { this->internalErrorCounter++; }
