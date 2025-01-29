@@ -192,9 +192,6 @@
        <property name="text">
         <string>&amp;for each source individually</string>
        </property>
-       <property name="checked">
-        <bool>true</bool>
-       </property>
       </widget>
      </item>
     </layout>
