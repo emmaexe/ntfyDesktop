@@ -271,6 +271,11 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>deleteButton</tabstop>
+  <tabstop>historySettingsButton</tabstop>
+  <tabstop>notificationList</tabstop>
+ </tabstops>
  <resources>
   <include location="../../resources/resources.qrc"/>
  </resources>

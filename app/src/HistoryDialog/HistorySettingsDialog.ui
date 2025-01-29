@@ -244,6 +244,15 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>keepHistoryComboBox</tabstop>
+  <tabstop>aNumberSpinBox</tabstop>
+  <tabstop>recentSpinBox</tabstop>
+  <tabstop>recentComboBox</tabstop>
+  <tabstop>sourcePickerIndividual</tabstop>
+  <tabstop>sourcePickerGlobal</tabstop>
+  <tabstop>applyButton</tabstop>
+ </tabstops>
  <resources>
   <include location="../../resources/resources.qrc"/>
  </resources>
