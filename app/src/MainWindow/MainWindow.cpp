@@ -1,6 +1,7 @@
 #include "MainWindow.hpp"
 
 #include "../DataBase/DataBase.hpp"
+#include "../HistoryDialog/HistoryDialog.hpp"
 #include "../ImportDialog/ImportDialog.hpp"
 #include "../NotificationManager/NotificationManager.hpp"
 #include "../Util/Util.hpp"
@@ -17,18 +18,20 @@ MainWindow::MainWindow(std::shared_ptr<ThreadManager> threadManager, KAboutData&
     QObject::connect(this->ui->saveAction, &QAction::triggered, this, &MainWindow::saveAction);
     QObject::connect(this->ui->addAction, &QAction::triggered, this, &MainWindow::addAction);
     QObject::connect(this->ui->removeAction, &QAction::triggered, this, &MainWindow::removeAction);
+    QObject::connect(this->ui->historyAction, &QAction::triggered, this, &MainWindow::historyAction);
     QObject::connect(this->ui->importAction, &QAction::triggered, this, &MainWindow::importAction);
     QObject::connect(this->ui->restartAction, &QAction::triggered, this, &MainWindow::restartAction);
     QObject::connect(this->ui->exitAction, &QAction::triggered, this, &MainWindow::exitAction);
 
-    DataBase db;
-
-    nlohmann::json sources = Config::data()["sources"];
-    for (int i = 0; i < sources.size(); i++) {
-        this->tabs.push_back(
-            new ConfigTab(sources[i]["name"], sources[i]["domain"], sources[i]["topic"], db.getAuth(Util::topicHash(sources[i]["domain"], sources[i]["topic"])), sources[i]["secure"], this)
-        );
-        this->ui->tabs->addTab(this->tabs.at(i), this->tabs.at(i)->getName().c_str());
+    {
+        DataBase db;
+        nlohmann::json sources = Config::data()["sources"];
+        for (int i = 0; i < sources.size(); i++) {
+            this->tabs.push_back(
+                new ConfigTab(sources[i]["name"], sources[i]["domain"], sources[i]["topic"], db.getAuth(Util::topicHash(sources[i]["domain"], sources[i]["topic"])), sources[i]["secure"], this)
+            );
+            this->ui->tabs->addTab(this->tabs.at(i), this->tabs.at(i)->getName().c_str());
+        }
     }
 
     if (this->tabs.size() == 0) {
@@ -231,4 +234,9 @@ void MainWindow::importAction() {
         this->restartAction();
         this->ui->statusBar->showMessage("Ntfy Android backup merged into existing config.", 5000);
     }
+}
+
+void MainWindow::historyAction() {
+    HistoryDialog* dialog = new HistoryDialog(this);
+    dialog->exec();
 }

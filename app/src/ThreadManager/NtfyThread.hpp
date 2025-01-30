@@ -12,10 +12,10 @@
 
 class NtfyThread {
     public:
-        NtfyThread(std::string name, std::string domain, std::string topic, AuthConfig authConfig, bool secure, std::string lastNotificationID, std::mutex* mutex);
+        NtfyThread(std::string name, std::string domain, std::string topic, AuthConfig authConfig, bool secure, int lastTimestamp, std::mutex* mutex);
         ~NtfyThread();
         void run();
-        const std::string& stop();
+        void stop();
         const std::string& name();
         const std::string& domain();
         const std::string& topic();
@@ -25,7 +25,8 @@ class NtfyThread {
         std::thread thread;
         std::mutex* mutex;
         std::atomic<bool> running;
-        std::string internalName, internalDomain, internalTopic, url, lastNotificationID;
+        std::string internalName, internalDomain, internalTopic, url;
+        int lastTimestamp;
         AuthConfig internalAuthConfig;
         bool internalSecure;
         int internalErrorCounter = 0;

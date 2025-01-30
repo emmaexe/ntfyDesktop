@@ -32,6 +32,7 @@ class MainWindow: public QMainWindow {
         void showHideAction();
         void restartAction();
         void importAction();
+        void historyAction();
     protected:
         void closeEvent(QCloseEvent* event) override;
         void changeEvent(QEvent* event) override;

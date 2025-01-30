@@ -1,6 +1,6 @@
 #include "NotificationManager.hpp"
 
-#include "../FileManager/FileManager.hpp"
+#include "../Util/FileManager.hpp"
 #include "ntfyDesktop.hpp"
 
 #include <KNotification>

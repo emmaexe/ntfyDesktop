@@ -92,6 +92,22 @@
        </spacer>
       </item>
       <item>
+       <widget class="QToolButton" name="historyButton">
+        <property name="cursor">
+         <cursorShape>PointingHandCursor</cursorShape>
+        </property>
+        <property name="text">
+         <string>History</string>
+        </property>
+        <property name="icon">
+         <iconset theme="view-history"/>
+        </property>
+        <property name="toolButtonStyle">
+         <enum>Qt::ToolButtonStyle::ToolButtonTextBesideIcon</enum>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="QToolButton" name="restartButton">
         <property name="cursor">
          <cursorShape>PointingHandCursor</cursorShape>
@@ -372,6 +388,7 @@
     </property>
     <addaction name="saveAction"/>
     <addaction name="separator"/>
+    <addaction name="historyAction"/>
     <addaction name="importAction"/>
     <addaction name="separator"/>
     <addaction name="restartAction"/>
@@ -458,6 +475,14 @@
     <string>&amp;Import</string>
    </property>
   </action>
+  <action name="historyAction">
+   <property name="icon">
+    <iconset theme="view-history"/>
+   </property>
+   <property name="text">
+    <string>History</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <tabstops>
@@ -528,6 +553,22 @@
    <hints>
     <hint type="sourcelabel">
      <x>750</x>
+     <y>53</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>historyButton</sender>
+   <signal>clicked()</signal>
+   <receiver>historyAction</receiver>
+   <slot>trigger()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>660</x>
      <y>53</y>
     </hint>
     <hint type="destinationlabel">

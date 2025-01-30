@@ -1,6 +1,10 @@
 #include "DataBase.hpp"
 
+#include "../Config/Config.hpp"
+#include "../Util/Util.hpp"
 #include "ntfyDesktop.hpp"
+
+#include <nlohmann/json.hpp>
 
 #include <QStandardPaths>
 #include <QUuid>
@@ -48,9 +52,148 @@ DataBase::DataBase() {
                 Message TEXT NOT NULL,
                 RawData TEXT NOT NULL
             );
+        )") &&
+        query.exec(R"(
+            CREATE TABLE IF NOT EXISTS LastNotifications (
+                TopicHash TEXT NOT NULL PRIMARY KEY,
+                Time INT NOT NULL
+            );
+        )") &&
+        query.exec(R"(
+            CREATE INDEX IF NOT EXISTS IDX_TIME ON Notifications(Time);
+        )") &&
+        query.exec(R"(
+            CREATE INDEX IF NOT EXISTS IDX_TOPICHASH ON Notifications(TopicHash);
+        )") &&
+        query.exec(R"(
+            CREATE TRIGGER IF NOT EXISTS TimestampUpdate
+            BEFORE INSERT ON Notifications
+            BEGIN
+                INSERT INTO LastNotifications (TopicHash, Time)
+                VALUES (NEW.TopicHash, NEW.Time)
+                ON CONFLICT(TopicHash) DO UPDATE SET Time =
+                    CASE
+                        WHEN NEW.Time > LastNotifications.Time THEN NEW.Time
+                        ELSE LastNotifications.Time
+                    END;
+            END;
+        )") &&
+        query.exec(R"(
+            DROP TRIGGER IF EXISTS NotificationsLimit;
         )")
     ) {
-        this->db.commit();
+        const std::array<int, 7> valueMap = { 1, 60, 3600, 86400, 604800, 2592000, 31536000 };
+        int mode = 0, numberValue = 5000, recentValue = 2, recentMode = 4, sourceMode = 0;
+        bool failure = false;
+        try {
+            nlohmann::json historyConfig = Config::data()["history"];
+            if (historyConfig.is_object() && historyConfig["mode"].is_string()) {
+                std::string configMode = historyConfig["mode"].get<std::string>();
+                Util::toLower(configMode);
+                if (configMode == "all") {
+                    mode = 0;
+                } else if (configMode == "number" && historyConfig["numberValue"].is_number()) {
+                    mode = 1;
+                    numberValue = historyConfig["numberValue"].get<int>();
+                } else if (configMode == "recent" && historyConfig["recentValue"].is_number() && historyConfig["recentMode"].is_string()) {
+                    mode = 2;
+                    recentValue = historyConfig["recentValue"].get<int>();
+                    std::string configRecentMode = historyConfig["recentMode"].get<std::string>();
+                    Util::toLower(configRecentMode);
+                    if (configRecentMode == "seconds") {
+                        recentMode = 0;
+                    } else if (configRecentMode == "minutes") {
+                        recentMode = 1;
+                    } else if (configRecentMode == "hours") {
+                        recentMode = 2;
+                    } else if (configRecentMode == "days") {
+                        recentMode = 3;
+                    } else if (configRecentMode == "weeks") {
+                        recentMode = 4;
+                    } else if (configRecentMode == "months") {
+                        recentMode = 5;
+                    } else if (configRecentMode == "years") {
+                        recentMode = 6;
+                    }
+                } else if (configMode == "none") {
+                    mode = 3;
+                }
+                if (historyConfig["sourceMode"].is_string()) {
+                    std::string modeStr = historyConfig["sourceMode"].get<std::string>();
+                    Util::toLower(modeStr);
+                    if (modeStr == "individual") {
+                        sourceMode = 0;
+                    } else if (modeStr == "all") {
+                        sourceMode = 1;
+                    }
+                }
+            }
+        } catch (const nlohmann::json::type_error& ignored) {}
+        recentValue *= valueMap[recentMode];
+        if (mode == 1) {
+            if (sourceMode == 0) {
+                query.prepare(QString(R"(
+                    CREATE TRIGGER NotificationsLimit
+                    AFTER INSERT ON Notifications
+                    WHEN (SELECT COUNT(*) FROM Notifications) > %1
+                    BEGIN
+                        DELETE FROM Notifications
+                        WHERE Id IN (
+                            SELECT Id FROM Notifications
+                            WHERE TopicHash = NEW.TopicHash
+                            AND Id NOT IN (
+                                SELECT Id FROM Notifications
+                                WHERE TopicHash = NEW.TopicHash
+                                ORDER BY Time DESC
+                                LIMIT %1
+                            )
+                        );
+                    END;
+                )").arg(numberValue));
+            } else if (sourceMode == 1) {
+                query.prepare(QString(R"(
+                    CREATE TRIGGER NotificationsLimit
+                    AFTER INSERT ON Notifications
+                    WHEN (SELECT COUNT(*) FROM Notifications) > %1
+                    BEGIN
+                        DELETE FROM Notifications
+                        WHERE Id IN (
+                            SELECT Id FROM Notifications
+                            ORDER BY Time ASC
+                            LIMIT (SELECT COUNT(*) - %1 FROM Notifications)
+                        );
+                    END;
+                )").arg(numberValue));
+            }
+            failure = failure ? true : !query.exec();
+            if (failure) {std::cerr << "Failure on trigger create" << std::endl;}
+        } else if (mode == 2) {
+            query.prepare(QString(R"(
+                CREATE TRIGGER NotificationsLimit
+                AFTER INSERT ON Notifications
+                BEGIN
+                    DELETE FROM Notifications
+                    WHERE Time < (strftime('%s', 'now') - %1);
+                END;
+            )").arg(recentValue));
+            failure = failure ? true : !query.exec();
+        } else if (mode == 3) {
+            query.prepare(R"(
+                CREATE TRIGGER NotificationsLimit
+                AFTER INSERT ON Notifications
+                BEGIN
+                    DELETE FROM Notifications WHERE Id = NEW.Id;
+                END;
+            )");
+            failure = failure ? true : !query.exec();
+        }
+
+        if (failure) {
+            std::cerr << "DataBase query failed: " << query.lastError().text().toStdString() << std::endl;
+            this->db.rollback();
+        } else {
+            this->db.commit();
+        }
     } else {
         std::cerr << "DataBase query failed: " << query.lastError().text().toStdString() << std::endl;
         this->db.rollback();
@@ -91,9 +234,7 @@ void DataBase::setAuth(const std::string& topicHash, const AuthConfig& authConfi
         query.addBindValue(authConfig.type);
         query.addBindValue(QString::fromStdString(authConfig.token));
     }
-    if (!query.exec()) {
-        std::cerr << "DataBase query failed: " << query.lastError().text().toStdString() << std::endl;
-    }
+    if (!query.exec()) { std::cerr << "DataBase query failed: " << query.lastError().text().toStdString() << std::endl; }
 }
 
 void DataBase::multiSetAuth(const std::map<std::string, AuthConfig>& data) {
@@ -173,9 +314,7 @@ AuthConfig DataBase::getAuth(const std::string& topicHash) {
     return authConfig;
 }
 
-void DataBase::enqueueNotification(const NtfyNotification notification) {
-    this->notificationQueue.push_back(notification);
-}
+void DataBase::enqueueNotification(const NtfyNotification notification) { this->notificationQueue.push_back(notification); }
 
 void DataBase::commitNotificationQueue() {
     QSqlQuery query(this->db);
@@ -209,28 +348,112 @@ void DataBase::commitNotificationQueue() {
     this->notificationQueue.clear();
 }
 
-const std::optional<NtfyNotification> DataBase::getLastNotification(const std::string& topicHash) {
+const std::optional<int> DataBase::getLastTimestamp(const std::string& topicHash) {
     QSqlQuery query(this->db);
     query.prepare(R"(
-        SELECT RawData
-        FROM Notifications
+        SELECT Time
+        FROM LastNotifications
         WHERE TopicHash = :topic_hash
-        ORDER BY Time DESC
         LIMIT 1
     )");
     query.bindValue(":topic_hash", QString::fromStdString(topicHash));
 
-    if (query.exec() && query.next()) {
-        return std::make_optional<NtfyNotification>(NtfyNotification(query.value(0).toString().toStdString(), topicHash));
-    }
+    if (query.exec() && query.next()) { return std::make_optional<int>(query.value(0).toInt()); }
     return std::nullopt;
+}
+
+std::vector<std::unique_ptr<NotificationListItem>> DataBase::getNotificationsAsListItem(QWidget* parent) {
+    std::vector<std::unique_ptr<NotificationListItem>> notifications = {};
+    QSqlQuery query(this->db);
+    query.prepare(R"(
+        SELECT Id, TopicHash, Time, Title, Message, RawData
+        FROM Notifications
+        ORDER BY Time DESC
+    )");
+    if (query.exec()) {
+        std::map<std::string, std::pair<std::string, std::string>> hashes = {};
+        nlohmann::json sources = Config::data()["sources"];
+        for (int i = 0; i < sources.size(); i++) {
+            std::string server = sources[i]["domain"];
+            std::string topic = sources[i]["topic"];
+            hashes.emplace(std::make_pair(Util::topicHash(server, topic), std::make_pair(server, topic)));
+        }
+
+        while (query.next()) {
+            const std::string id = query.value(0).toString().toStdString();
+            const std::string topicHash = query.value(1).toString().toStdString();
+            const std::string server = hashes[topicHash].first, topic = hashes[topicHash].second;
+            const int timestamp = query.value(2).toInt();
+            const std::string title = query.value(3).toString().toStdString();
+            const std::string message = query.value(4).toString().toStdString();
+            const std::string rawData = query.value(5).toString().toStdString();
+
+            std::unique_ptr<NotificationListItem> notification = std::make_unique<NotificationListItem>(id, server, topic, timestamp, title, message, rawData, parent);
+            if (notification->valid()) { notifications.push_back(std::move(notification)); }
+        }
+    }
+    return notifications;
+}
+
+void DataBase::deleteNotification(const std::string& id) {
+    QSqlQuery query(this->db);
+    query.prepare(R"(
+        DELETE FROM Notifications
+        WHERE Id = :id
+    )");
+    query.bindValue(":id", QString::fromStdString(id));
+    if (!query.exec()) { std::cerr << "DataBase query failed: " << query.lastError().text().toStdString() << std::endl; }
+}
+
+void DataBase::deleteNotifications(const std::vector<std::string>& ids) {
+    QSqlQuery query(this->db);
+    this->db.transaction();
+    bool failure = false;
+
+    for (std::string id: ids) {
+        if (failure) { break; }
+        query.prepare(R"(
+            DELETE FROM Notifications
+            WHERE Id = :id
+        )");
+        query.bindValue(":id", QString::fromStdString(id));
+
+        failure = failure ? true : !query.exec();
+        query.clear();
+    }
+
+    if (!failure) {
+        this->db.commit();
+    } else {
+        std::cerr << "DataBase query failed: " << query.lastError().text().toStdString() << std::endl;
+        this->db.rollback();
+    }
+}
+
+bool DataBase::hasRows(const std::string& table) {
+    QSqlQuery query(this->db);
+    query.prepare(QString(R"(
+        SELECT 1
+        FROM %1
+        LIMIT 1
+    )").arg(QString::fromStdString(table)));
+    if (query.exec() && query.next()) { return true; }
+    return false;
+}
+
+int DataBase::countRows(const std::string& table) {
+    QSqlQuery query(this->db);
+    query.prepare(QString(R"(
+        SELECT COUNT(*)
+        FROM %1
+    )").arg(QString::fromStdString(table)));
+    if (query.exec() && query.next()) { return query.value(0).toInt(); }
+    return 0;
 }
 
 void DataBase::executeQuery(const std::string& queryText) {
     QSqlQuery query(QString::fromStdString(queryText), this->db);
-    if (!query.exec()) {
-        std::cerr << "DataBase query failed: " << query.lastError().text().toStdString() << std::endl;
-    }
+    if (!query.exec()) { std::cerr << "DataBase query failed: " << query.lastError().text().toStdString() << std::endl; }
 }
 
 const std::string DataBase::getDBPath() { return QStandardPaths::writableLocation(QStandardPaths::AppDataLocation).toStdString(); }
