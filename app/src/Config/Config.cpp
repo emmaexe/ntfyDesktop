@@ -87,26 +87,48 @@ void Config::updateToCurrent() {
         } else if (Util::versionCompare(ND_VERSION, version) > 0) {
             Config::ok = false;
             Config::internalError = "The config (" + Config::getConfigFile() + ") was created for a newer version of ntfyDesktop. Please downgrade your config manually, reset it to default values or update ntfyDesktop.";
-        } else if (Util::versionCompare(version, "1.0.0") >= 0) {
-            // Version is 1.0.0 or older
-            // Schema used is: {"version": string, "sources": [{"name": string, "server": string, "topic": string}, ...]}
+        } else {
+            if (Util::versionCompare(version, "1.0.0") >= 0) {
+                // Version is 1.0.0 or older
+                // Schema used is: {"version": string, "sources": [{"name": string, "server": string, "topic": string}, ...]}
 
-            nlohmann::json data = Config::internalData;
-            while (!QFile::copy(QString::fromStdString(Config::getConfigFile()), QString::fromStdString(Config::getConfigFile() + ".bak"))) {
-                QFile::remove(QString::fromStdString(Config::getConfigFile() + ".bak"));
+                nlohmann::json data = Config::internalData;
+                while (!QFile::copy(QString::fromStdString(Config::getConfigFile()), QString::fromStdString(Config::getConfigFile() + ".bak"))) {
+                    QFile::remove(QString::fromStdString(Config::getConfigFile() + ".bak"));
+                }
+                Config::reset();
+
+                for (nlohmann::json source: data["sources"]) {
+                    nlohmann::json newSource = {};
+                    newSource["name"] = source["name"];
+                    newSource["domain"] = source["server"];
+                    newSource["topic"] = source["topic"];
+                    newSource["protocol"] = "https";
+                    Config::data()["sources"].push_back(newSource);
+                }
+
+                Config::write();
+            } else if (Util::versionCompare(version, "1.3.2") >= 0) {
+                // Version is <1.0.0, 1.3.2]
+                // Schema used is: {"version": string, "sources": [{"name": string, "server": string, "topic": string, "secure": bool}, ...]}
+
+                nlohmann::json data = Config::internalData;
+                while (!QFile::copy(QString::fromStdString(Config::getConfigFile()), QString::fromStdString(Config::getConfigFile() + ".bak"))) {
+                    QFile::remove(QString::fromStdString(Config::getConfigFile() + ".bak"));
+                }
+                Config::reset();
+
+                for (nlohmann::json source: data["sources"]) {
+                    nlohmann::json newSource = {};
+                    newSource["name"] = source["name"];
+                    newSource["domain"] = source["domain"];
+                    newSource["topic"] = source["topic"];
+                    newSource["protocol"] = source["secure"].get<bool>() ? "https" : "http";
+                    Config::data()["sources"].push_back(newSource);
+                }
+
+                Config::write();
             }
-            Config::reset();
-
-            for (nlohmann::json source: data["sources"]) {
-                nlohmann::json newSource = {};
-                newSource["name"] = source["name"];
-                newSource["domain"] = source["server"];
-                newSource["topic"] = source["topic"];
-                newSource["secure"] = true;
-                Config::data()["sources"].push_back(newSource);
-            }
-
-            Config::write();
         }
     } catch (const nlohmann::json::parse_error& e) {
         Config::ok = false;

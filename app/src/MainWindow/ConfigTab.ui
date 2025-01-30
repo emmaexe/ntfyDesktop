@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>400</width>
-    <height>349</height>
+    <height>359</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -212,45 +212,6 @@
        </property>
       </widget>
      </item>
-     <item row="6" column="0">
-      <widget class="QLabel" name="authTokenLabel">
-       <property name="whatsThis">
-        <string>This is the token field.</string>
-       </property>
-       <property name="text">
-        <string>Token:</string>
-       </property>
-      </widget>
-     </item>
-     <item row="7" column="0">
-      <widget class="QLabel" name="secureLabel">
-       <property name="toolTip">
-        <string>Choose whether to use https or not.</string>
-       </property>
-       <property name="whatsThis">
-        <string>This is a checkbox that toggles between https (secure) and http (unsecure) modes for the server that is hosting ntfy, that you are connecting to. This is useful if you are selfhosting a server on a local network and can't or don't want to use https.</string>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-      </widget>
-     </item>
-     <item row="7" column="1">
-      <widget class="QCheckBox" name="secureCheckBox">
-       <property name="toolTip">
-        <string>Choose whether to use https or not.</string>
-       </property>
-       <property name="whatsThis">
-        <string>This is a checkbox that toggles between https (secure) and http (unsecure) modes for the server that is hosting ntfy, that you are connecting to. This is useful if you are selfhosting a server on a local network and can't or don't want to use https.</string>
-       </property>
-       <property name="text">
-        <string>HTTPS</string>
-       </property>
-       <property name="icon">
-        <iconset theme="lock"/>
-       </property>
-      </widget>
-     </item>
      <item row="5" column="1">
       <widget class="KPasswordLineEdit" name="authPasswordLineEdit">
        <property name="cursor">
@@ -258,6 +219,16 @@
        </property>
        <property name="whatsThis">
         <string>This is the password field.</string>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="0">
+      <widget class="QLabel" name="authTokenLabel">
+       <property name="whatsThis">
+        <string>This is the token field.</string>
+       </property>
+       <property name="text">
+        <string>Token:</string>
        </property>
       </widget>
      </item>
@@ -269,6 +240,37 @@
        <property name="whatsThis">
         <string>This is the token field.</string>
        </property>
+      </widget>
+     </item>
+     <item row="7" column="0">
+      <widget class="QLabel" name="protocolLabel">
+       <property name="text">
+        <string>Protocol:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="7" column="1">
+      <widget class="QComboBox" name="protocolComboBox">
+       <item>
+        <property name="text">
+         <string>HTTPS</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>WSS</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>HTTP</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>WS</string>
+        </property>
+       </item>
       </widget>
      </item>
     </layout>

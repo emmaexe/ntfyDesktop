@@ -82,7 +82,7 @@ void HistorySettingsDialog::fetchFromConfig() {
         nlohmann::json historyConfig = Config::data()["history"];
         if (historyConfig.is_object() && historyConfig["mode"].is_string()) {
             std::string mode = historyConfig["mode"].get<std::string>();
-            Util::toLower(mode);
+            Util::Strings::toLower(mode);
             if (mode == "all") {
                 this->mode = 0;
             } else if (mode == "number" && historyConfig["numberValue"].is_number()) {
@@ -92,7 +92,7 @@ void HistorySettingsDialog::fetchFromConfig() {
                 this->mode = 2;
                 this->recentValue = historyConfig["recentValue"].get<int>();
                 std::string recentMode = historyConfig["recentMode"].get<std::string>();
-                Util::toLower(recentMode);
+                Util::Strings::toLower(recentMode);
                 if (recentMode == "seconds") {
                     this->recentMode = 0;
                 } else if (recentMode == "minutes") {
@@ -113,7 +113,7 @@ void HistorySettingsDialog::fetchFromConfig() {
             }
             if (historyConfig["sourceMode"].is_string()) {
                 std::string mode = historyConfig["sourceMode"].get<std::string>();
-                Util::toLower(mode);
+                Util::Strings::toLower(mode);
                 if (mode == "individual") {
                     this->sourceMode = 0;
                 } else if (mode == "all") {
