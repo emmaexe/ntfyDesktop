@@ -83,6 +83,11 @@ void HistoryDialog::deleteButton() {
         DataBase db;
         db.deleteNotifications(ids);
     }
+
+    if (this->ui->notificationList->count() == 0) {
+        this->ui->notificationList->hide();
+        Util::setLayoutVisibility(this->ui->noSourcesContainer, true);
+    }
 }
 
 void HistoryDialog::selectionChanged() { this->ui->deleteButton->setEnabled(this->ui->notificationList->selectedItems().size() != 0); }
