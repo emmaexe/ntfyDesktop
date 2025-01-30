@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.10)
 project(
     ntfyDesktop
-    VERSION 1.3.0
+    VERSION 1.3.2
     DESCRIPTION "A desktop client for ntfy"
     HOMEPAGE_URL "https://github.com/emmaexe/ntfyDesktop/"
     LANGUAGES C CXX
@@ -79,7 +79,7 @@ set(CPACK_RPM_PACKAGE_DESCRIPTION "${CPACK_PACKAGE_DESCRIPTION}")
 set(CPACK_RPM_PACKAGE_AUTOREQ TRUE)
 
 set(CPACK_DEBIAN_FILE_NAME "${CPACK_PACKAGE_FILE_NAME}.deb")
-set(CPACK_DEBIAN_PACKAGE_MAINTAINER "emmaexe <emma.git@emmaexe.moe>")
+set(CPACK_DEBIAN_PACKAGE_MAINTAINER "emmaexe <contact@emmaexe.moe>")
 set(CPACK_DEBIAN_PACKAGE_SECTION "utils")
 set(CPACK_DEBIAN_PACKAGE_PRIORITY "optional")
 

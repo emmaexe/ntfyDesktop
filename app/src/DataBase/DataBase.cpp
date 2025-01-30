@@ -10,8 +10,11 @@
 #include <QUuid>
 #include <QtSql/QSqlError>
 #include <iostream>
+#include <filesystem>
 
 DataBase::DataBase() {
+    if (!std::filesystem::exists(DataBase::getDBPath()) || !std::filesystem::is_directory(DataBase::getDBPath())) { std::filesystem::create_directory(DataBase::getDBPath()); }
+
     this->connectionName = "SQliteDB_" + QUuid::createUuid().toString(QUuid::Id128).toStdString();
     this->db = QSqlDatabase::addDatabase("QSQLITE", QString::fromStdString(this->connectionName));
     this->db.setDatabaseName(QString::fromStdString(DataBase::getDBFile()));
