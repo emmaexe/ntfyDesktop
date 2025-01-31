@@ -33,6 +33,7 @@ class MainWindow: public QMainWindow {
         void restartAction();
         void importAction();
         void historyAction();
+        void pullButton();
     protected:
         void closeEvent(QCloseEvent* event) override;
         void changeEvent(QEvent* event) override;

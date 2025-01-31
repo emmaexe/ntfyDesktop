@@ -11,6 +11,7 @@
 #include <QCryptographicHash>
 #include <QEvent>
 #include <QIcon>
+#include <QPushButton>
 #include <algorithm>
 
 MainWindow::MainWindow(std::shared_ptr<ThreadManager> threadManager, KAboutData& aboutData, QWidget* parent): QMainWindow(parent), ui(new Ui::MainWindow), threadManager(threadManager) {
@@ -22,6 +23,7 @@ MainWindow::MainWindow(std::shared_ptr<ThreadManager> threadManager, KAboutData&
     QObject::connect(this->ui->importAction, &QAction::triggered, this, &MainWindow::importAction);
     QObject::connect(this->ui->restartAction, &QAction::triggered, this, &MainWindow::restartAction);
     QObject::connect(this->ui->exitAction, &QAction::triggered, this, &MainWindow::exitAction);
+    QObject::connect(this->ui->pullButton, &QPushButton::clicked, this, &MainWindow::pullButton);
 
     {
         DataBase db;
@@ -243,3 +245,5 @@ void MainWindow::historyAction() {
     HistoryDialog* dialog = new HistoryDialog(this);
     dialog->exec();
 }
+
+void MainWindow::pullButton() {}

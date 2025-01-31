@@ -92,6 +92,25 @@
        </spacer>
       </item>
       <item>
+       <widget class="QToolButton" name="pullButton">
+        <property name="toolTip">
+         <string>Pulls and fires all cached notifications from the server for all notification sources.</string>
+        </property>
+        <property name="whatsThis">
+         <string>This is a button that pulls and all cached notifications from the server for all notification sources. It then shows the notifications and updates/inserts them into the history database.</string>
+        </property>
+        <property name="text">
+         <string>Pull Notifications</string>
+        </property>
+        <property name="icon">
+         <iconset theme="download"/>
+        </property>
+        <property name="toolButtonStyle">
+         <enum>Qt::ToolButtonStyle::ToolButtonTextBesideIcon</enum>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="QToolButton" name="historyButton">
         <property name="cursor">
          <cursorShape>PointingHandCursor</cursorShape>
@@ -480,7 +499,7 @@
     <iconset theme="view-history"/>
    </property>
    <property name="text">
-    <string>History</string>
+    <string>&amp;History</string>
    </property>
   </action>
  </widget>
