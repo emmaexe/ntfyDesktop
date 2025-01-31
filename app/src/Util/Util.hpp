@@ -19,6 +19,72 @@ namespace Util {
      */
     int random(int min, int max);
 
+    namespace Strings {
+        /**
+         * @brief Split a string into a vector of strings based on a delimiter.
+         * Does not remove trailing empty strings if the source string ends with the delimiter.
+         *
+         * @param string The string getting split
+         * @param delimiter The delimiter
+         * @return std::vector<std::string> - The resulting vector of strings.
+         */
+        std::vector<std::string> split(const std::string& string, const std::string& delimiter);
+
+        /**
+         * @brief Transform a string to upper case.
+         *
+         * @param str The string
+         */
+        void toUpper(std::string& str);
+
+        /**
+         * @brief Transform a string to upper case.
+         *
+         * @param str The string
+         * @return std::string - The string but upper case.
+         */
+        std::string getUpper(const std::string& str);
+
+        /**
+         * @brief Transform a string to lower case.
+         *
+         * @param str The string
+         */
+        void toLower(std::string& str);
+
+        /**
+         * @brief Transform a string to lower case.
+         *
+         * @param str The string
+         * @return std::string - The string but lower case.
+         */
+        std::string getLower(const std::string& str);
+
+        /**
+         * @brief Check if a string contains a substring.
+         *
+         * @param str The main string
+         * @param substr The substring that the main string is being checked for
+         */
+        bool contains(const std::string& str, const std::string& substr);
+
+        /**
+         * @brief Check if a string starts with a substring.
+         *
+         * @param str The main string
+         * @param substr The substring that the main string is being checked for
+         */
+        bool startsWith(const std::string& str, const std::string& substr);
+
+        /**
+         * @brief Check if a string ends with a substring.
+         *
+         * @param str The main string
+         * @param substr The substring that the main string is being checked for
+         */
+        bool endsWith(const std::string& str, const std::string& substr);
+    }
+
     /**
      * @brief Get a random, commonly used user agent.
      *
@@ -26,16 +92,6 @@ namespace Util {
      * @return std::string - The user agent.
      */
     std::string getRandomUA(int limit = 3);
-
-    /**
-     * @brief Split a string into a vector of strings based on a delimiter.
-     * Does not remove trailing empty strings if the source string ends with the delimiter.
-     *
-     * @param string The string getting split
-     * @param delimiter The delimiter
-     * @return std::vector<std::string> - The resulting vector of strings.
-     */
-    std::vector<std::string> split(const std::string& string, const std::string& delimiter);
 
     /**
      * @brief Check if a string contains a valid ntfy domain
@@ -97,20 +153,4 @@ namespace Util {
      * @return std::string - A formatted string of the given unix time
      */
     std::string timeToString(const std::time_t& time);
-
-    /**
-     * @brief Transform a string to upper case.
-     *
-     * @param str The string
-     * @return std::string - The string but upper case.
-     */
-    void toUpper(std::string& str);
-
-    /**
-     * @brief Transform a string to lower case.
-     *
-     * @param str The string
-     * @return std::string - The string but lower case.
-     */
-    void toLower(std::string& str);
 }

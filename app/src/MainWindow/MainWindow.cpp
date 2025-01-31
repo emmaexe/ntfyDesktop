@@ -28,7 +28,7 @@ MainWindow::MainWindow(std::shared_ptr<ThreadManager> threadManager, KAboutData&
         nlohmann::json sources = Config::data()["sources"];
         for (int i = 0; i < sources.size(); i++) {
             this->tabs.push_back(
-                new ConfigTab(sources[i]["name"], sources[i]["domain"], sources[i]["topic"], db.getAuth(Util::topicHash(sources[i]["domain"], sources[i]["topic"])), sources[i]["secure"], this)
+                new ConfigTab(sources[i]["name"], sources[i]["protocol"], sources[i]["domain"], sources[i]["topic"], db.getAuth(Util::topicHash(sources[i]["domain"], sources[i]["topic"])), this)
             );
             this->ui->tabs->addTab(this->tabs.at(i), this->tabs.at(i)->getName().c_str());
         }
@@ -72,7 +72,7 @@ MainWindow::~MainWindow() { delete ui, tray; }
 
 void MainWindow::ntfyProtocolTriggered(ParsedURL url) {
     if (url.protocol() == "ntfy") {
-        this->tabs.push_back(new ConfigTab("New Notification Source " + std::to_string(this->newTabCounter), url.domain(), url.path()[0], AuthConfig(), true, this));
+        this->tabs.push_back(new ConfigTab("New Notification Source " + std::to_string(this->newTabCounter), url.protocol(), url.domain(), url.path()[0], AuthConfig(), this));
         this->newTabCounter++;
         this->ui->tabs->addTab(this->tabs.at(this->tabs.size() - 1), this->tabs.at(this->tabs.size() - 1)->getName().c_str());
         this->ui->tabs->setCurrentIndex(this->tabs.size() - 1);
@@ -85,6 +85,7 @@ void MainWindow::ntfyProtocolTriggered(ParsedURL url) {
 }
 
 void MainWindow::saveAction() {
+    nlohmann::json previous = Config::data()["sources"];
     Config::data()["sources"] = nlohmann::json::array();
     std::map<std::string, AuthConfig> seen;
 
@@ -96,12 +97,14 @@ void MainWindow::saveAction() {
             this->ui->tabs->setTabText(i, QString::fromStdString(tabName));
             this->ui->tabs->setCurrentIndex(i);
             this->ui->statusBar->showMessage(QStatusBar::tr("⚠️ Duplicate configuration found. Did not save."), 5000);
+            Config::data()["sources"] = previous;
             return;
         } else if (!Util::isDomain(tab->getDomain()) || !Util::isTopic(tab->getTopic())) {
             std::string tabName = "⚠️" + tab->getName();
             this->ui->tabs->setTabText(i, QString::fromStdString(tabName));
             this->ui->tabs->setCurrentIndex(i);
             this->ui->statusBar->showMessage(QStatusBar::tr("⚠️ Invalid domain or topic. Did not save."), 5000);
+            Config::data()["sources"] = previous;
             return;
         } else {
             seen[topicHash] = tab->getAuth();
@@ -110,7 +113,7 @@ void MainWindow::saveAction() {
             tabData["name"] = tab->getName();
             tabData["domain"] = tab->getDomain();
             tabData["topic"] = tab->getTopic();
-            tabData["secure"] = tab->getSecure();
+            tabData["protocol"] = tab->getProtocol();
             Config::data()["sources"].push_back(tabData);
         }
     }
@@ -131,7 +134,7 @@ void MainWindow::addAction() {
         this->ui->tabs->show();
         Util::setLayoutVisibility(this->ui->noSourcesContainer, false);
     }
-    this->tabs.push_back(new ConfigTab("New Notification Source " + std::to_string(this->newTabCounter), "", "", AuthConfig(), true, this));
+    this->tabs.push_back(new ConfigTab("New Notification Source " + std::to_string(this->newTabCounter), "https", "", "", AuthConfig(), this));
     this->newTabCounter++;
     this->ui->tabs->addTab(this->tabs.at(this->tabs.size() - 1), this->tabs.at(this->tabs.size() - 1)->getName().c_str());
     this->ui->tabs->setCurrentIndex(this->tabs.size() - 1);
@@ -209,7 +212,7 @@ void MainWindow::restartAction() {
     nlohmann::json sources = Config::data()["sources"];
     for (int i = 0; i < sources.size(); i++) {
         this->tabs.push_back(
-            new ConfigTab(sources[i]["name"], sources[i]["domain"], sources[i]["topic"], db.getAuth(Util::topicHash(sources[i]["domain"], sources[i]["topic"])), sources[i]["secure"], this)
+            new ConfigTab(sources[i]["name"], sources[i]["protocol"], sources[i]["domain"], sources[i]["topic"], db.getAuth(Util::topicHash(sources[i]["domain"], sources[i]["topic"])), this)
         );
         this->ui->tabs->addTab(this->tabs.at(i), this->tabs.at(i)->getName().c_str());
     }

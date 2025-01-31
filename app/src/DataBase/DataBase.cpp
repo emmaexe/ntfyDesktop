@@ -89,7 +89,7 @@ DataBase::DataBase() {
             nlohmann::json historyConfig = Config::data()["history"];
             if (historyConfig.is_object() && historyConfig["mode"].is_string()) {
                 std::string configMode = historyConfig["mode"].get<std::string>();
-                Util::toLower(configMode);
+                Util::Strings::toLower(configMode);
                 if (configMode == "all") {
                     mode = 0;
                 } else if (configMode == "number" && historyConfig["numberValue"].is_number()) {
@@ -99,7 +99,7 @@ DataBase::DataBase() {
                     mode = 2;
                     recentValue = historyConfig["recentValue"].get<int>();
                     std::string configRecentMode = historyConfig["recentMode"].get<std::string>();
-                    Util::toLower(configRecentMode);
+                    Util::Strings::toLower(configRecentMode);
                     if (configRecentMode == "seconds") {
                         recentMode = 0;
                     } else if (configRecentMode == "minutes") {
@@ -120,7 +120,7 @@ DataBase::DataBase() {
                 }
                 if (historyConfig["sourceMode"].is_string()) {
                     std::string modeStr = historyConfig["sourceMode"].get<std::string>();
-                    Util::toLower(modeStr);
+                    Util::Strings::toLower(modeStr);
                     if (modeStr == "individual") {
                         sourceMode = 0;
                     } else if (modeStr == "all") {

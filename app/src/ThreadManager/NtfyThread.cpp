@@ -15,9 +15,12 @@
 const int maxRetries = 3;
 const int connectionLostTimeouts[] = { 1000, 1000, 5000 };
 
-NtfyThread::NtfyThread(std::string name, std::string domain, std::string topic, AuthConfig authConfig, bool secure, int lastTimestamp, std::mutex* mutex):
-    internalName(name), internalDomain(domain), internalTopic(topic), internalAuthConfig(authConfig), internalSecure(secure), lastTimestamp(lastTimestamp), mutex(mutex) {
-    this->url = (secure ? "https://" : "http://") + domain + "/" + topic + "/json";
+NtfyThread::NtfyThread(std::string name, std::string protocol, std::string domain, std::string topic, AuthConfig authConfig, int lastTimestamp, std::mutex* mutex):
+    internalName(name), internalDomain(domain), internalTopic(topic), internalAuthConfig(authConfig), internalProtocol(protocol), lastTimestamp(lastTimestamp), mutex(mutex) {
+    if (!(this->internalProtocol == "https" || this->internalProtocol == "http" || this->internalProtocol == "wss" || this->internalProtocol == "ws")) {
+        this->internalProtocol = "https";
+    }
+    this->url = this->internalProtocol + "://" + this->internalDomain + "/" + this->internalTopic + (Util::Strings::startsWith(this->internalProtocol, "ws") ? "/ws" : "/json");
     this->thread = std::thread(&NtfyThread::run, this);
 }
 
@@ -52,7 +55,7 @@ void NtfyThread::run() {
 
         std::string currentUrl = this->url + "?since=" + (this->lastTimestamp > 0 ? std::to_string(this->lastTimestamp + 1) : "all");
         curl_easy_setopt(curlHandle, CURLOPT_URL, currentUrl.c_str());
-        
+
         CURLcode res = curl_easy_perform(curlHandle);
         if (res != CURLE_OK && res != CURLE_ABORTED_BY_CALLBACK && res != CURLE_WRITE_ERROR) { std::cerr << "curl error: " << curl_easy_strerror(res) << std::endl; }
         if (this->running) { this->internalErrorCounter++; }
@@ -75,7 +78,7 @@ void NtfyThread::stop() {
 
 size_t NtfyThread::writeCallback(char* ptr, size_t size, size_t nmemb, void* userdata) {
     NtfyThread* this_p = static_cast<NtfyThread*>(userdata);
-    std::vector<std::string> data = Util::split(std::string(ptr, size * nmemb), "\n");
+    std::vector<std::string> data = Util::Strings::split(std::string(ptr, size * nmemb), "\n");
 
     if (!this_p->running) { return 0; }
 
@@ -119,10 +122,10 @@ int NtfyThread::progressCallback(void* clientp, curl_off_t dltotal, curl_off_t d
 
 const std::string& NtfyThread::name() { return this->internalName; }
 
+const std::string& NtfyThread::protocol() { return this->internalProtocol; }
+
 const std::string& NtfyThread::domain() { return this->internalDomain; }
 
 const std::string& NtfyThread::topic() { return this->internalTopic; }
 
 const AuthConfig& NtfyThread::authConfig() { return this->internalAuthConfig; }
-
-const bool NtfyThread::secure() { return this->internalSecure; }

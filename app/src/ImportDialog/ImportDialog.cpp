@@ -42,7 +42,7 @@ void ImportDialog::fileSelectButton() {
                         entry["name"] = source.contains("displayName") ? std::string(source["displayName"]) : "Imported Notification Source " + std::to_string(entryCounter);
                         entry["domain"] = parsedUrl.domain();
                         entry["topic"] = source["topic"];
-                        entry["secure"] = !(parsedUrl.protocol() == "http");
+                        entry["protocol"] = (parsedUrl.protocol() == "http" || parsedUrl.protocol() == "https" || parsedUrl.protocol() == "ws" || parsedUrl.protocol() == "wss") ? parsedUrl.protocol() : "https";
                         this->internalTempConfig["sources"].push_back(entry);
                         entryCounter++;
                     }

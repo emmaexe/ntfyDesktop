@@ -9,12 +9,12 @@
 
 #include <iostream>
 
-ConfigTab::ConfigTab(std::string name, std::string domain, std::string topic, AuthConfig authConfig, bool secure, QWidget* parent): QWidget(parent), ui(new Ui::ConfigTab) {
+ConfigTab::ConfigTab(std::string name, std::string protocol, std::string domain, std::string topic, AuthConfig authConfig, QWidget* parent): QWidget(parent), ui(new Ui::ConfigTab) {
     this->ui->setupUi(this);
     this->ui->nameLineEdit->setText(QString::fromStdString(name));
     this->ui->domainLineEdit->setText(QString::fromStdString(domain));
     this->ui->topicLineEdit->setText(QString::fromStdString(topic));
-    this->ui->secureCheckBox->setChecked(secure);
+    this->ui->protocolComboBox->setCurrentIndex(this->ui->protocolComboBox->findText(QString::fromStdString(Util::Strings::getUpper(protocol))));
 
     this->ui->authUsernameLabel->hide();
     this->ui->authUsernameLineEdit->hide();
@@ -50,7 +50,7 @@ std::string ConfigTab::getDomain() { return this->ui->domainLineEdit->text().toS
 
 std::string ConfigTab::getTopic() { return this->ui->topicLineEdit->text().toStdString(); }
 
-bool ConfigTab::getSecure() { return this->ui->secureCheckBox->isChecked(); }
+std::string ConfigTab::getProtocol() { return Util::Strings::getLower(this->ui->protocolComboBox->currentText().toStdString()); }
 
 AuthConfig ConfigTab::getAuth() {
     AuthConfig config;
@@ -83,7 +83,7 @@ void ConfigTab::testButton() {
     this->ui->testLabel->show();
 
     QThread* thread = new QThread;
-    ConnectionTester* tester = new ConnectionTester(this->getName(), this->getDomain(), this->getTopic(), this->getAuth(), this->getSecure(), this->lastTestMessage);
+    ConnectionTester* tester = new ConnectionTester(this->getName(), this->getProtocol(), this->getDomain(), this->getTopic(), this->getAuth(), this->lastTestMessage);
     tester->moveToThread(thread);
 
     connect(thread, &QThread::started, tester, &ConnectionTester::runTest);
@@ -134,12 +134,12 @@ void ConfigTab::authTypeChanged(int index) {
     }
 }
 
-ConnectionTester::ConnectionTester(const std::string& name, const std::string& domain, const std::string& topic, const AuthConfig& authConfig, const bool& secure, std::string& testMessage): name(name), domain(domain), topic(topic), authConfig(authConfig), secure(secure), testMessage(testMessage) {}
+ConnectionTester::ConnectionTester(const std::string& name, const std::string& protocol, const std::string& domain, const std::string& topic, const AuthConfig& authConfig, std::string& testMessage): name(name), domain(domain), topic(topic), authConfig(authConfig), protocol(protocol), testMessage(testMessage) {}
 
 void ConnectionTester::runTest() {
     this->testSuccessful = false;
     this->testMessage = "Connection failed.";
-    std::string url = (this->secure ? "https://" : "http://") + this->domain + "/" + this->topic + "/json";
+    std::string url = this->protocol + "://" + this->domain + "/" + this->topic + (Util::Strings::startsWith(this->protocol, "ws") ? "/ws" : "/json");
 
     CURL* curlHandle = curl_easy_init();
     char curlError[CURL_ERROR_SIZE] = "";
@@ -170,7 +170,7 @@ void ConnectionTester::runTest() {
 
 size_t ConnectionTester::writeCallback(char* ptr, size_t size, size_t nmemb, void* userdata) {
     ConnectionTester* this_p = static_cast<ConnectionTester*>(userdata);
-    std::vector<std::string> data = Util::split(std::string(ptr, size * nmemb), "\n");
+    std::vector<std::string> data = Util::Strings::split(std::string(ptr, size * nmemb), "\n");
 
     for (std::string& line: data) {
         if (line.empty()) { continue; }
@@ -183,7 +183,7 @@ size_t ConnectionTester::writeCallback(char* ptr, size_t size, size_t nmemb, voi
             } else if (jsonData.contains("code")) {
                 this_p->testSuccessful = false;
                 std::string code = std::to_string(static_cast<int>(jsonData["code"]));
-                if (code.rfind("401", 0) == 0) {
+                if (Util::Strings::startsWith(code, "401")) {
                     this_p->testMessage = "Connection failed (Error " + code + "). Check your authentication method.";
                 } else {
                     this_p->testMessage = "Connection failed (Error " + code + ").";
