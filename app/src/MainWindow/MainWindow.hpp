@@ -34,6 +34,7 @@ class MainWindow: public QMainWindow {
         void importAction();
         void historyAction();
         void pullButton();
+        void pullButtonResults(const bool success);
     protected:
         void closeEvent(QCloseEvent* event) override;
         void changeEvent(QEvent* event) override;
@@ -46,4 +47,17 @@ class MainWindow: public QMainWindow {
         QMenu* trayMenu;
         QAction* showHideQAction;
         KHelpMenu* helpMenu;
+        QTimer* pullButtonTimer;
+};
+
+class NotificationPuller: public QObject {
+        Q_OBJECT
+    public:
+        NotificationPuller(const nlohmann::json& sources);
+    public slots:
+        void run();
+    signals:
+        void complete(const bool success);
+    private:
+        const nlohmann::json sources;
 };

@@ -508,9 +508,12 @@
   <tabstop>saveButton</tabstop>
   <tabstop>addButton</tabstop>
   <tabstop>removeButton</tabstop>
+  <tabstop>pullButton</tabstop>
+  <tabstop>historyButton</tabstop>
   <tabstop>restartButton</tabstop>
   <tabstop>tabs</tabstop>
   <tabstop>dummyAddButton</tabstop>
+  <tabstop>dummyRestartButton</tabstop>
  </tabstops>
  <resources>
   <include location="../../resources/resources.qrc"/>
