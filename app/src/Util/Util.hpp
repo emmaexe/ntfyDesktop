@@ -1,5 +1,7 @@
 #pragma once
 
+#include <QAbstractButton>
+#include <QLabel>
 #include <QLayout>
 #include <QWidget>
 #include <ctime>
@@ -126,6 +128,8 @@ namespace Util {
      * @brief Color related functions for dynamic theme handling
      */
     namespace Colors {
+        enum ColorMode { Failure, Success, Normal };
+        void setButtonColor(QAbstractButton& button, ColorMode mode = ColorMode::Normal);
         const QColor textColor();
         const QColor textColorSuccess();
         const QColor textColorFailure();

@@ -11,6 +11,8 @@
 #include <QPushButton>
 #include <QThread>
 
+using Util::Colors::ColorMode;
+
 NotificationListItem::NotificationListItem(
     const std::string& id, const std::string& server, const std::string& topic, const int& timestamp, const std::string& title, const std::string& message, const std::string& rawData, QWidget* parent
 ):
@@ -95,10 +97,7 @@ NotificationListItem::NotificationListItem(
                                     &AsyncCurlRequest::completed,
                                     this,
                                     [this, &button](bool success) {
-                                        QPalette palette = button->palette();
-                                        palette.setColor(QPalette::Button, (success ? Util::Colors::buttonColorSuccess() : Util::Colors::buttonColorFailure()));
-                                        palette.setColor(QPalette::ButtonText, (success ? Util::Colors::buttonTextColorSuccess() : Util::Colors::buttonTextColorFailure()));
-                                        button->setPalette(palette);
+                                        Util::Colors::setButtonColor(*button, (success ? ColorMode::Success : ColorMode::Failure));
                                         button->setEnabled(true);
                                     },
                                     Qt::QueuedConnection
