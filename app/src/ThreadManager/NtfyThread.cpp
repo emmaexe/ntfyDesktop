@@ -15,11 +15,9 @@
 const int maxRetries = 3;
 const int connectionLostTimeouts[] = { 1000, 1000, 5000 };
 
-NtfyThread::NtfyThread(std::string name, std::string protocol, std::string domain, std::string topic, AuthConfig authConfig, int lastTimestamp, std::mutex* mutex):
-    internalName(name), internalDomain(domain), internalTopic(topic), internalAuthConfig(authConfig), internalProtocol(protocol), lastTimestamp(lastTimestamp), mutex(mutex) {
-    if (!(this->internalProtocol == "https" || this->internalProtocol == "http" || this->internalProtocol == "wss" || this->internalProtocol == "ws")) {
-        this->internalProtocol = "https";
-    }
+NtfyThread::NtfyThread(std::string name, std::string protocol, std::string domain, std::string topic, AuthConfig authConfig, int lastTimestamp, std::mutex* mutex, bool pollMode):
+    internalName(name), internalDomain(domain), internalTopic(topic), internalAuthConfig(authConfig), internalProtocol(protocol), lastTimestamp(lastTimestamp), mutex(mutex), pollMode(pollMode) {
+    if (!(this->internalProtocol == "https" || this->internalProtocol == "http" || this->internalProtocol == "wss" || this->internalProtocol == "ws")) { this->internalProtocol = "https"; }
     this->url = this->internalProtocol + "://" + this->internalDomain + "/" + this->internalTopic + (Util::Strings::startsWith(this->internalProtocol, "ws") ? "/ws" : "/json");
     this->thread = std::thread(&NtfyThread::run, this);
 }
@@ -50,20 +48,30 @@ void NtfyThread::run() {
     curl_easy_setopt(curlHandle, CURLOPT_USERAGENT, ND_USERAGENT);
     curl_easy_setopt(curlHandle, CURLOPT_HTTPHEADER, headers);
 
-    while (this->running && this->internalErrorCounter <= maxRetries) {
-        if (this->internalErrorCounter > 0) { std::this_thread::sleep_for(std::chrono::milliseconds(connectionLostTimeouts[this->internalErrorCounter - 1])); }
-
-        std::string currentUrl = this->url + "?since=" + (this->lastTimestamp > 0 ? std::to_string(this->lastTimestamp + 1) : "all");
+    if (this->pollMode) {
+        std::string currentUrl = this->url + "?poll=1&since=all";
         curl_easy_setopt(curlHandle, CURLOPT_URL, currentUrl.c_str());
 
         CURLcode res = curl_easy_perform(curlHandle);
-        if (res != CURLE_OK && res != CURLE_ABORTED_BY_CALLBACK && res != CURLE_WRITE_ERROR) { std::cerr << "curl error: " << curl_easy_strerror(res) << std::endl; }
-        if (this->running) { this->internalErrorCounter++; }
+        if (res != CURLE_OK && res != CURLE_ABORTED_BY_CALLBACK && res != CURLE_WRITE_ERROR) { this->internalErrorCounter++; }
+
+        this->running = false;
+    } else {
+        while (this->running && this->internalErrorCounter <= maxRetries) {
+            if (this->internalErrorCounter > 0) { std::this_thread::sleep_for(std::chrono::milliseconds(connectionLostTimeouts[this->internalErrorCounter - 1])); }
+
+            std::string currentUrl = this->url + "?since=" + (this->lastTimestamp > 0 ? std::to_string(this->lastTimestamp + 1) : "all");
+            curl_easy_setopt(curlHandle, CURLOPT_URL, currentUrl.c_str());
+
+            CURLcode res = curl_easy_perform(curlHandle);
+            if (res != CURLE_OK && res != CURLE_ABORTED_BY_CALLBACK && res != CURLE_WRITE_ERROR) { std::cerr << "curl error: " << curl_easy_strerror(res) << std::endl; }
+            if (this->running) { this->internalErrorCounter++; }
+        }
     }
 
     curl_easy_cleanup(curlHandle);
 
-    if (internalErrorCounter > maxRetries) {
+    if (internalErrorCounter > maxRetries && !pollMode) {
         this->running = false;
         const std::string title = "Unable to connect to " + this->internalName;
         const std::string message = "Maximum retries exceeded for notification source \"" + this->internalName + "\" (" + this->url + ")";
@@ -76,6 +84,10 @@ void NtfyThread::stop() {
     if (this->thread.joinable()) { this->thread.join(); }
 }
 
+void NtfyThread::waitForStop() {
+    if (this->thread.joinable()) { this->thread.join(); }
+}
+
 size_t NtfyThread::writeCallback(char* ptr, size_t size, size_t nmemb, void* userdata) {
     NtfyThread* this_p = static_cast<NtfyThread*>(userdata);
     std::vector<std::string> data = Util::Strings::split(std::string(ptr, size * nmemb), "\n");
@@ -84,7 +96,7 @@ size_t NtfyThread::writeCallback(char* ptr, size_t size, size_t nmemb, void* use
 
     DataBase db;
 
-    for (std::string& line: data) {
+    for (const std::string& line: data) {
         if (line.empty()) { continue; }
         try {
             nlohmann::json jsonData = nlohmann::json::parse(line);
@@ -92,9 +104,7 @@ size_t NtfyThread::writeCallback(char* ptr, size_t size, size_t nmemb, void* use
                 this_p->lastTimestamp = jsonData["time"].get<int>();
                 try {
                     NtfyNotification notification(jsonData, this_p->internalDomain, this_p->internalTopic);
-                    QMetaObject::invokeMethod(QApplication::instance(), [notification]() {
-                        NotificationManager::generalNotification(notification);
-                    });
+                    QMetaObject::invokeMethod(QApplication::instance(), [notification]() { NotificationManager::generalNotification(notification); });
                     db.enqueueNotification(notification);
                 } catch (const NtfyNotificationException& e) {
                     this_p->mutex->lock();
@@ -119,6 +129,8 @@ int NtfyThread::progressCallback(void* clientp, curl_off_t dltotal, curl_off_t d
 
     return this_p->running ? 0 : 1;
 }
+
+const bool NtfyThread::hasError() { return this->internalErrorCounter != 0; }
 
 const std::string& NtfyThread::name() { return this->internalName; }
 

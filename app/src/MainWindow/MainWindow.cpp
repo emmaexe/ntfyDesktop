@@ -11,7 +11,11 @@
 #include <QCryptographicHash>
 #include <QEvent>
 #include <QIcon>
+#include <QPushButton>
 #include <algorithm>
+#include <iostream>
+
+using Util::Colors::ColorMode;
 
 MainWindow::MainWindow(std::shared_ptr<ThreadManager> threadManager, KAboutData& aboutData, QWidget* parent): QMainWindow(parent), ui(new Ui::MainWindow), threadManager(threadManager) {
     this->ui->setupUi(this);
@@ -22,6 +26,7 @@ MainWindow::MainWindow(std::shared_ptr<ThreadManager> threadManager, KAboutData&
     QObject::connect(this->ui->importAction, &QAction::triggered, this, &MainWindow::importAction);
     QObject::connect(this->ui->restartAction, &QAction::triggered, this, &MainWindow::restartAction);
     QObject::connect(this->ui->exitAction, &QAction::triggered, this, &MainWindow::exitAction);
+    QObject::connect(this->ui->pullButton, &QPushButton::clicked, this, &MainWindow::pullButton);
 
     {
         DataBase db;
@@ -59,6 +64,12 @@ MainWindow::MainWindow(std::shared_ptr<ThreadManager> threadManager, KAboutData&
     this->helpMenu = new KHelpMenu(this, aboutData);
     this->helpMenu->action(KHelpMenu::MenuId::menuAboutApp)->setIcon(QIcon(QStringLiteral(":/icons/ntfyDesktop.svg")));
     this->ui->menuBar->addMenu(this->helpMenu->menu());
+
+    this->pullButtonTimer = new QTimer(this);
+    this->pullButtonTimer->setSingleShot(true);
+    QObject::connect(this->pullButtonTimer, &QTimer::timeout, [this](){
+        Util::Colors::setButtonColor(*this->ui->pullButton, ColorMode::Normal);
+    });
 
     if (this->tabs.size() == 0) {
         this->show();
@@ -242,4 +253,53 @@ void MainWindow::importAction() {
 void MainWindow::historyAction() {
     HistoryDialog* dialog = new HistoryDialog(this);
     dialog->exec();
+}
+
+void MainWindow::pullButton() {
+    this->pullButtonTimer->stop();
+    Util::Colors::setButtonColor(*this->ui->pullButton, ColorMode::Normal);
+    this->ui->pullButton->setEnabled(false);
+
+    QThread* thread = new QThread;
+    NotificationPuller* notificationPuller = new NotificationPuller(Config::data()["sources"]);
+    notificationPuller->moveToThread(thread);
+
+    connect(thread, &QThread::started, notificationPuller, &NotificationPuller::run);
+    connect(notificationPuller, &NotificationPuller::complete, this, &MainWindow::pullButtonResults);
+
+    connect(notificationPuller, &NotificationPuller::complete, notificationPuller, &NotificationPuller::deleteLater);
+    connect(notificationPuller, &NotificationPuller::complete, thread, &QThread::quit);
+    connect(thread, &QThread::finished, thread, &QThread::deleteLater);
+
+    thread->start();
+}
+
+void MainWindow::pullButtonResults(const bool success) {
+    Util::Colors::setButtonColor(*this->ui->pullButton, (success ? ColorMode::Success : ColorMode::Failure));
+    this->ui->pullButton->setEnabled(true);
+    this->pullButtonTimer->start(5000);
+}
+
+NotificationPuller::NotificationPuller(const nlohmann::json& sources): sources(sources) {}
+
+void NotificationPuller::run() {
+    bool error = false;
+    std::vector<std::unique_ptr<NtfyThread>> threads;
+    std::mutex mutex;
+    if (this->sources.is_array()) {
+        DataBase db;
+        for (const nlohmann::json& source: this->sources) {
+            try {
+                int lastTimestamp = -1;
+                std::string name = source["name"].get<std::string>(), protocol = source["protocol"].get<std::string>(), domain = source["domain"].get<std::string>(), topic = source["topic"].get<std::string>(), topicHash = Util::topicHash(domain, topic);
+                AuthConfig authConfig = db.getAuth(topicHash);
+                threads.push_back(std::make_unique<NtfyThread>(name, protocol, domain, topic, authConfig, -1, &mutex, true));
+            } catch (const nlohmann::json::out_of_range& e) { std::cerr << "Invalid source in config, ignoring: " << source << std::endl; }
+        }
+    }
+    for (std::unique_ptr<NtfyThread>& thread: threads) {
+        thread->waitForStop();
+        error = error || thread->hasError();
+    }
+    emit complete(!error);
 }

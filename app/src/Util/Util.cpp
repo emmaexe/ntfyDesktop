@@ -75,7 +75,7 @@ namespace Util {
 
         bool startsWith(const std::string& str, const std::string& substr) { return str.size() >= substr.size() && str.compare(0, substr.size(), substr) == 0; }
 
-        bool endsWith(const std::string& str, const std::string& substr) { return str.size() >= substr.size() && str.compare(str.size()-substr.size(), substr.size(), substr) == 0; }
+        bool endsWith(const std::string& str, const std::string& substr) { return str.size() >= substr.size() && str.compare(str.size() - substr.size(), substr.size(), substr) == 0; }
     }
 
     bool isDomain(const std::string& domain) { return std::regex_match(domain, std::regex("^[-.0-9:A-Za-z]+$")); }
@@ -128,6 +128,24 @@ namespace Util {
     }
 
     namespace Colors {
+        void setButtonColor(QAbstractButton& button, ColorMode mode) {
+            QPalette palette = button.palette();
+            QColor buttonColor, buttonTextColor;
+            if (mode == ColorMode::Normal) {
+                buttonColor = Util::Colors::buttonColor();
+                buttonTextColor = Util::Colors::buttonTextColor();
+            } else if (mode == ColorMode::Success) {
+                buttonColor = Util::Colors::buttonColorSuccess();
+                buttonTextColor = Util::Colors::buttonTextColorSuccess();
+            } else if (mode == ColorMode::Failure) {
+                buttonColor = Util::Colors::buttonColorFailure();
+                buttonTextColor = Util::Colors::buttonTextColorFailure();
+            }
+            palette.setColor(QPalette::Button, buttonColor);
+            palette.setColor(QPalette::ButtonText, buttonTextColor);
+            button.setPalette(palette);
+        }
+
         const QColor colorShiftSuccess(const QColor& base) {
             float h, s, l, a;
             base.getHslF(&h, &s, &l, &a);
