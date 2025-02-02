@@ -64,6 +64,8 @@ You can also download the [latest release](https://github.com/emmaexe/ntfyDeskto
 
 ![Third screenshot](https://raw.githubusercontent.com/emmaexe/ntfyDesktop/main/assets/screenshot3.png)
 
+![Fourth screenshot](https://raw.githubusercontent.com/emmaexe/ntfyDesktop/main/assets/screenshot4.png)
+
 ## Want to contribute? Found a bug? Have a question?
 
 [<img alt="github-plural" height="56" src="https://raw.githubusercontent.com/emmaexe/devins-badges/v3/assets/cozy/social/github-plural_vector.svg">](https://github.com/emmaexe/ntfyDesktop/issues)
