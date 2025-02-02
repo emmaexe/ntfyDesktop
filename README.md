@@ -51,8 +51,8 @@ sudo apt install ntfydesktop
 
 ### Manual installation
 
-[<img alt="fedora" height="56" src="https://raw.githubusercontent.com/emmaexe/devins-badges/v3/assets/cozy/available/fedora_vector.svg">](https://github.com/emmaexe/ntfyDesktop/releases/download/v1.3.2/ntfyDesktop-1.3.2.rpm)
-[<img alt="ubuntu" height="56" src="https://raw.githubusercontent.com/emmaexe/devins-badges/v3/assets/cozy/available/ubuntu_vector.svg">](https://github.com/emmaexe/ntfyDesktop/releases/download/v1.3.2/ntfyDesktop-1.3.2.deb)
+[<img alt="fedora" height="56" src="https://raw.githubusercontent.com/emmaexe/devins-badges/v3/assets/cozy/available/fedora_vector.svg">](https://github.com/emmaexe/ntfyDesktop/releases/download/v1.4.0/ntfyDesktop-1.4.0.rpm)
+[<img alt="ubuntu" height="56" src="https://raw.githubusercontent.com/emmaexe/devins-badges/v3/assets/cozy/available/ubuntu_vector.svg">](https://github.com/emmaexe/ntfyDesktop/releases/download/v1.4.0/ntfyDesktop-1.4.0.deb)
 
 You can also download the [latest release](https://github.com/emmaexe/ntfyDesktop/releases/latest) for manual installation.
 
@@ -63,6 +63,8 @@ You can also download the [latest release](https://github.com/emmaexe/ntfyDeskto
 ![Second screenshot](https://raw.githubusercontent.com/emmaexe/ntfyDesktop/main/assets/screenshot2.png)
 
 ![Third screenshot](https://raw.githubusercontent.com/emmaexe/ntfyDesktop/main/assets/screenshot3.png)
+
+![Fourth screenshot](https://raw.githubusercontent.com/emmaexe/ntfyDesktop/main/assets/screenshot4.png)
 
 ## Want to contribute? Found a bug? Have a question?
 
