@@ -37,6 +37,10 @@
     </screenshot>
     <screenshot>
       <image>https://raw.githubusercontent.com/emmaexe/ntfyDesktop/main/assets/screenshot3.png</image>
+      <caption>The notification history menu.</caption>
+    </screenshot>
+    <screenshot>
+      <image>https://raw.githubusercontent.com/emmaexe/ntfyDesktop/main/assets/screenshot4.png</image>
       <caption>A notification arriving after being sent using cURL.</caption>
     </screenshot>
   </screenshots>
