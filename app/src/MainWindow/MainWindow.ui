@@ -93,6 +93,9 @@
       </item>
       <item>
        <widget class="QToolButton" name="pullButton">
+        <property name="cursor">
+         <cursorShape>PointingHandCursor</cursorShape>
+        </property>
         <property name="toolTip">
          <string>Pulls and fires all cached notifications from the server for all notification sources.</string>
         </property>
@@ -139,6 +142,28 @@
         </property>
         <property name="icon">
          <iconset theme="view-refresh"/>
+        </property>
+        <property name="toolButtonStyle">
+         <enum>Qt::ToolButtonStyle::ToolButtonTextBesideIcon</enum>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QToolButton" name="preferencesButton">
+        <property name="cursor">
+         <cursorShape>PointingHandCursor</cursorShape>
+        </property>
+        <property name="toolTip">
+         <string>Opens the general preferences window.</string>
+        </property>
+        <property name="whatsThis">
+         <string>This is a button that opens the general preferences window.</string>
+        </property>
+        <property name="text">
+         <string>Preferences</string>
+        </property>
+        <property name="icon">
+         <iconset theme="settings-configure"/>
         </property>
         <property name="toolButtonStyle">
          <enum>Qt::ToolButtonStyle::ToolButtonTextBesideIcon</enum>
@@ -410,6 +435,7 @@
     <addaction name="historyAction"/>
     <addaction name="importAction"/>
     <addaction name="separator"/>
+    <addaction name="preferencesAction"/>
     <addaction name="restartAction"/>
     <addaction name="exitAction"/>
    </widget>
@@ -502,6 +528,14 @@
     <string>&amp;History</string>
    </property>
   </action>
+  <action name="preferencesAction">
+   <property name="icon">
+    <iconset theme="settings-configure"/>
+   </property>
+   <property name="text">
+    <string>&amp;Preferences</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <tabstops>
@@ -591,6 +625,22 @@
    <hints>
     <hint type="sourcelabel">
      <x>660</x>
+     <y>53</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>preferencesButton</sender>
+   <signal>clicked()</signal>
+   <receiver>preferencesAction</receiver>
+   <slot>trigger()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>738</x>
      <y>53</y>
     </hint>
     <hint type="destinationlabel">
