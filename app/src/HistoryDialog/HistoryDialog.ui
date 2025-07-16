@@ -57,19 +57,6 @@
          </property>
         </spacer>
        </item>
-       <item>
-        <widget class="QToolButton" name="historySettingsButton">
-         <property name="text">
-          <string>History Settings</string>
-         </property>
-         <property name="icon">
-          <iconset theme="configure"/>
-         </property>
-         <property name="toolButtonStyle">
-          <enum>Qt::ToolButtonStyle::ToolButtonTextBesideIcon</enum>
-         </property>
-        </widget>
-       </item>
       </layout>
      </item>
     </layout>
@@ -273,7 +260,6 @@
  </widget>
  <tabstops>
   <tabstop>deleteButton</tabstop>
-  <tabstop>historySettingsButton</tabstop>
   <tabstop>notificationList</tabstop>
  </tabstops>
  <resources>

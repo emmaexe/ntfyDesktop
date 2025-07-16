@@ -3,7 +3,6 @@
 #include "../Config/Config.hpp"
 #include "../DataBase/DataBase.hpp"
 #include "../Util/Util.hpp"
-#include "./HistorySettingsDialog.hpp"
 #include "ui_HistoryDialog.h"
 
 #include <nlohmann/json.hpp>
@@ -11,7 +10,6 @@
 HistoryDialog::HistoryDialog(QWidget* parent): QDialog(parent), ui(new Ui::HistoryDialog) {
     this->ui->setupUi(this);
     this->setAttribute(Qt::WA_DeleteOnClose);
-    QObject::connect(this->ui->historySettingsButton, &QToolButton::clicked, this, &HistoryDialog::historySettingsButton);
     QObject::connect(this->ui->deleteButton, &QToolButton::clicked, this, &HistoryDialog::deleteButton);
     QObject::connect(this->ui->notificationList, &QListWidget::itemSelectionChanged, this, &HistoryDialog::selectionChanged);
 
@@ -48,11 +46,6 @@ HistoryDialog::HistoryDialog(QWidget* parent): QDialog(parent), ui(new Ui::Histo
 }
 
 HistoryDialog::~HistoryDialog() { delete ui; }
-
-void HistoryDialog::historySettingsButton() {
-    HistorySettingsDialog* dialog = new HistorySettingsDialog(this);
-    dialog->exec();
-}
 
 void HistoryDialog::deleteButton() {
     QList<QListWidgetItem*> items = this->ui->notificationList->selectedItems();

@@ -17,7 +17,6 @@ class HistoryDialog: public QDialog {
         HistoryDialog(QWidget* parent = nullptr);
         ~HistoryDialog();
     public slots:
-        void historySettingsButton();
         void deleteButton();
         void selectionChanged();
     private:
