@@ -30,6 +30,7 @@ class MainWindow: public QMainWindow {
         void exitAction();
         void trayIconPressed(QSystemTrayIcon::ActivationReason reason);
         void showHideAction();
+        void preferencesAction();
         void restartAction();
         void importAction();
         void historyAction();
