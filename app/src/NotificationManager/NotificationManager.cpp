@@ -1,5 +1,6 @@
 #include "NotificationManager.hpp"
 
+#include "../Config/Config.hpp"
 #include "../Util/FileManager.hpp"
 #include "ntfyDesktop.hpp"
 
@@ -57,19 +58,23 @@ void NotificationManager::generalNotification(NtfyNotification ntfyNotification)
 }
 
 void NotificationManager::startupNotification() {
-    KNotification* notification = new KNotification("startup");
-    notification->setUrgency(KNotification::Urgency::LowUrgency);
-    notification->setTitle("Ntfy Desktop");
-    notification->setText("Ntfy Desktop is running in the background.");
-    notification->setIconName("moe.emmaexe.ntfyDesktop");
-    notification->sendEvent();
+    if (Config::data()["preferences"].is_object() && Config::data()["preferences"]["notifications"].is_object() && Config::data()["preferences"]["notifications"]["startup"].is_boolean() && Config::data()["preferences"]["notifications"]["startup"]) {
+        KNotification* notification = new KNotification("startup");
+        notification->setUrgency(KNotification::Urgency::LowUrgency);
+        notification->setTitle("Ntfy Desktop");
+        notification->setText("Ntfy Desktop is running in the background.");
+        notification->setIconName("moe.emmaexe.ntfyDesktop");
+        notification->sendEvent();
+    }
 }
 
 void NotificationManager::errorNotification(const std::string title, const std::string message) {
-    KNotification* notification = new KNotification("error");
-    notification->setTitle(QString::fromStdString(title));
-    notification->setText(QString::fromStdString(message));
-    notification->setUrgency(KNotification::Urgency::HighUrgency);
-    notification->setIconName(QStringLiteral("moe.emmaexe.ntfyDesktop"));
-    notification->sendEvent();
+    if (Config::data()["preferences"].is_object() && Config::data()["preferences"]["notifications"].is_object() && Config::data()["preferences"]["notifications"]["error"].is_boolean() && Config::data()["preferences"]["notifications"]["error"]) {
+        KNotification* notification = new KNotification("error");
+        notification->setTitle(QString::fromStdString(title));
+        notification->setText(QString::fromStdString(message));
+        notification->setUrgency(KNotification::Urgency::HighUrgency);
+        notification->setIconName(QStringLiteral("moe.emmaexe.ntfyDesktop"));
+        notification->sendEvent();
+    }
 }
