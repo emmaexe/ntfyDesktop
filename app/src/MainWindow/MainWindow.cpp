@@ -4,6 +4,7 @@
 #include "../HistoryDialog/HistoryDialog.hpp"
 #include "../ImportDialog/ImportDialog.hpp"
 #include "../NotificationManager/NotificationManager.hpp"
+#include "../PreferencesDialog/PreferencesDialog.hpp"
 #include "../Util/Util.hpp"
 #include "ui_MainWindow.h"
 
@@ -25,6 +26,7 @@ MainWindow::MainWindow(std::shared_ptr<ThreadManager> threadManager, KAboutData&
     QObject::connect(this->ui->historyAction, &QAction::triggered, this, &MainWindow::historyAction);
     QObject::connect(this->ui->importAction, &QAction::triggered, this, &MainWindow::importAction);
     QObject::connect(this->ui->restartAction, &QAction::triggered, this, &MainWindow::restartAction);
+    QObject::connect(this->ui->preferencesAction, &QAction::triggered, this, &MainWindow::preferencesAction);
     QObject::connect(this->ui->exitAction, &QAction::triggered, this, &MainWindow::exitAction);
     QObject::connect(this->ui->pullButton, &QPushButton::clicked, this, &MainWindow::pullButton);
 
@@ -205,6 +207,11 @@ void MainWindow::showHideAction() {
     } else {
         this->hide();
     }
+}
+
+void MainWindow::preferencesAction() {
+    PreferencesDialog* dialog = new PreferencesDialog(this);
+    dialog->exec();
 }
 
 void MainWindow::restartAction() {
