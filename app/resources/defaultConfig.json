@@ -1,1 +1,1 @@
-{"sources":[], "history":{"mode":"All"}, "version":"1.4.0"}
+{"sources":[], "preferences": {"history":{"mode":"All"}, "notifications": {"startup": true, "error": true}}, "version":"1.4.0"}
