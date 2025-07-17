@@ -60,6 +60,9 @@
        <property name="cursor">
         <cursorShape>PointingHandCursor</cursorShape>
        </property>
+       <property name="toolTip">
+        <string>Test the connection with the server</string>
+       </property>
        <property name="text">
         <string>Test Connection</string>
        </property>
@@ -102,9 +105,6 @@
        <property name="toolTip">
         <string>The name of this notification source.</string>
        </property>
-       <property name="whatsThis">
-        <string>This is the name of the notification source you are viewing.</string>
-       </property>
        <property name="placeholderText">
         <string>New Notification Source</string>
        </property>
@@ -127,9 +127,6 @@
       <widget class="QLineEdit" name="domainLineEdit">
        <property name="toolTip">
         <string>A valid domain or IP, with or without a port e.g. ntfy.sh, 192.168.1.69:8080, 91.198.174.192</string>
-       </property>
-       <property name="whatsThis">
-        <string>This is the domain of the notification source you are viewing. It determines the server where the notifications are fetched from for this notification source.</string>
        </property>
        <property name="placeholderText">
         <string>ntfy.sh</string>
@@ -154,9 +151,6 @@
        <property name="toolTip">
         <string>The name of the ntfy topic.</string>
        </property>
-       <property name="whatsThis">
-        <string>This is the topic of the notification source you are viewing. It determines the topic that you are subscribing to.</string>
-       </property>
        <property name="placeholderText">
         <string>ntfyDesktop</string>
        </property>
@@ -177,8 +171,8 @@
        <property name="cursor">
         <cursorShape>PointingHandCursor</cursorShape>
        </property>
-       <property name="whatsThis">
-        <string>This is the authentication selector. It lets you pick your method of authentication to the ntfy server.</string>
+       <property name="toolTip">
+        <string>Authentication mode</string>
        </property>
        <property name="placeholderText">
         <string>Authentication</string>
@@ -196,11 +190,7 @@
       </widget>
      </item>
      <item row="4" column="1">
-      <widget class="QLineEdit" name="authUsernameLineEdit">
-       <property name="whatsThis">
-        <string>This is the username field.</string>
-       </property>
-      </widget>
+      <widget class="QLineEdit" name="authUsernameLineEdit"/>
      </item>
      <item row="5" column="0">
       <widget class="QLabel" name="authPasswordLabel">
@@ -216,9 +206,6 @@
       <widget class="KPasswordLineEdit" name="authPasswordLineEdit">
        <property name="cursor">
         <cursorShape>IBeamCursor</cursorShape>
-       </property>
-       <property name="whatsThis">
-        <string>This is the password field.</string>
        </property>
       </widget>
      </item>
@@ -237,9 +224,6 @@
        <property name="cursor">
         <cursorShape>IBeamCursor</cursorShape>
        </property>
-       <property name="whatsThis">
-        <string>This is the token field.</string>
-       </property>
       </widget>
      </item>
      <item row="7" column="0">
@@ -251,6 +235,12 @@
      </item>
      <item row="7" column="1">
       <widget class="QComboBox" name="protocolComboBox">
+       <property name="cursor">
+        <cursorShape>PointingHandCursor</cursorShape>
+       </property>
+       <property name="toolTip">
+        <string>Protocol used for communicating with the server</string>
+       </property>
        <item>
         <property name="text">
          <string>HTTPS</string>

@@ -54,6 +54,9 @@
      </item>
      <item>
       <widget class="QPlainTextEdit" name="dataPlainTextEdit">
+       <property name="cursor" stdset="0">
+        <cursorShape>IBeamCursor</cursorShape>
+       </property>
        <property name="undoRedoEnabled">
         <bool>false</bool>
        </property>
@@ -107,6 +110,9 @@
         <widget class="QToolButton" name="fileSelectButton">
          <property name="cursor">
           <cursorShape>PointingHandCursor</cursorShape>
+         </property>
+         <property name="toolTip">
+          <string>Select a backup file</string>
          </property>
          <property name="text">
           <string>Select a File</string>
