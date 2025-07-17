@@ -128,6 +128,26 @@ void Config::updateToCurrent() {
                 }
 
                 Config::write();
+            } else if (Util::versionCompare(version, "1.4.0") >= 0) {
+                // Version is <1.3.2, 1.4.0]
+                // Schema used is: {"version": string, "history": {"numberValue": number, "recentMode": string, "recentValue": number, "sourceMode": string}, "sources": [{"name": string, "server": string, "topic": string, "secure": bool}, ...]}
+
+                std::cerr << "Transforming for <1.3.2, 1.4.0]" << std::endl;
+
+                nlohmann::json data = Config::internalData;
+                while (!QFile::copy(QString::fromStdString(Config::getConfigFile()), QString::fromStdString(Config::getConfigFile() + ".bak"))) {
+                    QFile::remove(QString::fromStdString(Config::getConfigFile() + ".bak"));
+                }
+                Config::reset();
+
+                Config::data()["sources"] = data["sources"];
+
+                if (data["history"].is_object()) {
+                    Config::data()["preferences"]["history"] = data["history"];
+                    Config::data().erase("history");
+                }
+
+                Config::write();
             }
         }
     } catch (const nlohmann::json::parse_error& e) {

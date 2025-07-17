@@ -86,7 +86,7 @@ DataBase::DataBase() {
         int mode = 0, numberValue = 5000, recentValue = 2, recentMode = 4, sourceMode = 0;
         bool failure = false;
         try {
-            nlohmann::json historyConfig = Config::data()["history"];
+            nlohmann::json historyConfig = Config::data()["preferences"]["history"];
             if (historyConfig.is_object() && historyConfig["mode"].is_string()) {
                 std::string configMode = historyConfig["mode"].get<std::string>();
                 Util::Strings::toLower(configMode);
