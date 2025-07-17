@@ -51,8 +51,8 @@
         <property name="cursor">
          <cursorShape>PointingHandCursor</cursorShape>
         </property>
-        <property name="whatsThis">
-         <string>This is a reset button. It will reset the configuration file on the disk to a default state.</string>
+        <property name="toolTip">
+         <string>Resets all configuration</string>
         </property>
         <property name="text">
          <string>Reset Configuration</string>
@@ -66,9 +66,6 @@
        <widget class="QPushButton" name="ExitButton">
         <property name="cursor">
          <cursorShape>PointingHandCursor</cursorShape>
-        </property>
-        <property name="whatsThis">
-         <string>This is an exit button. It will dismiss the error and exit.</string>
         </property>
         <property name="text">
          <string>Exit</string>

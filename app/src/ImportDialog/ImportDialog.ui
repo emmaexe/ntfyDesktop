@@ -111,6 +111,9 @@
          <property name="cursor">
           <cursorShape>PointingHandCursor</cursorShape>
          </property>
+         <property name="toolTip">
+          <string>Select a backup file</string>
+         </property>
          <property name="text">
           <string>Select a File</string>
          </property>

@@ -31,9 +31,6 @@
        <property name="cursor">
         <cursorShape>PointingHandCursor</cursorShape>
        </property>
-       <property name="whatsThis">
-        <string>This is a button that saves the configuration to the disk.</string>
-       </property>
        <property name="text">
         <string>Save</string>
        </property>
@@ -88,6 +85,9 @@
          <property name="cursor">
           <cursorShape>PointingHandCursor</cursorShape>
          </property>
+         <property name="toolTip">
+          <string>The startup notification tells you the app is running in the background.</string>
+         </property>
          <property name="text">
           <string>Send the startup notification</string>
          </property>
@@ -113,6 +113,9 @@
         <widget class="QCheckBox" name="errorNotificationCheckbox">
          <property name="cursor">
           <cursorShape>PointingHandCursor</cursorShape>
+         </property>
+         <property name="toolTip">
+          <string>Error notifications are sent when an error occurs (e.g. a notification source is unreachable)</string>
          </property>
          <property name="text">
           <string>Send error notifications</string>
@@ -144,6 +147,9 @@
       <layout class="QGridLayout" name="history">
        <item row="3" column="2">
         <widget class="QSpinBox" name="recentSpinBox">
+         <property name="toolTip">
+          <string>An amount of time</string>
+         </property>
          <property name="minimum">
           <number>1</number>
          </property>
@@ -179,6 +185,9 @@
          <property name="cursor">
           <cursorShape>ArrowCursor</cursorShape>
          </property>
+         <property name="toolTip">
+          <string>The number of notifications to keep</string>
+         </property>
          <property name="minimum">
           <number>1</number>
          </property>
@@ -204,6 +213,9 @@
         <widget class="QComboBox" name="keepHistoryComboBox">
          <property name="cursor">
           <cursorShape>PointingHandCursor</cursorShape>
+         </property>
+         <property name="toolTip">
+          <string>Select which notifications to keep</string>
          </property>
          <item>
           <property name="text">
@@ -231,6 +243,9 @@
         <widget class="QComboBox" name="recentComboBox">
          <property name="cursor">
           <cursorShape>PointingHandCursor</cursorShape>
+         </property>
+         <property name="toolTip">
+          <string>Time interval measurement unit</string>
          </property>
          <property name="currentIndex">
           <number>4</number>
@@ -277,6 +292,9 @@
          <property name="cursor">
           <cursorShape>PointingHandCursor</cursorShape>
          </property>
+         <property name="toolTip">
+          <string>The notification keeping rules will apply to all sources</string>
+         </property>
          <property name="text">
           <string>for a&amp;ll sources</string>
          </property>
@@ -309,6 +327,9 @@
         <widget class="QRadioButton" name="sourcePickerIndividual">
          <property name="cursor">
           <cursorShape>PointingHandCursor</cursorShape>
+         </property>
+         <property name="toolTip">
+          <string>The notification keeping rules will apply to each source seperately</string>
          </property>
          <property name="text">
           <string>&amp;for each source individually</string>
@@ -347,6 +368,9 @@
       <layout class="QGridLayout" name="timings">
        <item row="3" column="2">
         <widget class="QSpinBox" name="timeoutSpinBox">
+         <property name="toolTip">
+          <string>An amount of time</string>
+         </property>
          <property name="minimum">
           <number>1</number>
          </property>
@@ -379,6 +403,9 @@
            <verstretch>0</verstretch>
           </sizepolicy>
          </property>
+         <property name="toolTip">
+          <string>The maximum number of retries before giving up</string>
+         </property>
          <property name="minimum">
           <number>1</number>
          </property>
@@ -405,6 +432,9 @@
          <property name="cursor">
           <cursorShape>PointingHandCursor</cursorShape>
          </property>
+         <property name="toolTip">
+          <string>Select the retry mode</string>
+         </property>
          <item>
           <property name="text">
            <string>forever</string>
@@ -426,6 +456,9 @@
         <widget class="QComboBox" name="timeoutComboBox">
          <property name="cursor">
           <cursorShape>PointingHandCursor</cursorShape>
+         </property>
+         <property name="toolTip">
+          <string>Time interval measurement unit</string>
          </property>
          <property name="currentText">
           <string>Minutes</string>
