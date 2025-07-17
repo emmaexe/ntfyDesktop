@@ -319,6 +319,178 @@
        </item>
       </layout>
      </widget>
+     <widget class="QWidget" name="tab3">
+      <attribute name="title">
+       <string>Reconnect</string>
+      </attribute>
+      <layout class="QGridLayout" name="timings">
+       <item row="3" column="2">
+        <widget class="QSpinBox" name="timeoutSpinBox">
+         <property name="minimum">
+          <number>1</number>
+         </property>
+         <property name="maximum">
+          <number>2147483647</number>
+         </property>
+         <property name="value">
+          <number>2</number>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="5" rowspan="5">
+        <spacer name="spacerRight2">
+         <property name="orientation">
+          <enum>Qt::Orientation::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="2" column="2" colspan="3">
+        <widget class="QSpinBox" name="retryNumberSpinBox">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimum">
+          <number>1</number>
+         </property>
+         <property name="maximum">
+          <number>2147483647</number>
+         </property>
+         <property name="value">
+          <number>3</number>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <widget class="QLabel" name="retryNumberLabel">
+         <property name="text">
+          <string>The number:</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="2" colspan="3">
+        <widget class="QComboBox" name="retryComboBox">
+         <item>
+          <property name="text">
+           <string>forever</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>a number of times</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>never</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="3" column="3" colspan="2">
+        <widget class="QComboBox" name="timeoutComboBox">
+         <property name="currentText">
+          <string>Minutes</string>
+         </property>
+         <property name="currentIndex">
+          <number>1</number>
+         </property>
+         <item>
+          <property name="text">
+           <string>Seconds</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Minutes</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Hours</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Days</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Weeks</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Months</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Years</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QLabel" name="retryLabel">
+         <property name="text">
+          <string>Retry</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0" rowspan="5">
+        <spacer name="spacerLeft2">
+         <property name="orientation">
+          <enum>Qt::Orientation::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="7" column="0" colspan="6">
+        <spacer name="verticalSpacer2">
+         <property name="orientation">
+          <enum>Qt::Orientation::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="3" column="1">
+        <widget class="QLabel" name="timeoutLabel">
+         <property name="text">
+          <string>Timeout:</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
     </widget>
    </item>
   </layout>
