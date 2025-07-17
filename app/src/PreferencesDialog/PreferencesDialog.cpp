@@ -12,13 +12,13 @@ PreferencesDialog::PreferencesDialog(QWidget* parent): QDialog(parent), ui(new U
     QObject::connect(this->ui->saveButton, &QToolButton::clicked, this, &PreferencesDialog::saveButton);
 
     this->ui->aNumberLabel->hide();
-    this->ui->aNumberSpinBox->setValue(this->numberValue);
+    this->ui->aNumberSpinBox->setValue(this->historyNumberValue);
     this->ui->aNumberSpinBox->hide();
 
     this->ui->recentLabel->hide();
-    this->ui->recentSpinBox->setValue(this->recentValue);
+    this->ui->recentSpinBox->setValue(this->historyRecentValue);
     this->ui->recentSpinBox->hide();
-    this->ui->recentComboBox->setCurrentIndex(this->recentMode);
+    this->ui->recentComboBox->setCurrentIndex(this->historyRecentMode);
     this->ui->recentComboBox->hide();
 
     this->ui->sourcePickerIndividual->hide();
@@ -26,23 +26,41 @@ PreferencesDialog::PreferencesDialog(QWidget* parent): QDialog(parent), ui(new U
     this->sourceButtons = new QButtonGroup(this);
     this->sourceButtons->addButton(this->ui->sourcePickerIndividual, 0);
     this->sourceButtons->addButton(this->ui->sourcePickerGlobal, 1);
-    this->sourceButtons->button(this->sourceMode)->setChecked(true);
+    this->sourceButtons->button(this->historySourceMode)->setChecked(true);
+
+    QObject::connect(this->ui->keepHistoryComboBox, &QComboBox::currentIndexChanged, this, &PreferencesDialog::keepHistoryChanged);
+    this->ui->keepHistoryComboBox->setCurrentIndex(this->historyMode);
+    this->keepHistoryChanged(this->historyMode);
+
+    this->ui->retryNumberLabel->hide();
+    this->ui->retryNumberSpinBox->setValue(this->reconnectNumberValue);
+    this->ui->retryNumberSpinBox->hide();
+    this->ui->timeoutLabel->hide();
+    this->ui->timeoutComboBox->setCurrentIndex(this->reconnectTimeoutMode);
+    this->ui->timeoutComboBox->hide();
+    this->ui->timeoutSpinBox->setValue(this->reconnectTimeoutValue);
+    this->ui->timeoutSpinBox->hide();
+
+    QObject::connect(this->ui->retryComboBox, &QComboBox::currentIndexChanged, this, &PreferencesDialog::retryChanged);
+    this->ui->retryComboBox->setCurrentIndex(this->reconnectMode);
+    this->retryChanged(this->reconnectMode);
 
     this->ui->startupNotificationCheckbox->setChecked(this->startupNotifications);
     this->ui->errorNotificationCheckbox->setChecked(this->errorNotifications);
-
-    QObject::connect(this->ui->keepHistoryComboBox, &QComboBox::currentIndexChanged, this, &PreferencesDialog::keepHistoryChanged);
-    this->ui->keepHistoryComboBox->setCurrentIndex(this->mode);
 }
 
 PreferencesDialog::~PreferencesDialog() { delete ui; }
 
 void PreferencesDialog::saveButton() {
-    this->mode = this->ui->keepHistoryComboBox->currentIndex();
-    this->numberValue = this->ui->aNumberSpinBox->value();
-    this->recentValue = this->ui->recentSpinBox->value();
-    this->recentMode = this->ui->recentComboBox->currentIndex();
-    this->sourceMode = this->sourceButtons->checkedId();
+    this->historyMode = this->ui->keepHistoryComboBox->currentIndex();
+    this->historyNumberValue = this->ui->aNumberSpinBox->value();
+    this->historyRecentValue = this->ui->recentSpinBox->value();
+    this->historyRecentMode = this->ui->recentComboBox->currentIndex();
+    this->historySourceMode = this->sourceButtons->checkedId();
+    this->reconnectMode = this->ui->retryComboBox->currentIndex();
+    this->reconnectNumberValue = this->ui->retryNumberSpinBox->value();
+    this->reconnectTimeoutMode = this->ui->timeoutComboBox->currentIndex();
+    this->reconnectTimeoutValue = this->ui->timeoutSpinBox->value();
     this->startupNotifications = this->ui->startupNotificationCheckbox->checkState() == Qt::CheckState::Checked;
     this->errorNotifications = this->ui->errorNotificationCheckbox->checkState() == Qt::CheckState::Checked;
     this->updateToConfig();
@@ -50,7 +68,8 @@ void PreferencesDialog::saveButton() {
 }
 
 void PreferencesDialog::keepHistoryChanged(int index) {
-    if (index == 1) {
+    switch (index) {
+    case 1: {
         this->ui->aNumberLabel->show();
         this->ui->aNumberSpinBox->show();
         this->ui->recentLabel->hide();
@@ -58,7 +77,9 @@ void PreferencesDialog::keepHistoryChanged(int index) {
         this->ui->recentComboBox->hide();
         this->ui->sourcePickerIndividual->show();
         this->ui->sourcePickerGlobal->show();
-    } else if (index == 2) {
+        break;
+    }
+    case 2: {
         this->ui->aNumberLabel->hide();
         this->ui->aNumberSpinBox->hide();
         this->ui->recentLabel->show();
@@ -66,7 +87,9 @@ void PreferencesDialog::keepHistoryChanged(int index) {
         this->ui->recentComboBox->show();
         this->ui->sourcePickerIndividual->hide();
         this->ui->sourcePickerGlobal->hide();
-    } else {
+        break;
+    }
+    default: {
         this->ui->aNumberLabel->hide();
         this->ui->aNumberSpinBox->hide();
         this->ui->recentLabel->hide();
@@ -74,12 +97,49 @@ void PreferencesDialog::keepHistoryChanged(int index) {
         this->ui->recentComboBox->hide();
         this->ui->sourcePickerIndividual->hide();
         this->ui->sourcePickerGlobal->hide();
+        break;
+    }
     }
 }
 
-const std::array<std::string, 4> PreferencesDialog::modes = { "All", "Number", "Recent", "None" };
-const std::array<std::string, 7> PreferencesDialog::recentModes = { "Seconds", "Minutes", "Hours", "Days", "Weeks", "Months", "Years" };
-const std::array<std::string, 2> PreferencesDialog::sourceModes = { "Individual", "All" };
+void PreferencesDialog::retryChanged(int index) {
+    switch (index) {
+    case 0: {
+        this->ui->retryNumberLabel->hide();
+        this->ui->retryNumberSpinBox->hide();
+        this->ui->timeoutLabel->show();
+        this->ui->timeoutComboBox->show();
+        this->ui->timeoutSpinBox->show();
+        break;
+    }
+    case 1: {
+        this->ui->retryNumberLabel->show();
+        this->ui->retryNumberSpinBox->show();
+        this->ui->timeoutLabel->show();
+        this->ui->timeoutComboBox->show();
+        this->ui->timeoutSpinBox->show();
+        break;
+    }
+    case 2: {
+        this->ui->retryNumberLabel->hide();
+        this->ui->retryNumberSpinBox->hide();
+        this->ui->timeoutLabel->hide();
+        this->ui->timeoutComboBox->hide();
+        this->ui->timeoutSpinBox->hide();
+        break;
+    }
+    default: {
+        break;
+    }
+    }
+}
+
+const std::array<std::string, 4> PreferencesDialog::historyModes = { "All", "Number", "Recent", "None" };
+const std::array<std::string, 7> PreferencesDialog::historyRecentModes = { "Seconds", "Minutes", "Hours", "Days", "Weeks", "Months", "Years" };
+const std::array<std::string, 2> PreferencesDialog::historySourceModes = { "Individual", "All" };
+const std::array<std::string, 3> PreferencesDialog::reconnectModes = { "Forever", "Number", "Never" };
+const std::array<std::string, 7> PreferencesDialog::reconnectTimeoutModes = { "Seconds", "Minutes", "Hours", "Days", "Weeks", "Months", "Years" };
+
 
 void PreferencesDialog::fetchFromConfig() {
     Config::read();
@@ -90,40 +150,40 @@ void PreferencesDialog::fetchFromConfig() {
                 std::string mode = preferences["history"]["mode"].get<std::string>();
                 Util::Strings::toLower(mode);
                 if (mode == "all") {
-                    this->mode = 0;
+                    this->historyMode = 0;
                 } else if (mode == "number" && preferences["history"]["numberValue"].is_number()) {
-                    this->mode = 1;
-                    this->numberValue = preferences["history"]["numberValue"].get<int>();
+                    this->historyMode = 1;
+                    this->historyNumberValue = preferences["history"]["numberValue"].get<int>();
                 } else if (mode == "recent" && preferences["history"]["recentValue"].is_number() && preferences["history"]["recentMode"].is_string()) {
-                    this->mode = 2;
-                    this->recentValue = preferences["history"]["recentValue"].get<int>();
+                    this->historyMode = 2;
+                    this->historyRecentValue = preferences["history"]["recentValue"].get<int>();
                     std::string recentMode = preferences["history"]["recentMode"].get<std::string>();
                     Util::Strings::toLower(recentMode);
                     if (recentMode == "seconds") {
-                        this->recentMode = 0;
+                        this->historyRecentMode = 0;
                     } else if (recentMode == "minutes") {
-                        this->recentMode = 1;
+                        this->historyRecentMode = 1;
                     } else if (recentMode == "hours") {
-                        this->recentMode = 2;
+                        this->historyRecentMode = 2;
                     } else if (recentMode == "days") {
-                        this->recentMode = 3;
+                        this->historyRecentMode = 3;
                     } else if (recentMode == "weeks") {
-                        this->recentMode = 4;
+                        this->historyRecentMode = 4;
                     } else if (recentMode == "months") {
-                        this->recentMode = 5;
+                        this->historyRecentMode = 5;
                     } else if (recentMode == "years") {
-                        this->recentMode = 6;
+                        this->historyRecentMode = 6;
                     }
                 } else if (mode == "none") {
-                    this->mode = 3;
+                    this->historyMode = 3;
                 }
                 if (preferences["history"]["sourceMode"].is_string()) {
                     std::string mode = preferences["history"]["sourceMode"].get<std::string>();
                     Util::Strings::toLower(mode);
                     if (mode == "individual") {
-                        this->sourceMode = 0;
+                        this->historySourceMode = 0;
                     } else if (mode == "all") {
-                        this->sourceMode = 1;
+                        this->historySourceMode = 1;
                     }
                 }
             }
@@ -135,19 +195,71 @@ void PreferencesDialog::fetchFromConfig() {
                     this->errorNotifications= preferences["notifications"]["error"];
                 }
             }
+            if (preferences["reconnect"].is_object() && preferences["reconnect"]["mode"].is_string()) {
+                std::string mode = preferences["reconnect"]["mode"].get<std::string>();
+                Util::Strings::toLower(mode);
+                if (mode == "forever" && preferences["reconnect"]["timeoutMode"].is_string() && preferences["reconnect"]["timeoutValue"].is_number()) {
+                    this->reconnectMode = 0;
+                    this->reconnectTimeoutValue = preferences["reconnect"]["timeoutValue"].get<int>();
+                    std::string timeoutMode = preferences["reconnect"]["timeoutMode"].get<std::string>();
+                    Util::Strings::toLower(timeoutMode);
+                    if (timeoutMode == "seconds") {
+                        this->reconnectTimeoutMode = 0;
+                    } else if (timeoutMode == "minutes") {
+                        this->reconnectTimeoutMode = 1;
+                    } else if (timeoutMode == "hours") {
+                        this->reconnectTimeoutMode = 2;
+                    } else if (timeoutMode == "days") {
+                        this->reconnectTimeoutMode = 3;
+                    } else if (timeoutMode == "weeks") {
+                        this->reconnectTimeoutMode = 4;
+                    } else if (timeoutMode == "months") {
+                        this->reconnectTimeoutMode = 5;
+                    } else if (timeoutMode == "years") {
+                        this->reconnectTimeoutMode = 6;
+                    }
+                } else if (mode == "number" && preferences["reconnect"]["timeoutMode"].is_string() && preferences["reconnect"]["timeoutValue"].is_number() && preferences["reconnect"]["numberValue"].is_number()) {
+                    this->reconnectMode = 1;
+                    this->reconnectTimeoutValue = preferences["reconnect"]["timeoutValue"].get<int>();
+                    this->reconnectNumberValue = preferences["reconnect"]["numberValue"].get<int>();
+                    std::string timeoutMode = preferences["reconnect"]["timeoutMode"].get<std::string>();
+                    Util::Strings::toLower(timeoutMode);
+                    if (timeoutMode == "seconds") {
+                        this->reconnectTimeoutMode = 0;
+                    } else if (timeoutMode == "minutes") {
+                        this->reconnectTimeoutMode = 1;
+                    } else if (timeoutMode == "hours") {
+                        this->reconnectTimeoutMode = 2;
+                    } else if (timeoutMode == "days") {
+                        this->reconnectTimeoutMode = 3;
+                    } else if (timeoutMode == "weeks") {
+                        this->reconnectTimeoutMode = 4;
+                    } else if (timeoutMode == "months") {
+                        this->reconnectTimeoutMode = 5;
+                    } else if (timeoutMode == "years") {
+                        this->reconnectTimeoutMode = 6;
+                    }
+                } else if (mode == "never") {
+                    this->reconnectMode = 2;
+                }
+            }
         }
     } catch (const nlohmann::json::type_error& ignored) {}
 }
 
 void PreferencesDialog::updateToConfig() {
     nlohmann::json preferences = nlohmann::json::object();
-    preferences["history"]["mode"] = this->modes[this->mode];
-    preferences["history"]["numberValue"] = this->numberValue;
-    preferences["history"]["recentValue"] = this->recentValue;
-    preferences["history"]["recentMode"] = this->recentModes[this->recentMode];
-    preferences["history"]["sourceMode"] = this->sourceModes[this->sourceMode];
+    preferences["history"]["mode"] = this->historyModes[this->historyMode];
+    preferences["history"]["numberValue"] = this->historyNumberValue;
+    preferences["history"]["recentValue"] = this->historyRecentValue;
+    preferences["history"]["recentMode"] = this->historyRecentModes[this->historyRecentMode];
+    preferences["history"]["sourceMode"] = this->historySourceModes[this->historySourceMode];
     preferences["notifications"]["startup"] = this->startupNotifications;
     preferences["notifications"]["error"] = this->errorNotifications;
+    preferences["reconnect"]["mode"] = this->reconnectModes[this->reconnectMode];
+    preferences["reconnect"]["numberValue"] = this->reconnectNumberValue;
+    preferences["reconnect"]["timeoutMode"] = this->reconnectTimeoutModes[this->reconnectTimeoutMode];
+    preferences["reconnect"]["timeoutValue"] = this->reconnectTimeoutValue;
     Config::data()["preferences"] = preferences;
     Config::write();
 }

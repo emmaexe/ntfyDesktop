@@ -300,7 +300,7 @@ void NotificationPuller::run() {
                 int lastTimestamp = -1;
                 std::string name = source["name"].get<std::string>(), protocol = source["protocol"].get<std::string>(), domain = source["domain"].get<std::string>(), topic = source["topic"].get<std::string>(), topicHash = Util::topicHash(domain, topic);
                 AuthConfig authConfig = db.getAuth(topicHash);
-                threads.push_back(std::make_unique<NtfyThread>(name, protocol, domain, topic, authConfig, -1, &mutex, true));
+                threads.push_back(std::make_unique<NtfyThread>(name, protocol, domain, topic, authConfig, -1, std::nullopt, std::nullopt, &mutex, true));
             } catch (const nlohmann::json::out_of_range& e) { std::cerr << "Invalid source in config, ignoring: " << source << std::endl; }
         }
     }

@@ -9,10 +9,11 @@
 #include <mutex>
 #include <string>
 #include <thread>
+#include <optional>
 
 class NtfyThread {
     public:
-        NtfyThread(std::string name, std::string protocol, std::string domain, std::string topic, AuthConfig authConfig, int lastTimestamp, std::mutex* mutex, bool pollMode = false);
+        NtfyThread(std::string name, std::string protocol, std::string domain, std::string topic, AuthConfig authConfig, int lastTimestamp, std::optional<int> reconnectCount, std::optional<int> timeout, std::mutex* mutex, bool pollMode = false);
         ~NtfyThread();
         void run();
         void stop();
@@ -29,9 +30,10 @@ class NtfyThread {
         std::atomic<bool> running = false, error = false;
         std::string internalName, internalProtocol, internalDomain, internalTopic, url;
         int lastTimestamp;
+        std::atomic<int> runCount = 0;
+        std::optional<int> reconnectCount, timeout;
         bool pollMode;
         AuthConfig internalAuthConfig;
-        std::atomic<int> internalErrorCounter = 0;
         static size_t writeCallback(char* ptr, size_t size, size_t nmemb, void* userdata);
         static int progressCallback(void* clientp, curl_off_t dltotal, curl_off_t dlnow, curl_off_t ultotal, curl_off_t ulnow);
 };

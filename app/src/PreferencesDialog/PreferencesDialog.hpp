@@ -1,7 +1,7 @@
 #pragma once
 
-#include <QDialog>
 #include <QButtonGroup>
+#include <QDialog>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -17,13 +17,16 @@ class PreferencesDialog: public QDialog {
     public slots:
         void saveButton();
         void keepHistoryChanged(int index);
+        void retryChanged(int index);
     private:
         Ui::PreferencesDialog* ui;
         QButtonGroup* sourceButtons;
-        static const std::array<std::string, 4> modes;
-        static const std::array<std::string, 7> recentModes;
-        static const std::array<std::string, 2> sourceModes;
-        int mode = 0, numberValue = 5000, recentValue = 2, recentMode = 4, sourceMode = 0;
+        static const std::array<std::string, 4> historyModes;
+        static const std::array<std::string, 7> historyRecentModes;
+        static const std::array<std::string, 2> historySourceModes;
+        static const std::array<std::string, 3> reconnectModes;
+        static const std::array<std::string, 7> reconnectTimeoutModes;
+        int historyMode = 0, historyNumberValue = 5000, historyRecentValue = 2, historyRecentMode = 4, historySourceMode = 0, reconnectMode = 1, reconnectNumberValue = 3, reconnectTimeoutValue = 2, reconnectTimeoutMode = 1;
         bool startupNotifications = true, errorNotifications = true;
         void fetchFromConfig();
         void updateToConfig();
