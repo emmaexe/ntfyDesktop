@@ -54,6 +54,9 @@
      </item>
      <item>
       <widget class="QPlainTextEdit" name="dataPlainTextEdit">
+       <property name="cursor" stdset="0">
+        <cursorShape>IBeamCursor</cursorShape>
+       </property>
        <property name="undoRedoEnabled">
         <bool>false</bool>
        </property>

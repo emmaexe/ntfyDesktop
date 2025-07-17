@@ -85,6 +85,9 @@
        </item>
        <item row="0" column="1">
         <widget class="QCheckBox" name="startupNotificationCheckbox">
+         <property name="cursor">
+          <cursorShape>PointingHandCursor</cursorShape>
+         </property>
          <property name="text">
           <string>Send the startup notification</string>
          </property>
@@ -108,6 +111,9 @@
        </item>
        <item row="1" column="1">
         <widget class="QCheckBox" name="errorNotificationCheckbox">
+         <property name="cursor">
+          <cursorShape>PointingHandCursor</cursorShape>
+         </property>
          <property name="text">
           <string>Send error notifications</string>
          </property>
@@ -170,6 +176,9 @@
            <verstretch>0</verstretch>
           </sizepolicy>
          </property>
+         <property name="cursor">
+          <cursorShape>ArrowCursor</cursorShape>
+         </property>
          <property name="minimum">
           <number>1</number>
          </property>
@@ -193,6 +202,9 @@
        </item>
        <item row="1" column="2" colspan="3">
         <widget class="QComboBox" name="keepHistoryComboBox">
+         <property name="cursor">
+          <cursorShape>PointingHandCursor</cursorShape>
+         </property>
          <item>
           <property name="text">
            <string>all notifications</string>
@@ -217,6 +229,9 @@
        </item>
        <item row="3" column="3" colspan="2">
         <widget class="QComboBox" name="recentComboBox">
+         <property name="cursor">
+          <cursorShape>PointingHandCursor</cursorShape>
+         </property>
          <property name="currentIndex">
           <number>4</number>
          </property>
@@ -259,6 +274,9 @@
        </item>
        <item row="4" column="3" colspan="2">
         <widget class="QRadioButton" name="sourcePickerGlobal">
+         <property name="cursor">
+          <cursorShape>PointingHandCursor</cursorShape>
+         </property>
          <property name="text">
           <string>for a&amp;ll sources</string>
          </property>
@@ -289,6 +307,9 @@
        </item>
        <item row="4" column="1" colspan="2">
         <widget class="QRadioButton" name="sourcePickerIndividual">
+         <property name="cursor">
+          <cursorShape>PointingHandCursor</cursorShape>
+         </property>
          <property name="text">
           <string>&amp;for each source individually</string>
          </property>
@@ -381,6 +402,9 @@
        </item>
        <item row="1" column="2" colspan="3">
         <widget class="QComboBox" name="retryComboBox">
+         <property name="cursor">
+          <cursorShape>PointingHandCursor</cursorShape>
+         </property>
          <item>
           <property name="text">
            <string>forever</string>
@@ -400,6 +424,9 @@
        </item>
        <item row="3" column="3" colspan="2">
         <widget class="QComboBox" name="timeoutComboBox">
+         <property name="cursor">
+          <cursorShape>PointingHandCursor</cursorShape>
+         </property>
          <property name="currentText">
           <string>Minutes</string>
          </property>
