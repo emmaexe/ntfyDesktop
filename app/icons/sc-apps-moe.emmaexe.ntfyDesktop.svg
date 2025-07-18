@@ -7,7 +7,7 @@
    viewBox="0 0 50 50"
    version="1.1"
    id="svg8"
-   inkscape:version="1.3.2 (091e20ef0f, 2023-11-25)"
+   inkscape:version="1.4.2 (ebf0e940d0, 2025-05-08)"
    sodipodi:docname="ntfyDesktop.svg"
    inkscape:export-filename="/home/pheckel/Code/ntfy-android/assets/appstore_ios.png"
    inkscape:export-xdpi="520.19202"
@@ -122,11 +122,11 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="4"
-     inkscape:cx="60.25"
-     inkscape:cy="101.875"
+     inkscape:zoom="2"
+     inkscape:cx="-35.25"
+     inkscape:cy="84"
      inkscape:document-units="mm"
-     inkscape:current-layer="layer2"
+     inkscape:current-layer="svg8"
      showgrid="false"
      inkscape:measure-start="0,0"
      inkscape:measure-end="0,0"
@@ -201,18 +201,20 @@
      inkscape:groupmode="layer"
      id="layer2"
      inkscape:label="background"
-     style="display:inline">
+     style="display:inline"
+     transform="matrix(0.90811706,0,0,0.90811706,2.1441513,2.1441513)">
     <path
        id="rect4545"
        clip-path="none"
        style="display:inline;fill:url(#linearGradient4633);fill-opacity:1;stroke:none;stroke-width:0.286502;stroke-linejoin:bevel"
-       d="M 25.135417 1.7389119 C 15.308871 1.7389119 9.2258505 1.7388549 5.4823527 5.4823527 C 1.7388549 9.2258505 1.7389119 15.308871 1.7389119 25.135417 C 1.7389119 34.961962 1.7388549 41.045087 5.4823527 44.788481 C 9.2258505 48.531874 15.308871 48.531921 25.135417 48.531921 C 34.961962 48.531921 41.045087 48.531874 44.788481 44.788481 C 48.531874 41.045087 48.531921 34.961962 48.531921 25.135417 C 48.531921 15.308871 48.531874 9.2258505 44.788481 5.4823527 C 41.045087 1.7388549 34.961962 1.7389119 25.135417 1.7389119 z " />
+       d="m 25.135417,1.7389119 c -9.826546,0 -15.9095665,-5.7e-5 -19.6530643,3.7434408 -3.7434978,3.7434978 -3.7434408,9.8265183 -3.7434408,19.6530643 0,9.826545 -5.7e-5,15.90967 3.7434408,19.653064 3.7434978,3.743393 9.8265183,3.74344 19.6530643,3.74344 9.826545,0 15.90967,-4.7e-5 19.653064,-3.74344 3.743393,-3.743394 3.74344,-9.826519 3.74344,-19.653064 0,-9.826546 -4.7e-5,-15.9095665 -3.74344,-19.6530643 C 41.045087,1.7388549 34.961962,1.7389119 25.135417,1.7389119 Z" />
   </g>
   <g
      inkscape:groupmode="layer"
      id="layer5"
      inkscape:label="drop shadow"
-     style="display:inline">
+     style="display:inline"
+     transform="matrix(0.90811706,0,0,0.90811706,2.1441513,2.1441513)">
     <path
        id="path3646"
        style="color:#000000;display:inline;fill:#ffffff;stroke:none;stroke-width:1.93113;-inkscape-stroke:none;filter:url(#filter3958)"
@@ -223,7 +225,7 @@
      inkscape:label="foreground"
      inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(-51.147327,-81.515579)"
+     transform="matrix(0.90811706,0,0,0.90811706,-44.303609,-71.881537)"
      style="display:inline">
     <path
        style="color:#000000;fill:url(#linearGradient3255);stroke:none;stroke-width:2.49558;-inkscape-stroke:none"
