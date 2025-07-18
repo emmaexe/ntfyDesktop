@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.10)
 project(
     ntfyDesktop
     VERSION 1.5.0
-    DESCRIPTION "A desktop client for ntfy"
+    DESCRIPTION "A desktop app for ntfy"
     HOMEPAGE_URL "https://github.com/emmaexe/ntfyDesktop/"
     LANGUAGES C CXX
 )
@@ -66,7 +66,7 @@ set(CPACK_GENERATOR "RPM;DEB;TGZ")
 set(CPACK_PACKAGE_NAME "${CMAKE_PROJECT_NAME}")
 set(CPACK_PACKAGE_VERSION "${PROJECT_VERSION}")
 set(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION}")
-set(CPACK_PACKAGE_DESCRIPTION "${CMAKE_PROJECT_DESCRIPTION}. Allows you to subscribe to topics from any ntfy server and recieve notifications natively on the desktop.")
+set(CPACK_PACKAGE_DESCRIPTION "Subscribe to topics from any ntfy server and recieve notifications natively on the desktop.")
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "${CMAKE_PROJECT_DESCRIPTION}")
 set(CPACK_PACKAGE_CHECKSUM "SHA256")
 set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_SOURCE_DIR}/LICENSE")
