@@ -2,7 +2,8 @@
 
 ![GitHub License](https://img.shields.io/github/license/emmaexe/ntfyDesktop)
 ![GitHub Tag](https://img.shields.io/github/v/tag/emmaexe/ntfyDesktop?label=Latest%20stable%20version)
-![GitHub Downloads (all assets, all releases)](https://img.shields.io/github/downloads/emmaexe/ntfyDesktop/total)
+![Flathub Downloads](https://img.shields.io/flathub/downloads/moe.emmaexe.ntfyDesktop?label=downloads%20-%20flathub)
+![GitHub Downloads (all assets, all releases)](https://img.shields.io/github/downloads/emmaexe/ntfyDesktop/total?label=downloads%20-%20github)
 
 A desktop client for [ntfy](https://github.com/binwiederhier/ntfy). Allows you to subscribe to topics from any ntfy server and recieve notifications natively on the desktop.
 
