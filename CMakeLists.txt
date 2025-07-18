@@ -29,19 +29,19 @@ include(ECMInstallIcons)
 include(ECMAddAppIcon)
 
 if (ND_BUILD_TYPE STREQUAL "Flatpak")
-    find_package(nlohmann_json 3.11.3 REQUIRED)
+    find_package(nlohmann_json 3.12.0 REQUIRED)
     find_package(emojicpp 2.0.1 REQUIRED)
 else()
     # To update CPM.cmake, update the version number in the url and SHA hash as found in the most recent release asset.
     # https://github.com/cpm-cmake/CPM.cmake/wiki/Downloading-CPM.cmake-in-CMake
     file(
         DOWNLOAD
-        https://github.com/cpm-cmake/CPM.cmake/releases/download/v0.40.2/CPM.cmake
+        https://github.com/cpm-cmake/CPM.cmake/releases/download/v0.42.0/CPM.cmake
         ${CMAKE_CURRENT_BINARY_DIR}/cmake/CPM.cmake
-        EXPECTED_HASH SHA256=c8cdc32c03816538ce22781ed72964dc864b2a34a310d3b7104812a5ca2d835d
+        EXPECTED_HASH SHA256=2020b4fc42dba44817983e06342e682ecfc3d2f484a581f11cc5731fbe4dce8a
     )
     include(${CMAKE_CURRENT_BINARY_DIR}/cmake/CPM.cmake)
-    CPMAddPackage("gh:nlohmann/json@3.11.3")
+    CPMAddPackage("gh:nlohmann/json@3.12.0")
     CPMAddPackage("gh:emmaexe/emojicpp@2.0.1")
 endif()
 
