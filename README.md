@@ -80,14 +80,14 @@ You can also download the [latest release](https://github.com/emmaexe/ntfyDeskto
 #### Fedora
 
 ```bash
-dnf groupinstall "Development Tools"
-dnf install gcc-c++ cmake extra-cmake-modules libcurl-devel qt6-qtbase-devel kf6-kcoreaddons-devel kf6-ki18n-devel kf6-knotifications-devel kf6-kxmlgui-devel rpm-build
+dnf install @development-tools
+dnf install gcc-c++ ninja-build cmake extra-cmake-modules libcurl-devel qt6-qtbase-devel kf6-kcoreaddons-devel kf6-ki18n-devel kf6-knotifications-devel kf6-kxmlgui-devel rpm-build
 ```
 
 #### Ubuntu
 
 ```bash
-apt install git g++ cmake extra-cmake-modules libcurl4-openssl-dev qt6-base-dev libkf6coreaddons-dev libkf6i18n-dev libkf6notifications-dev libkf6xmlgui-dev
+apt install git g++ ninja-build cmake extra-cmake-modules libcurl4-openssl-dev qt6-base-dev libkf6coreaddons-dev libkf6i18n-dev libkf6notifications-dev libkf6xmlgui-dev
 ```
 
 #### Others
@@ -96,7 +96,7 @@ You will need the following:
 
 - Basic development tools (git, make, etc.)
 - A C++ compiler (e.g. g++)
-- CMake (with [ECM](https://api.kde.org/frameworks/extra-cmake-modules/html/index.html))
+- Ninja and CMake (with [ECM](https://api.kde.org/frameworks/extra-cmake-modules/html/index.html))
 - libcurl development libraries
 - Base Qt6 development libraries (with SQLite support)
 - KDE Frameworks' KCoreAddons, Ki18n, KNotifications and KXmlGui development libraries
@@ -115,9 +115,11 @@ curl -s https://api.github.com/repos/emmaexe/ntfyDesktop/releases/latest | grep 
 
 ### Build the project
 
+Replace `YOUR_THREADS_HERE` with the number of threads you want to use while building:
+
 ```bash
-cmake -DCMAKE_BUILD_TYPE=Release -B build
-cmake --build build
+cmake -DCMAKE_BUILD_TYPE=Release -B build -G Ninja
+cmake --build build --parallel YOUR_THREADS_HERE
 ```
 
 ### Create packages for installation

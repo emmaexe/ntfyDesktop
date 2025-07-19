@@ -29,19 +29,19 @@
   <screenshots>
     <screenshot type="default">
       <image>https://raw.githubusercontent.com/emmaexe/ntfyDesktop/main/assets/screenshot1.png</image>
-      <caption>The main screen of the app.</caption>
+      <caption>The main window of the app</caption>
     </screenshot>
     <screenshot>
       <image>https://raw.githubusercontent.com/emmaexe/ntfyDesktop/main/assets/screenshot2.png</image>
-      <caption>The main screen without any notification sources.</caption>
+      <caption>The notification history window</caption>
     </screenshot>
     <screenshot>
       <image>https://raw.githubusercontent.com/emmaexe/ntfyDesktop/main/assets/screenshot3.png</image>
-      <caption>The notification history menu.</caption>
+      <caption>The preferences window</caption>
     </screenshot>
     <screenshot>
       <image>https://raw.githubusercontent.com/emmaexe/ntfyDesktop/main/assets/screenshot4.png</image>
-      <caption>A notification arriving after being sent using cURL.</caption>
+      <caption>The main window on first launch</caption>
     </screenshot>
   </screenshots>
 
@@ -62,6 +62,19 @@
     </keywords>
 
   <releases>
+    <release version="1.5.0" date="2025-07-19">
+      <url type="details">https://github.com/emmaexe/ntfyDesktop/releases/tag/v1.5.0</url>
+      <description>
+        <p>Release v1.5.0</p>
+          <ul>
+            <li>Added preferences window</li>
+            <li>Moved notification history preferences to preferences window</li>
+            <li>Added startup and error notification preferences (option to disable)</li>
+            <li>Added reconnect preferences (how/when to retry if connection is lost)</li>
+            <li>Fixed some UI inconsistencies (tooltips, What's This?)</li>
+          </ul>
+      </description>
+    </release>
     <release version="1.4.0" date="2025-02-02">
       <url type="details">https://github.com/emmaexe/ntfyDesktop/releases/tag/v1.4.0</url>
       <description>
