@@ -5,15 +5,29 @@
 ![Flathub Downloads](https://img.shields.io/flathub/downloads/moe.emmaexe.ntfyDesktop?label=downloads%20-%20flathub)
 ![GitHub Downloads (all assets, all releases)](https://img.shields.io/github/downloads/emmaexe/ntfyDesktop/total?label=downloads%20-%20github)
 
+[<img alt="flathub" height="56" src="https://raw.githubusercontent.com/PenPow/Badges/refs/heads/main/src/assets/available/flathub/cozy.svg">](#flatpak)
+[<img alt="fedora" height="56" src="https://raw.githubusercontent.com/PenPow/Badges/refs/heads/main/src/assets/supported/fedora/cozy.svg">](#fedora)
+[<img alt="ubuntu" height="56" src="https://raw.githubusercontent.com/PenPow/Badges/refs/heads/main/src/assets/supported/ubuntu/cozy.svg">](#ubuntu)
+[<img alt="arch" height="56" src="https://raw.githubusercontent.com/PenPow/Badges/refs/heads/main/src/assets/supported/arch/cozy.svg">](#arch)
+[<img alt="github" height="56" src="https://raw.githubusercontent.com/PenPow/Badges/refs/heads/main/src/assets/available/github/cozy.svg">](#manual-installation)
+
 A desktop client for [ntfy](https://github.com/binwiederhier/ntfy). Allows you to subscribe to topics from any ntfy server and recieve notifications natively on the desktop.
+
+## Screenshots
+
+![First screenshot](https://raw.githubusercontent.com/emmaexe/ntfyDesktop/main/assets/screenshot1.png)
+
+![Second screenshot](https://raw.githubusercontent.com/emmaexe/ntfyDesktop/main/assets/screenshot2.png)
+
+![Third screenshot](https://raw.githubusercontent.com/emmaexe/ntfyDesktop/main/assets/screenshot3.png)
+
+![Fourth screenshot](https://raw.githubusercontent.com/emmaexe/ntfyDesktop/main/assets/screenshot4.png)
 
 ## Installation
 
 ### Flatpak
 
-Ntfy Desktop is available on flathub:
-
-[<img alt="flathub" height="56" src="https://flathub.org/api/badge?svg&locale=en">](https://flathub.org/apps/moe.emmaexe.ntfyDesktop)
+[Ntfy Desktop is available on flathub](https://flathub.org/apps/moe.emmaexe.ntfyDesktop)
 
 ### Fedora
 
@@ -50,22 +64,19 @@ sudo apt update
 sudo apt install ntfydesktop
 ```
 
+### Arch
+
+In Arch Linux, Ntfy Desktop is available in the [Arch User Repository](https://aur.archlinux.org/packages/ntfydesktop), under the name `ntfydesktop`.
+
+Example installation method, using the `yay` AUR helper:
+
+```bash
+yay ntfydesktop
+```
+
 ### Manual installation
 
-[<img alt="fedora" height="56" src="https://raw.githubusercontent.com/emmaexe/devins-badges/v3/assets/cozy/available/fedora_vector.svg">](https://github.com/emmaexe/ntfyDesktop/releases/download/v1.4.0/ntfyDesktop-1.4.0.rpm)
-[<img alt="ubuntu" height="56" src="https://raw.githubusercontent.com/emmaexe/devins-badges/v3/assets/cozy/available/ubuntu_vector.svg">](https://github.com/emmaexe/ntfyDesktop/releases/download/v1.4.0/ntfyDesktop-1.4.0.deb)
-
-You can also download the [latest release](https://github.com/emmaexe/ntfyDesktop/releases/latest) for manual installation.
-
-## Screenshots
-
-![First screenshot](https://raw.githubusercontent.com/emmaexe/ntfyDesktop/main/assets/screenshot1.png)
-
-![Second screenshot](https://raw.githubusercontent.com/emmaexe/ntfyDesktop/main/assets/screenshot2.png)
-
-![Third screenshot](https://raw.githubusercontent.com/emmaexe/ntfyDesktop/main/assets/screenshot3.png)
-
-![Fourth screenshot](https://raw.githubusercontent.com/emmaexe/ntfyDesktop/main/assets/screenshot4.png)
+You can download the latest build artifacts in the [latest release](https://github.com/emmaexe/ntfyDesktop/releases/latest) for manual installation.
 
 ## Want to contribute? Found a bug? Have a question?
 
@@ -75,55 +86,4 @@ You can also download the [latest release](https://github.com/emmaexe/ntfyDeskto
 
 ## Building
 
-### Download the necessary dependencies
-
-#### Fedora
-
-```bash
-dnf install @development-tools
-dnf install gcc-c++ ninja-build cmake extra-cmake-modules libcurl-devel qt6-qtbase-devel kf6-kcoreaddons-devel kf6-ki18n-devel kf6-knotifications-devel kf6-kxmlgui-devel rpm-build
-```
-
-#### Ubuntu
-
-```bash
-apt install git g++ ninja-build cmake extra-cmake-modules libcurl4-openssl-dev qt6-base-dev libkf6coreaddons-dev libkf6i18n-dev libkf6notifications-dev libkf6xmlgui-dev
-```
-
-#### Others
-
-You will need the following:
-
-- Basic development tools (git, make, etc.)
-- A C++ compiler (e.g. g++)
-- Ninja and CMake (with [ECM](https://api.kde.org/frameworks/extra-cmake-modules/html/index.html))
-- libcurl development libraries
-- Base Qt6 development libraries (with SQLite support)
-- KDE Frameworks' KCoreAddons, Ki18n, KNotifications and KXmlGui development libraries
-
-### Clone the repository
-
-```bash
-git clone https://github.com/emmaexe/ntfyDesktop.git && cd ntfyDesktop
-```
-
-#### or download the latest release
-
-```bash
-curl -s https://api.github.com/repos/emmaexe/ntfyDesktop/releases/latest | grep "tarball_url" | cut -d '"' -f 4 | xargs curl -L -o ntfyDesktop.tar.gz && mkdir ntfyDesktop && tar -xzf ntfyDesktop.tar.gz -C ntfyDesktop --strip-components=1 && rm ntfyDesktop.tar.gz && cd ntfyDesktop
-```
-
-### Build the project
-
-Replace `YOUR_THREADS_HERE` with the number of threads you want to use while building:
-
-```bash
-cmake -DCMAKE_BUILD_TYPE=Release -B build -G Ninja
-cmake --build build --parallel YOUR_THREADS_HERE
-```
-
-### Create packages for installation
-
-```bash
-cd build && cpack
-```
+[Building instructions are available here](./scripts/README.md)

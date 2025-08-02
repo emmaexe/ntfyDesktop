@@ -15,5 +15,8 @@ CTestTestfile.cmake
 _deps
 /build
 
+#Build
+/scripts/artifacts
+
 # Dolphin/KDE
 .directory
