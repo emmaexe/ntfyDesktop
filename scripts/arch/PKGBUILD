@@ -3,7 +3,7 @@ pkgname=ntfydesktop
 pkgver=1.5.0
 pkgrel=1
 pkgdesc="Subscribe to topics from any ntfy server and receive notifications natively on the desktop."
-arch=("x86_64")
+arch=("x86_64" "aarch64")
 url="https://github.com/emmaexe/ntfyDesktop"
 license=("GPL-3.0-only")
 depends=("curl" "qt6-base" "kcoreaddons" "ki18n" "knotifications" "kxmlgui")
@@ -17,7 +17,7 @@ build() {
     -G Ninja
     -S ntfyDesktop-$pkgver
     -W no-dev
-    -D CMAKE_BUILD_TYPE=None
+    -D CMAKE_BUILD_TYPE=Release
     -D CMAKE_INSTALL_PREFIX=/usr
   )
   cmake "${cmake_options[@]}"
