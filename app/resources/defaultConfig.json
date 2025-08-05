@@ -1,1 +1,1 @@
-{"sources":[], "preferences": {"history":{"mode":"All"}, "notifications": {"startup": true, "error": true}, "reconnect": {"mode": "Number", "numberValue": 3, "timeoutMode": "Minutes", "timeoutValue": 2}}, "version":"1.5.0"}
+{"sources":[], "preferences": {"history":{"mode":"All"}, "notifications": {"startup": true, "error": true}, "reconnect": {"mode": "Number", "numberValue": 3, "timeoutMode": "Minutes", "timeoutValue": 2}}, "version":"1.5.1"}

@@ -11,7 +11,19 @@
 [<img alt="arch" height="56" src="https://raw.githubusercontent.com/PenPow/Badges/refs/heads/main/src/assets/supported/arch/cozy.svg">](#arch)
 [<img alt="github" height="56" src="https://raw.githubusercontent.com/PenPow/Badges/refs/heads/main/src/assets/available/github/cozy.svg">](#manual-installation)
 
-A desktop client for [ntfy](https://github.com/binwiederhier/ntfy). Allows you to subscribe to topics from any ntfy server and recieve notifications natively on the desktop.
+A fully featured desktop client for [ntfy](https://github.com/binwiederhier/ntfy) for Linux, built with Qt and C++. Allows you to subscribe to topics from any ntfy server and receive notifications natively on the desktop.
+
+**Features include:**
+
+- Native desktop notifications with:
+  - Attachment and icon support, for displaying images and linking to files directly on the notification
+  - Notification click event support, just like on Android
+  - Notification button support, just like on Android
+- Notification history
+- Full authentication support and ability to use all protocols that ntfy supports
+- Ability to import from an [ntfy android](https://github.com/binwiederhier/ntfy-android) backup
+- Customizable behavior when (re)connecting to servers and keeping history.
+- Builds for `x86_64` and `aarch64` architectures
 
 ## Screenshots
 
@@ -27,7 +39,7 @@ A desktop client for [ntfy](https://github.com/binwiederhier/ntfy). Allows you t
 
 ### Flatpak
 
-[Ntfy Desktop is available on flathub](https://flathub.org/apps/moe.emmaexe.ntfyDesktop)
+[<img alt="flathub" height="56" src="https://flathub.org/api/badge?svg&locale=en">](https://flathub.org/apps/moe.emmaexe.ntfyDesktop)
 
 ### Fedora
 
@@ -66,7 +78,7 @@ sudo apt install ntfydesktop
 
 ### Arch
 
-In Arch Linux, Ntfy Desktop is available in the [Arch User Repository](https://aur.archlinux.org/packages/ntfydesktop), under the name `ntfydesktop`.
+On Arch Linux, Ntfy Desktop is available in the [Arch User Repository](https://aur.archlinux.org/packages/ntfydesktop), under the name `ntfydesktop`.
 
 Example installation method, using the `yay` AUR helper:
 
@@ -78,12 +90,12 @@ yay ntfydesktop
 
 You can download the latest build artifacts in the [latest release](https://github.com/emmaexe/ntfyDesktop/releases/latest) for manual installation.
 
+## Building
+
+To build the project, please refer to the [Building Guide](./scripts/README.md)
+
 ## Want to contribute? Found a bug? Have a question?
 
 [<img alt="github-plural" height="56" src="https://raw.githubusercontent.com/emmaexe/devins-badges/v3/assets/cozy/social/github-plural_vector.svg">](https://github.com/emmaexe/ntfyDesktop/issues)
 [<img alt="discord-plural" height="56" src="https://raw.githubusercontent.com/emmaexe/devins-badges/v3/assets/cozy/social/discord-plural_vector.svg">](https://ln.emmaexe.moe/discord-server)
 [<img alt="matrix-plural" height="56" src="https://raw.githubusercontent.com/emmaexe/devins-badges/v3/assets/cozy/social/matrix-plural_vector.svg">](https://ln.emmaexe.moe/matrix-server)
-
-## Building
-
-[Building instructions are available here](./scripts/README.md)

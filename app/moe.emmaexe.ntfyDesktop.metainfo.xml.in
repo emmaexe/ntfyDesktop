@@ -59,9 +59,22 @@
 
     <keywords>
       <keyword>notifications</keyword>
+      <keyword>ntfy</keyword>
     </keywords>
 
   <releases>
+    <release version="1.5.1" date="2025-">
+      <url type="details">https://github.com/emmaexe/ntfyDesktop/releases/tag/v1.5.1</url>
+      <description>
+        <p>Release v1.5.1</p>
+          <ul>
+            <li>Updated metadata</li>
+            <li>Spelling fixes</li>
+            <li>Added Ntfy Desktop to the Arch User Repository</li>
+            <li>Added support for aarch64</li>
+          </ul>
+      </description>
+    </release>
     <release version="1.5.0" date="2025-07-19">
       <url type="details">https://github.com/emmaexe/ntfyDesktop/releases/tag/v1.5.0</url>
       <description>
