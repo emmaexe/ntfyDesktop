@@ -41,7 +41,7 @@ void NtfyThread::run() {
     curl_easy_setopt(curlHandle, CURLOPT_XFERINFOFUNCTION, &NtfyThread::progressCallback);
     curl_easy_setopt(curlHandle, CURLOPT_XFERINFODATA, this);
     curl_easy_setopt(curlHandle, CURLOPT_NOPROGRESS, 0L);
-    curl_easy_setopt(curlHandle, CURLOPT_NOSIGNAL, 1L);
+    curl_easy_setopt(curlHandle, CURLOPT_CONNECTTIMEOUT, 10L);
     curl_easy_setopt(curlHandle, CURLOPT_USERAGENT, ND_USERAGENT);
     curl_easy_setopt(curlHandle, CURLOPT_HTTPHEADER, headers);
 

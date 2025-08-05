@@ -157,7 +157,6 @@ void ConnectionTester::runTest() {
     curl_easy_setopt(curlHandle, CURLOPT_ERRORBUFFER, curlError);
     curl_easy_setopt(curlHandle, CURLOPT_WRITEFUNCTION, &ConnectionTester::writeCallback);
     curl_easy_setopt(curlHandle, CURLOPT_WRITEDATA, this);
-    curl_easy_setopt(curlHandle, CURLOPT_NOSIGNAL, 1L);
     curl_easy_setopt(curlHandle, CURLOPT_TIMEOUT, 10L);
     curl_easy_setopt(curlHandle, CURLOPT_USERAGENT, ND_USERAGENT);
     curl_easy_setopt(curlHandle, CURLOPT_HTTPHEADER, headers);

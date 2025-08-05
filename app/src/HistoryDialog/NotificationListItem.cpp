@@ -181,7 +181,6 @@ AsyncCurlRequest::AsyncCurlRequest(const nlohmann::json& action, QObject* parent
         curl_easy_setopt(this->handle, CURLOPT_URL, this->url.c_str());
         curl_easy_setopt(this->handle, CURLOPT_HTTPHEADER, headers);
         curl_easy_setopt(this->handle, CURLOPT_USERAGENT, ND_USERAGENT);
-        curl_easy_setopt(this->handle, CURLOPT_NOSIGNAL, 1L);
         curl_easy_setopt(this->handle, CURLOPT_TIMEOUT, 120L);
         this->ready = true;
     } catch (const nlohmann::json::parse_error& e) {}

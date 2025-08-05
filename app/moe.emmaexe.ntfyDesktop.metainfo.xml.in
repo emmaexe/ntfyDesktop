@@ -70,6 +70,7 @@
           <ul>
             <li>Updated metadata</li>
             <li>Spelling fixes</li>
+            <li>Mitigate hanging threads bug</li>
             <li>Added Ntfy Desktop to the Arch User Repository</li>
             <li>Added support for aarch64</li>
           </ul>

@@ -22,7 +22,7 @@ A fully featured desktop client for [ntfy](https://github.com/binwiederhier/ntfy
 - Notification history
 - Full authentication support and ability to use all protocols that ntfy supports
 - Ability to import from an [ntfy android](https://github.com/binwiederhier/ntfy-android) backup
-- Customizable behavior when (re)connecting to servers and keeping history.
+- Customizable behavior when (re)connecting to servers and keeping history
 - Builds for `x86_64` and `aarch64` architectures
 
 ## Screenshots
