@@ -1,6 +1,6 @@
 # Maintainer: Emma <contact@emmaexe.moe>
 pkgname=ntfydesktop
-pkgver=1.5.0
+pkgver=1.5.1
 pkgrel=1
 pkgdesc="Subscribe to topics from any ntfy server and receive notifications natively on the desktop."
 arch=("x86_64" "aarch64")
