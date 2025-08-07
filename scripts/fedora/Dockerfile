@@ -1,7 +1,8 @@
 FROM fedora:latest
 
 RUN dnf update -y && \
-    dnf install -y @development-tools gcc-c++ ninja-build cmake extra-cmake-modules libcurl-devel qt6-qtbase-devel kf6-kcoreaddons-devel kf6-ki18n-devel kf6-knotifications-devel kf6-kxmlgui-devel rpm-build
+    dnf install -y @development-tools gcc-c++ ninja-build cmake extra-cmake-modules libcurl-devel qt6-qtbase-devel kf6-kcoreaddons-devel kf6-ki18n-devel kf6-knotifications-devel kf6-kxmlgui-devel rpm-build && \
+    dnf install -y --use-host-config --installroot=/roots/aarch64-rootfs --releasever=42 --forcearch=aarch64 --setopt=install_weak_deps=False libcurl-devel qt6-qtbase-devel kf6-kcoreaddons-devel kf6-ki18n-devel kf6-knotifications-devel kf6-kxmlgui-devel
 
 ARG USER_ID
 ARG GROUP_ID
