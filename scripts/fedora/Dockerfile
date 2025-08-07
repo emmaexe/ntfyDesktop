@@ -1,8 +1,7 @@
 FROM fedora:latest
 
 RUN dnf update -y && \
-    dnf install -y @development-tools && \
-    dnf install -y gcc-c++ ninja-build cmake extra-cmake-modules libcurl-devel qt6-qtbase-devel kf6-kcoreaddons-devel kf6-ki18n-devel kf6-knotifications-devel kf6-kxmlgui-devel rpm-build
+    dnf install -y @development-tools gcc-c++ ninja-build cmake extra-cmake-modules libcurl-devel qt6-qtbase-devel kf6-kcoreaddons-devel kf6-ki18n-devel kf6-knotifications-devel kf6-kxmlgui-devel rpm-build
 
 ARG USER_ID
 ARG GROUP_ID
