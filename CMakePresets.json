@@ -1,0 +1,136 @@
+{
+  "version": 10,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 31,
+    "patch": 0
+  },
+  "configurePresets": [
+    {
+        "name": "x86_64",
+        "hidden": false,
+        "generator": "Ninja",
+        "binaryDir": "${sourceDir}/build/x86_64",
+        "toolchainFile": "${sourceDir}/toolchain-x86_64.cmake"
+    },
+    {
+        "name": "aarch64",
+        "hidden": false,
+        "generator": "Ninja",
+        "binaryDir": "${sourceDir}/build/aarch64",
+        "toolchainFile": "${sourceDir}/toolchain-aarch64.cmake"
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "x86_64",
+      "configurePreset": "x86_64"
+    },
+    {
+      "name": "aarch64",
+      "configurePreset": "aarch64"
+    }
+  ],
+  "packagePresets": [
+    {
+      "name": "x86_64-fedora",
+      "configurePreset": "x86_64",
+      "generators": [
+        "TGZ",
+        "RPM"
+      ]
+    },
+    {
+      "name": "x86_64-ubuntu",
+      "configurePreset": "x86_64",
+      "generators": [
+        "DEB"
+      ]
+    },
+    {
+      "name": "aarch64-fedora",
+      "configurePreset": "aarch64",
+      "generators": [
+        "TGZ",
+        "RPM"
+      ]
+    },
+    {
+      "name": "aarch64-ubuntu",
+      "configurePreset": "aarch64",
+      "generators": [
+        "DEB"
+      ]
+    }
+  ],
+  "workflowPresets": [
+    {
+      "name": "fedora-x86_64",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "x86_64"
+        },
+        {
+          "type": "build",
+          "name": "x86_64"
+        },
+        {
+          "type": "package",
+          "name": "x86_64-fedora"
+        }
+      ]
+    },
+    {
+      "name": "fedora-aarch64",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "aarch64"
+        },
+        {
+          "type": "build",
+          "name": "aarch64"
+        },
+        {
+          "type": "package",
+          "name": "aarch64-fedora"
+        }
+      ]
+    },
+    {
+      "name": "ubuntu-x86_64",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "x86_64"
+        },
+        {
+          "type": "build",
+          "name": "x86_64"
+        },
+        {
+          "type": "package",
+          "name": "x86_64-ubuntu"
+        }
+      ]
+    },
+    {
+      "name": "ubuntu-aarch64",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "aarch64"
+        },
+        {
+          "type": "build",
+          "name": "aarch64"
+        },
+        {
+          "type": "package",
+          "name": "aarch64-ubuntu"
+        }
+      ]
+    }
+  ]
+}
