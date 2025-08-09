@@ -22,6 +22,7 @@ set(GEN_DIR "${CMAKE_BINARY_DIR}/generated")
 include_directories("${GEN_DIR}")
 
 # Libraries
+set(QT_DEFAULT_MAJOR_VERSION "6")
 find_package(ECM REQUIRED NO_MODULE)
 set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH})
 include(KDEInstallDirs) # This is supposed to be KDEInstallDirs6 but KDEInstallDirs6 is broken atm
