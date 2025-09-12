@@ -70,6 +70,7 @@ void NtfyThread::run() {
         }
     }
 
+    curl_slist_free_all(headers);
     curl_easy_cleanup(curlHandle);
 
     if (reconnectCount.has_value() && this->runCount > reconnectCount.value() && !pollMode) {
