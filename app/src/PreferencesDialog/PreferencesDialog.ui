@@ -551,6 +551,85 @@
        </item>
       </layout>
      </widget>
+     <widget class="QWidget" name="tab4">
+      <attribute name="title">
+       <string>Security</string>
+      </attribute>
+      <layout class="QGridLayout" name="securityGrid">
+       <item row="1" column="1">
+        <widget class="QLabel" name="CALabel">
+         <property name="toolTip">
+          <string>The path to a directory containing custom certificate authorities. Leave empty to disable.</string>
+         </property>
+         <property name="text">
+          <string>Custom CA Path</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="2">
+        <widget class="QLineEdit" name="CALineEdit">
+         <property name="toolTip">
+          <string>The path to a directory containing custom certificate authorities. Leave empty to disable.</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0" colspan="4">
+        <spacer name="verticalSpacer_2">
+         <property name="orientation">
+          <enum>Qt::Orientation::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="0" column="1" colspan="2">
+        <widget class="QCheckBox" name="tlsVerificationCheckBox">
+         <property name="cursor">
+          <cursorShape>PointingHandCursor</cursorShape>
+         </property>
+         <property name="toolTip">
+          <string>Verify TLS certificates against trusted certificate authorities</string>
+         </property>
+         <property name="text">
+          <string>TLS Verification</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0" rowspan="2">
+        <spacer name="horizontalSpacer_2">
+         <property name="orientation">
+          <enum>Qt::Orientation::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="0" column="3" rowspan="2">
+        <spacer name="horizontalSpacer_3">
+         <property name="orientation">
+          <enum>Qt::Orientation::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
     </widget>
    </item>
   </layout>
