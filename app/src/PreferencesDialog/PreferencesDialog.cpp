@@ -1,13 +1,14 @@
 #include "PreferencesDialog.hpp"
 
 #include "../Config/Config.hpp"
+#include "../DataBase/DataBase.hpp"
 #include "../Util/Util.hpp"
 #include "ui_PreferencesDialog.h"
 
 PreferencesDialog::PreferencesDialog(QWidget* parent): QDialog(parent), ui(new Ui::PreferencesDialog) {
     this->ui->setupUi(this);
     this->setAttribute(Qt::WA_DeleteOnClose);
-    this->fetchFromConfig();
+    this->fetchStored();
 
     QObject::connect(this->ui->saveButton, &QToolButton::clicked, this, &PreferencesDialog::saveButton);
 
@@ -47,6 +48,9 @@ PreferencesDialog::PreferencesDialog(QWidget* parent): QDialog(parent), ui(new U
 
     this->ui->startupNotificationCheckbox->setChecked(this->startupNotifications);
     this->ui->errorNotificationCheckbox->setChecked(this->errorNotifications);
+
+    this->ui->tlsVerificationCheckBox->setChecked(this->tlsVerification);
+    this->ui->CALineEdit->setText(QString::fromStdString(this->customCaPath));
 }
 
 PreferencesDialog::~PreferencesDialog() { delete ui; }
@@ -63,7 +67,9 @@ void PreferencesDialog::saveButton() {
     this->reconnectTimeoutValue = this->ui->timeoutSpinBox->value();
     this->startupNotifications = this->ui->startupNotificationCheckbox->checkState() == Qt::CheckState::Checked;
     this->errorNotifications = this->ui->errorNotificationCheckbox->checkState() == Qt::CheckState::Checked;
-    this->updateToConfig();
+    this->tlsVerification = this->ui->tlsVerificationCheckBox->checkState() == Qt::CheckState::Checked;
+    this->customCaPath = this->ui->CALineEdit->text().toStdString();
+    this->storeChanges();
     this->accept();
 }
 
@@ -141,7 +147,7 @@ const std::array<std::string, 3> PreferencesDialog::reconnectModes = { "Forever"
 const std::array<std::string, 7> PreferencesDialog::reconnectTimeoutModes = { "Seconds", "Minutes", "Hours", "Days", "Weeks", "Months", "Years" };
 
 
-void PreferencesDialog::fetchFromConfig() {
+void PreferencesDialog::fetchStored() {
     Config::read();
     try {
         nlohmann::json preferences = Config::data()["preferences"];
@@ -245,9 +251,12 @@ void PreferencesDialog::fetchFromConfig() {
             }
         }
     } catch (const nlohmann::json::type_error& ignored) {}
+    DataBase db;
+    this->tlsVerification = db.getTlsVerificationPreference();
+    this->customCaPath = db.getCAPathPreference();
 }
 
-void PreferencesDialog::updateToConfig() {
+void PreferencesDialog::storeChanges() {
     nlohmann::json preferences = nlohmann::json::object();
     preferences["history"]["mode"] = this->historyModes[this->historyMode];
     preferences["history"]["numberValue"] = this->historyNumberValue;
@@ -262,4 +271,7 @@ void PreferencesDialog::updateToConfig() {
     preferences["reconnect"]["timeoutValue"] = this->reconnectTimeoutValue;
     Config::data()["preferences"] = preferences;
     Config::write();
+    DataBase db;
+    db.setTlsVerificationPreference(this->tlsVerification);
+    db.setCAPathPreference(this->customCaPath);
 }
