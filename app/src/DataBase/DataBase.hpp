@@ -33,6 +33,11 @@ class DataBase {
         void deleteNotification(const std::string& id);
         void deleteNotifications(const std::vector<std::string>& ids);
 
+        void setTlsVerificationPreference(bool preference);
+        void setCAPathPreference(const std::string& preference);
+        bool getTlsVerificationPreference();
+        std::string getCAPathPreference();
+
         bool hasRows(const std::string& table);
         int countRows(const std::string& table);
         void executeQuery(const std::string& query);
