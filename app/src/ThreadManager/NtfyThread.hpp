@@ -13,7 +13,7 @@
 
 class NtfyThread {
     public:
-        NtfyThread(std::string name, std::string protocol, std::string domain, std::string topic, AuthConfig authConfig, int lastTimestamp, std::optional<int> reconnectCount, std::optional<int> timeout, std::mutex* mutex, bool pollMode = false);
+        NtfyThread(std::string name, std::string protocol, std::string domain, std::string topic, AuthConfig authConfig, int lastTimestamp, bool verifyTls, std::string CAPath, std::optional<int> reconnectCount, std::optional<int> timeout, std::mutex* mutex, bool pollMode = false);
         ~NtfyThread();
         void run();
         void stop();
@@ -28,11 +28,11 @@ class NtfyThread {
         std::thread thread;
         std::mutex* mutex;
         std::atomic<bool> running = false, error = false;
-        std::string internalName, internalProtocol, internalDomain, internalTopic, url;
+        std::string internalName, internalProtocol, internalDomain, internalTopic, CAPath, url;
         int lastTimestamp;
         std::atomic<int> runCount = 0;
         std::optional<int> reconnectCount, timeout;
-        bool pollMode;
+        bool verifyTls, pollMode;
         AuthConfig internalAuthConfig;
         static size_t writeCallback(char* ptr, size_t size, size_t nmemb, void* userdata);
         static int progressCallback(void* clientp, curl_off_t dltotal, curl_off_t dlnow, curl_off_t ultotal, curl_off_t ulnow);

@@ -1,5 +1,6 @@
 #include "NotificationListItem.hpp"
 
+#include "../DataBase/DataBase.hpp"
 #include "../NotificationManager/NtfyNotification.hpp"
 #include "../Util/FileManager.hpp"
 #include "../Util/Util.hpp"
@@ -182,6 +183,18 @@ AsyncCurlRequest::AsyncCurlRequest(const nlohmann::json& action, QObject* parent
         curl_easy_setopt(this->handle, CURLOPT_HTTPHEADER, headers);
         curl_easy_setopt(this->handle, CURLOPT_USERAGENT, ND_USERAGENT);
         curl_easy_setopt(this->handle, CURLOPT_TIMEOUT, 120L);
+
+        bool verifyTls;
+        std::string CAPath;
+        {
+            DataBase db;
+            verifyTls = db.getTlsVerificationPreference();
+            CAPath = db.getCAPathPreference();
+        }
+
+        curl_easy_setopt(this->handle, CURLOPT_SSL_VERIFYPEER, verifyTls ? 1L : 0L);
+        if (!CAPath.empty()) { curl_easy_setopt(this->handle, Util::Strings::endsWith(CAPath, "/") ? CURLOPT_CAPATH : CURLOPT_CAINFO, CAPath.c_str()); }
+
         this->ready = true;
     } catch (const nlohmann::json::parse_error& e) {}
 }

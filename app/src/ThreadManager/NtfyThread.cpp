@@ -12,8 +12,22 @@
 #include <QString>
 #include <iostream>
 
-NtfyThread::NtfyThread(std::string name, std::string protocol, std::string domain, std::string topic, AuthConfig authConfig, int lastTimestamp, std::optional<int> reconnectCount, std::optional<int> timeout, std::mutex* mutex, bool pollMode):
-    internalName(name), internalDomain(domain), internalTopic(topic), internalAuthConfig(authConfig), internalProtocol(protocol), lastTimestamp(lastTimestamp), reconnectCount(reconnectCount), timeout(timeout), mutex(mutex), pollMode(pollMode) {
+NtfyThread::NtfyThread(
+    std::string name, std::string protocol, std::string domain, std::string topic, AuthConfig authConfig, int lastTimestamp, bool verifyTls, std::string CAPath, std::optional<int> reconnectCount,
+    std::optional<int> timeout, std::mutex* mutex, bool pollMode
+):
+    internalName(name),
+    internalDomain(domain),
+    internalTopic(topic),
+    internalAuthConfig(authConfig),
+    internalProtocol(protocol),
+    lastTimestamp(lastTimestamp),
+    verifyTls(verifyTls),
+    CAPath(CAPath),
+    reconnectCount(reconnectCount),
+    timeout(timeout),
+    mutex(mutex),
+    pollMode(pollMode) {
     if (!(this->internalProtocol == "https" || this->internalProtocol == "http" || this->internalProtocol == "wss" || this->internalProtocol == "ws")) { this->internalProtocol = "https"; }
     this->url = this->internalProtocol + "://" + this->internalDomain + "/" + this->internalTopic + (Util::Strings::startsWith(this->internalProtocol, "ws") ? "/ws" : "/json");
     this->thread = std::thread(&NtfyThread::run, this);
@@ -44,6 +58,9 @@ void NtfyThread::run() {
     curl_easy_setopt(curlHandle, CURLOPT_CONNECTTIMEOUT, 10L);
     curl_easy_setopt(curlHandle, CURLOPT_USERAGENT, ND_USERAGENT);
     curl_easy_setopt(curlHandle, CURLOPT_HTTPHEADER, headers);
+    curl_easy_setopt(curlHandle, CURLOPT_SSL_VERIFYPEER, this->verifyTls ? 1L : 0L);
+
+    if (!this->CAPath.empty()) { curl_easy_setopt(curlHandle, Util::Strings::endsWith(this->CAPath, "/") ? CURLOPT_CAPATH : CURLOPT_CAINFO, this->CAPath.c_str()); }
 
     if (this->pollMode) {
         std::string currentUrl = this->url + "?poll=1&since=all";

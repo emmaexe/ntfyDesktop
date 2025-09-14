@@ -162,6 +162,19 @@ void ConnectionTester::runTest() {
     curl_easy_setopt(curlHandle, CURLOPT_HTTPHEADER, headers);
     curl_easy_setopt(curlHandle, CURLOPT_URL, url.c_str());
 
+    bool verifyTls;
+    std::string CAPath;
+    {
+        DataBase db;
+        verifyTls = db.getTlsVerificationPreference();
+        CAPath = db.getCAPathPreference();
+    }
+
+    curl_easy_setopt(curlHandle, CURLOPT_SSL_VERIFYPEER, verifyTls ? 1L : 0L);
+    if (!CAPath.empty()) {
+        curl_easy_setopt(curlHandle, Util::Strings::endsWith(CAPath, "/") ? CURLOPT_CAPATH : CURLOPT_CAINFO, CAPath.c_str());
+    }
+
     curl_easy_perform(curlHandle);
 
     emit testFinished(this->testSuccessful);

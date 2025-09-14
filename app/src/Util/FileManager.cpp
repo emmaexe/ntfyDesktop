@@ -1,6 +1,7 @@
 #include "FileManager.hpp"
 
 #include "./Util.hpp"
+#include "../DataBase/DataBase.hpp"
 #include "ntfyDesktop.hpp"
 
 #include <curl/curl.h>
@@ -56,6 +57,19 @@ QUrl FileManager::urlToTempFile(QUrl url, bool outsidePath) {
 
         char curlError[CURL_ERROR_SIZE] = "";
         curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, curlError);
+
+        bool verifyTls;
+        std::string CAPath;
+        {
+            DataBase db;
+            verifyTls = db.getTlsVerificationPreference();
+            CAPath = db.getCAPathPreference();
+        }
+
+        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, verifyTls ? 1L : 0L);
+        if (!CAPath.empty()) {
+            curl_easy_setopt(curl, Util::Strings::endsWith(CAPath, "/") ? CURLOPT_CAPATH : CURLOPT_CAINFO, CAPath.c_str());
+        }
 
         if (curl_easy_perform(curl) != CURLE_OK) {
             std::string err = "Failed to download file: ";
