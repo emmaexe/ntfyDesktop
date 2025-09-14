@@ -5,6 +5,8 @@
 #include "../Util/Util.hpp"
 #include "ui_PreferencesDialog.h"
 
+#include <QDesktopServices>
+
 PreferencesDialog::PreferencesDialog(QWidget* parent): QDialog(parent), ui(new Ui::PreferencesDialog) {
     this->ui->setupUi(this);
     this->setAttribute(Qt::WA_DeleteOnClose);
@@ -51,6 +53,8 @@ PreferencesDialog::PreferencesDialog(QWidget* parent): QDialog(parent), ui(new U
 
     this->ui->tlsVerificationCheckBox->setChecked(this->tlsVerification);
     this->ui->CALineEdit->setText(QString::fromStdString(this->customCaPath));
+
+    QObject::connect(this->ui->CAToolButton, &QToolButton::clicked, this, &PreferencesDialog::CAButton);
 }
 
 PreferencesDialog::~PreferencesDialog() { delete ui; }
@@ -75,69 +79,81 @@ void PreferencesDialog::saveButton() {
 
 void PreferencesDialog::keepHistoryChanged(int index) {
     switch (index) {
-    case 1: {
-        this->ui->aNumberLabel->show();
-        this->ui->aNumberSpinBox->show();
-        this->ui->recentLabel->hide();
-        this->ui->recentSpinBox->hide();
-        this->ui->recentComboBox->hide();
-        this->ui->sourcePickerIndividual->show();
-        this->ui->sourcePickerGlobal->show();
-        break;
-    }
-    case 2: {
-        this->ui->aNumberLabel->hide();
-        this->ui->aNumberSpinBox->hide();
-        this->ui->recentLabel->show();
-        this->ui->recentSpinBox->show();
-        this->ui->recentComboBox->show();
-        this->ui->sourcePickerIndividual->hide();
-        this->ui->sourcePickerGlobal->hide();
-        break;
-    }
-    default: {
-        this->ui->aNumberLabel->hide();
-        this->ui->aNumberSpinBox->hide();
-        this->ui->recentLabel->hide();
-        this->ui->recentSpinBox->hide();
-        this->ui->recentComboBox->hide();
-        this->ui->sourcePickerIndividual->hide();
-        this->ui->sourcePickerGlobal->hide();
-        break;
-    }
+        case 1:
+            {
+                this->ui->aNumberLabel->show();
+                this->ui->aNumberSpinBox->show();
+                this->ui->recentLabel->hide();
+                this->ui->recentSpinBox->hide();
+                this->ui->recentComboBox->hide();
+                this->ui->sourcePickerIndividual->show();
+                this->ui->sourcePickerGlobal->show();
+                break;
+            }
+        case 2:
+            {
+                this->ui->aNumberLabel->hide();
+                this->ui->aNumberSpinBox->hide();
+                this->ui->recentLabel->show();
+                this->ui->recentSpinBox->show();
+                this->ui->recentComboBox->show();
+                this->ui->sourcePickerIndividual->hide();
+                this->ui->sourcePickerGlobal->hide();
+                break;
+            }
+        default:
+            {
+                this->ui->aNumberLabel->hide();
+                this->ui->aNumberSpinBox->hide();
+                this->ui->recentLabel->hide();
+                this->ui->recentSpinBox->hide();
+                this->ui->recentComboBox->hide();
+                this->ui->sourcePickerIndividual->hide();
+                this->ui->sourcePickerGlobal->hide();
+                break;
+            }
     }
 }
 
 void PreferencesDialog::retryChanged(int index) {
     switch (index) {
-    case 0: {
-        this->ui->retryNumberLabel->hide();
-        this->ui->retryNumberSpinBox->hide();
-        this->ui->timeoutLabel->show();
-        this->ui->timeoutComboBox->show();
-        this->ui->timeoutSpinBox->show();
-        break;
+        case 0:
+            {
+                this->ui->retryNumberLabel->hide();
+                this->ui->retryNumberSpinBox->hide();
+                this->ui->timeoutLabel->show();
+                this->ui->timeoutComboBox->show();
+                this->ui->timeoutSpinBox->show();
+                break;
+            }
+        case 1:
+            {
+                this->ui->retryNumberLabel->show();
+                this->ui->retryNumberSpinBox->show();
+                this->ui->timeoutLabel->show();
+                this->ui->timeoutComboBox->show();
+                this->ui->timeoutSpinBox->show();
+                break;
+            }
+        case 2:
+            {
+                this->ui->retryNumberLabel->hide();
+                this->ui->retryNumberSpinBox->hide();
+                this->ui->timeoutLabel->hide();
+                this->ui->timeoutComboBox->hide();
+                this->ui->timeoutSpinBox->hide();
+                break;
+            }
+        default:
+            {
+                break;
+            }
     }
-    case 1: {
-        this->ui->retryNumberLabel->show();
-        this->ui->retryNumberSpinBox->show();
-        this->ui->timeoutLabel->show();
-        this->ui->timeoutComboBox->show();
-        this->ui->timeoutSpinBox->show();
-        break;
-    }
-    case 2: {
-        this->ui->retryNumberLabel->hide();
-        this->ui->retryNumberSpinBox->hide();
-        this->ui->timeoutLabel->hide();
-        this->ui->timeoutComboBox->hide();
-        this->ui->timeoutSpinBox->hide();
-        break;
-    }
-    default: {
-        break;
-    }
-    }
+}
+
+void PreferencesDialog::CAButton() {
+    QDesktopServices::openUrl(QUrl("https://curl.se/libcurl/c/CURLOPT_CAPATH.html"));
+    QDesktopServices::openUrl(QUrl("https://curl.se/libcurl/c/CURLOPT_CAINFO.html"));
 }
 
 const std::array<std::string, 4> PreferencesDialog::historyModes = { "All", "Number", "Recent", "None" };
@@ -145,7 +161,6 @@ const std::array<std::string, 7> PreferencesDialog::historyRecentModes = { "Seco
 const std::array<std::string, 2> PreferencesDialog::historySourceModes = { "Individual", "All" };
 const std::array<std::string, 3> PreferencesDialog::reconnectModes = { "Forever", "Number", "Never" };
 const std::array<std::string, 7> PreferencesDialog::reconnectTimeoutModes = { "Seconds", "Minutes", "Hours", "Days", "Weeks", "Months", "Years" };
-
 
 void PreferencesDialog::fetchStored() {
     Config::read();
@@ -194,12 +209,8 @@ void PreferencesDialog::fetchStored() {
                 }
             }
             if (preferences["notifications"].is_object()) {
-                if (preferences["notifications"]["startup"].is_boolean()) {
-                    this->startupNotifications = preferences["notifications"]["startup"];
-                }
-                if (preferences["notifications"]["error"].is_boolean()) {
-                    this->errorNotifications= preferences["notifications"]["error"];
-                }
+                if (preferences["notifications"]["startup"].is_boolean()) { this->startupNotifications = preferences["notifications"]["startup"]; }
+                if (preferences["notifications"]["error"].is_boolean()) { this->errorNotifications = preferences["notifications"]["error"]; }
             }
             if (preferences["reconnect"].is_object() && preferences["reconnect"]["mode"].is_string()) {
                 std::string mode = preferences["reconnect"]["mode"].get<std::string>();
@@ -224,7 +235,8 @@ void PreferencesDialog::fetchStored() {
                     } else if (timeoutMode == "years") {
                         this->reconnectTimeoutMode = 6;
                     }
-                } else if (mode == "number" && preferences["reconnect"]["timeoutMode"].is_string() && preferences["reconnect"]["timeoutValue"].is_number() && preferences["reconnect"]["numberValue"].is_number()) {
+                } else if (mode == "number" && preferences["reconnect"]["timeoutMode"].is_string() && preferences["reconnect"]["timeoutValue"].is_number() &&
+                           preferences["reconnect"]["numberValue"].is_number()) {
                     this->reconnectMode = 1;
                     this->reconnectTimeoutValue = preferences["reconnect"]["timeoutValue"].get<int>();
                     this->reconnectNumberValue = preferences["reconnect"]["numberValue"].get<int>();

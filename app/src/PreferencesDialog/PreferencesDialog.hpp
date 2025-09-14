@@ -18,6 +18,7 @@ class PreferencesDialog: public QDialog {
         void saveButton();
         void keepHistoryChanged(int index);
         void retryChanged(int index);
+        void CAButton();
     private:
         Ui::PreferencesDialog* ui;
         QButtonGroup* sourceButtons;
