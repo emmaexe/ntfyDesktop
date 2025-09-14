@@ -444,18 +444,15 @@ void DataBase::deleteNotifications(const std::vector<std::string>& ids) {
 
 void DataBase::setTlsVerificationPreference(bool preference) {
     QSqlQuery query(this->db);
-    std::string preferenceStr = preference ? "1" : "0";
-    query.prepare(QString::fromStdString(
-        "INSERT OR REPLACE INTO GlobalPreferences (key, value) VALUES ('TlsVerification', '" + preferenceStr + "');"
-    ));
+    query.prepare("INSERT OR REPLACE INTO GlobalPreferences (key, value) VALUES ('TlsVerification', :preference);");
+    query.bindValue(":preference", preference ? "1" : "0");
     if (!query.exec()) { std::cerr << "DataBase query failed: " << query.lastError().text().toStdString() << std::endl; }
 }
 
 void DataBase::setCAPathPreference(const std::string& preference) {
     QSqlQuery query(this->db);
-    query.prepare(QString::fromStdString(
-        "INSERT OR REPLACE INTO GlobalPreferences (key, value) VALUES ('CaPath', '" + preference + "');"
-    ));
+    query.prepare("INSERT OR REPLACE INTO GlobalPreferences (key, value) VALUES ('CaPath', :preference);");
+    query.bindValue(":preference", QString::fromStdString(preference));
     if (!query.exec()) { std::cerr << "DataBase query failed: " << query.lastError().text().toStdString() << std::endl; }
 }
 
