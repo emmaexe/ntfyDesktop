@@ -1,5 +1,7 @@
 #include "FileManager.hpp"
 
+#include "../DataBase/DataBase.hpp"
+#include "../Util/Curl.hpp"
 #include "./Util.hpp"
 #include "ntfyDesktop.hpp"
 
@@ -46,24 +48,20 @@ QUrl FileManager::urlToTempFile(QUrl url, bool outsidePath) {
     file->setAutoRemove(true);
 
     std::ofstream fileStream(file->fileName().toStdString(), std::ios::binary);
-    CURL* curl = curl_easy_init();
-    if (curl) {
-        curl_easy_setopt(curl, CURLOPT_URL, url.toString().toStdString().c_str());
-        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, FileManager::urlToTempFileWriteCallback);
-        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &fileStream);
-        curl_easy_setopt(curl, CURLOPT_USERAGENT, Util::getRandomUA().c_str());
-        curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
+    Curl curlInstance = Curl::withDefaults();
 
-        char curlError[CURL_ERROR_SIZE] = "";
-        curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, curlError);
+    curlInstance.setOpt(CURLOPT_URL, url.toString().toStdString().c_str());
+    curlInstance.setOpt(CURLOPT_WRITEFUNCTION, FileManager::urlToTempFileWriteCallback);
+    curlInstance.setOpt(CURLOPT_WRITEDATA, &fileStream);
+    curlInstance.setOpt(CURLOPT_FOLLOWLOCATION, 1L);
 
-        if (curl_easy_perform(curl) != CURLE_OK) {
-            std::string err = "Failed to download file: ";
-            err.append(curlError);
-            throw FileManagerException(err.c_str());
-        }
-    } else {
-        throw FileManagerException("Unable to create libcurl handle.");
+    char curlError[CURL_ERROR_SIZE] = "";
+    curlInstance.setOpt(CURLOPT_ERRORBUFFER, curlError);
+
+    if (curl_easy_perform(curlInstance.handle()) != CURLE_OK) {
+        std::string err = "Failed to download file: ";
+        err.append(curlError);
+        throw FileManagerException(err.c_str());
     }
 
     QString fileName = file->fileName();

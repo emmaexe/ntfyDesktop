@@ -1,10 +1,10 @@
 #include "ConfigTab.hpp"
 
+#include "../Util/Curl.hpp"
 #include "../Util/Util.hpp"
 #include "ntfyDesktop.hpp"
 #include "ui_ConfigTab.h"
 
-#include <curl/curl.h>
 #include <nlohmann/json.hpp>
 
 #include <iostream>
@@ -134,35 +134,31 @@ void ConfigTab::authTypeChanged(int index) {
     }
 }
 
-ConnectionTester::ConnectionTester(const std::string& name, const std::string& protocol, const std::string& domain, const std::string& topic, const AuthConfig& authConfig, std::string& testMessage): name(name), domain(domain), topic(topic), authConfig(authConfig), protocol(protocol), testMessage(testMessage) {}
+ConnectionTester::ConnectionTester(const std::string& name, const std::string& protocol, const std::string& domain, const std::string& topic, const AuthConfig& authConfig, std::string& testMessage):
+    name(name), domain(domain), topic(topic), authConfig(authConfig), protocol(protocol), testMessage(testMessage) {}
 
 void ConnectionTester::runTest() {
     this->testSuccessful = false;
     this->testMessage = "Connection failed.";
     std::string url = this->protocol + "://" + this->domain + "/" + this->topic + (Util::Strings::startsWith(this->protocol, "ws") ? "/ws" : "/json");
 
-    CURL* curlHandle = curl_easy_init();
-    char curlError[CURL_ERROR_SIZE] = "";
-    curl_slist* headers = NULL;
+    Curl curlInstance = Curl::withDefaults();
+    CurlList headers;
 
     if (this->authConfig.type == AuthType::USERNAME_PASSWORD) {
         QByteArray base64 = QString::fromStdString(this->authConfig.username + ":" + this->authConfig.password).toUtf8().toBase64();
-        std::string header = "Authorization: Basic " + std::string(base64.constData(), base64.length());
-        headers = curl_slist_append(headers, header.c_str());
+        headers.append("Authorization: Basic " + std::string(base64.constData(), base64.length()));
     } else if (this->authConfig.type == AuthType::TOKEN) {
-        std::string header = "Authorization: Bearer " + this->authConfig.token;
-        headers = curl_slist_append(headers, header.c_str());
+        headers.append("Authorization: Bearer " + this->authConfig.token);
     }
 
-    curl_easy_setopt(curlHandle, CURLOPT_ERRORBUFFER, curlError);
-    curl_easy_setopt(curlHandle, CURLOPT_WRITEFUNCTION, &ConnectionTester::writeCallback);
-    curl_easy_setopt(curlHandle, CURLOPT_WRITEDATA, this);
-    curl_easy_setopt(curlHandle, CURLOPT_TIMEOUT, 10L);
-    curl_easy_setopt(curlHandle, CURLOPT_USERAGENT, ND_USERAGENT);
-    curl_easy_setopt(curlHandle, CURLOPT_HTTPHEADER, headers);
-    curl_easy_setopt(curlHandle, CURLOPT_URL, url.c_str());
+    curlInstance.setOpt(CURLOPT_WRITEFUNCTION, &ConnectionTester::writeCallback);
+    curlInstance.setOpt(CURLOPT_WRITEDATA, this);
+    curlInstance.setOpt(CURLOPT_TIMEOUT, 10L);
+    curlInstance.setOpt(CURLOPT_HTTPHEADER, headers.handle());
+    curlInstance.setOpt(CURLOPT_URL, url.c_str());
 
-    curl_easy_perform(curlHandle);
+    curl_easy_perform(curlInstance.handle());
 
     emit testFinished(this->testSuccessful);
 }

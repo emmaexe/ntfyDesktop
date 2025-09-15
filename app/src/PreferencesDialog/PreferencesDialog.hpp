@@ -18,6 +18,7 @@ class PreferencesDialog: public QDialog {
         void saveButton();
         void keepHistoryChanged(int index);
         void retryChanged(int index);
+        void CAButton();
     private:
         Ui::PreferencesDialog* ui;
         QButtonGroup* sourceButtons;
@@ -27,7 +28,8 @@ class PreferencesDialog: public QDialog {
         static const std::array<std::string, 3> reconnectModes;
         static const std::array<std::string, 7> reconnectTimeoutModes;
         int historyMode = 0, historyNumberValue = 5000, historyRecentValue = 2, historyRecentMode = 4, historySourceMode = 0, reconnectMode = 1, reconnectNumberValue = 3, reconnectTimeoutValue = 2, reconnectTimeoutMode = 1;
-        bool startupNotifications = true, errorNotifications = true;
-        void fetchFromConfig();
-        void updateToConfig();
+        bool startupNotifications = true, errorNotifications = true, tlsVerification = true;
+        std::string customCaPath = "";
+        void fetchStored();
+        void storeChanges();
 };

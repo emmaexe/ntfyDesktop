@@ -20,7 +20,6 @@ void ThreadManager::stopAll() {
 void ThreadManager::restartConfig() {
     this->stopAll();
 
-
     std::optional<int> reconnectCount = std::make_optional(0), timeout = std::nullopt;
     try {
         nlohmann::json reconnectConfig = Config::data()["preferences"]["reconnect"];
@@ -53,12 +52,17 @@ void ThreadManager::restartConfig() {
     DataBase db;
     for (nlohmann::json& source: Config::data()["sources"]) {
         try {
-            int lastTimestamp = -1;
             std::string name = source["name"].get<std::string>(), protocol = source["protocol"].get<std::string>(), domain = source["domain"].get<std::string>(), topic = source["topic"].get<std::string>(), topicHash = Util::topicHash(domain, topic);
             AuthConfig authConfig = db.getAuth(topicHash);
+
+            int lastTimestamp = -1;
             std::optional<int> time = db.getLastTimestamp(topicHash);
             if (time.has_value()) { lastTimestamp = time.value(); }
-            this->threads.push_back(std::make_unique<NtfyThread>(name, protocol, domain, topic, authConfig, lastTimestamp, reconnectCount, timeout, &this->mutex));
+
+            bool verifyTls = db.getTlsVerificationPreference();
+            std::string CAPath = db.getCAPathPreference();
+
+            this->threads.push_back(std::make_unique<NtfyThread>(name, protocol, domain, topic, authConfig, lastTimestamp, verifyTls, CAPath, reconnectCount, timeout, &this->mutex));
         } catch (nlohmann::json::out_of_range e) { std::cerr << "Invalid source in config, ignoring: " << source << std::endl; }
     }
 }

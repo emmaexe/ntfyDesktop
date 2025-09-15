@@ -2,6 +2,7 @@
 
 #include "../Config/Config.hpp"
 #include "../Util/Util.hpp"
+#include "../HistoryDialog/NotificationListItem.hpp"
 #include "ntfyDesktop.hpp"
 
 #include <nlohmann/json.hpp>
@@ -33,6 +34,18 @@ DataBase::DataBase() {
         query.exec(
             "INSERT OR REPLACE INTO meta (key, value)"
             "VALUES ('version', '" ND_VERSION "');"
+        ) &&
+        query.exec(R"(
+            CREATE TABLE IF NOT EXISTS GlobalPreferences (
+                Key TEXT NOT NULL PRIMARY KEY,
+                Value TEXT NOT NULL
+            );
+        )") &&
+        query.exec(
+            "INSERT INTO GlobalPreferences (key, value)"
+            "VALUES ('TlsVerification', '1'),"
+            "       ('CaPath', '')"
+            "ON CONFLICT(key) DO NOTHING;"
         ) &&
         query.exec(R"(
             CREATE TABLE IF NOT EXISTS Auth (
@@ -427,6 +440,44 @@ void DataBase::deleteNotifications(const std::vector<std::string>& ids) {
     } else {
         std::cerr << "DataBase query failed: " << query.lastError().text().toStdString() << std::endl;
         this->db.rollback();
+    }
+}
+
+void DataBase::setTlsVerificationPreference(bool preference) {
+    QSqlQuery query(this->db);
+    query.prepare("INSERT OR REPLACE INTO GlobalPreferences (key, value) VALUES ('TlsVerification', :preference);");
+    query.bindValue(":preference", preference ? "1" : "0");
+    if (!query.exec()) { std::cerr << "DataBase query failed: " << query.lastError().text().toStdString() << std::endl; }
+}
+
+void DataBase::setCAPathPreference(const std::string& preference) {
+    QSqlQuery query(this->db);
+    query.prepare("INSERT OR REPLACE INTO GlobalPreferences (key, value) VALUES ('CaPath', :preference);");
+    query.bindValue(":preference", QString::fromStdString(preference));
+    if (!query.exec()) { std::cerr << "DataBase query failed: " << query.lastError().text().toStdString() << std::endl; }
+}
+
+bool DataBase::getTlsVerificationPreference() {
+    QSqlQuery query(this->db);
+    query.prepare(
+        "SELECT value FROM GlobalPreferences WHERE key = 'TlsVerification';"
+    );
+    if (query.exec() && query.next()) {
+        return query.value(0).toString().toStdString() != "0";
+    } else {
+        return true;
+    }
+}
+
+std::string DataBase::getCAPathPreference() {
+    QSqlQuery query(this->db);
+    query.prepare(
+        "SELECT value FROM GlobalPreferences WHERE key = 'CaPath';"
+    );
+    if (query.exec() && query.next()) {
+        return query.value(0).toString().toStdString();
+    } else {
+        return "";
     }
 }
 

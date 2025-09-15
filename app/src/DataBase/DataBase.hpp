@@ -1,12 +1,13 @@
 #pragma once
 
 #include "../NotificationManager/NtfyNotification.hpp"
-#include "../HistoryDialog/HistoryDialog.hpp"
 
 #include <QtSql/QSqlDatabase>
 #include <QtSql/QSqlQuery>
 #include <string>
 #include <optional>
+
+class NotificationListItem;
 
 enum AuthType {
     NONE, USERNAME_PASSWORD, TOKEN
@@ -32,6 +33,11 @@ class DataBase {
         std::vector<std::unique_ptr<NotificationListItem>> getNotificationsAsListItem(QWidget* parent = nullptr);
         void deleteNotification(const std::string& id);
         void deleteNotifications(const std::vector<std::string>& ids);
+
+        void setTlsVerificationPreference(bool preference);
+        void setCAPathPreference(const std::string& preference);
+        bool getTlsVerificationPreference();
+        std::string getCAPathPreference();
 
         bool hasRows(const std::string& table);
         int countRows(const std::string& table);
