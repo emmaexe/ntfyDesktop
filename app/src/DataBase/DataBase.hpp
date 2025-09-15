@@ -1,12 +1,13 @@
 #pragma once
 
 #include "../NotificationManager/NtfyNotification.hpp"
-#include "../HistoryDialog/HistoryDialog.hpp"
 
 #include <QtSql/QSqlDatabase>
 #include <QtSql/QSqlQuery>
 #include <string>
 #include <optional>
+
+class NotificationListItem;
 
 enum AuthType {
     NONE, USERNAME_PASSWORD, TOKEN

@@ -13,14 +13,8 @@
  */
 namespace Util {
     /**
-     * @brief Get a random number in the range [min, max].
-     *
-     * @param min The start of the number range.
-     * @param max The end of the number range.
-     * @return int - The random number.
+     * @brief String related utilities
      */
-    int random(int min, int max);
-
     namespace Strings {
         /**
          * @brief Split a string into a vector of strings based on a delimiter.
@@ -88,6 +82,32 @@ namespace Util {
     }
 
     /**
+     * @brief Color related functions for dynamic theme handling
+     */
+    namespace Colors {
+        enum ColorMode { Failure, Success, Normal };
+        void setButtonColor(QAbstractButton& button, ColorMode mode = ColorMode::Normal);
+        const QColor textColor();
+        const QColor textColorSuccess();
+        const QColor textColorFailure();
+        const QColor buttonColor();
+        const QColor buttonColorSuccess();
+        const QColor buttonColorFailure();
+        const QColor buttonTextColor();
+        const QColor buttonTextColorSuccess();
+        const QColor buttonTextColorFailure();
+    }
+
+    /**
+     * @brief Get a random number in the range [min, max].
+     *
+     * @param min The start of the number range.
+     * @param max The end of the number range.
+     * @return int - The random number.
+     */
+    int random(int min, int max);
+
+    /**
      * @brief Get a random, commonly used user agent.
      *
      * @param limit Limit the search to the top N most commonly used user agents.
@@ -101,6 +121,7 @@ namespace Util {
      * @param domain The domain to check
      */
     bool isDomain(const std::string& domain);
+
     /**
      * @brief Check if a string contains a valid ntfy topic
      *
@@ -123,23 +144,6 @@ namespace Util {
      * @throws std::invalid_argument - Thrown when either of the strings can't be recognised as a valid version.
      */
     int versionCompare(const std::string& first, const std::string& second);
-
-    /**
-     * @brief Color related functions for dynamic theme handling
-     */
-    namespace Colors {
-        enum ColorMode { Failure, Success, Normal };
-        void setButtonColor(QAbstractButton& button, ColorMode mode = ColorMode::Normal);
-        const QColor textColor();
-        const QColor textColorSuccess();
-        const QColor textColorFailure();
-        const QColor buttonColor();
-        const QColor buttonColorSuccess();
-        const QColor buttonColorFailure();
-        const QColor buttonTextColor();
-        const QColor buttonTextColorSuccess();
-        const QColor buttonTextColorFailure();
-    }
 
     /**
      * @brief Generate hash representing a topic of a specific ntfy server.

@@ -2,6 +2,7 @@
 
 #include "../Config/Config.hpp"
 #include "../Util/Util.hpp"
+#include "../HistoryDialog/NotificationListItem.hpp"
 #include "ntfyDesktop.hpp"
 
 #include <nlohmann/json.hpp>

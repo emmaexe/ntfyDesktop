@@ -1,6 +1,7 @@
 #pragma once
 
-#include <curl/curl.h>
+#include "../Util/Curl.hpp"
+
 #include <nlohmann/json.hpp>
 
 #include <QWidget>
@@ -59,8 +60,8 @@ class AsyncCurlRequest: public QObject {
     private:
         static size_t writeCallback(char* ptr, size_t size, size_t nmemb, void* userdata);
         bool ready = false;
-        CURL* handle;
-        curl_slist* headers;
+        Curl curlInstance = Curl::withDefaults();
+        CurlList headers;
         std::string url, method, body;
         std::vector<std::string> rawHeaders;
 };

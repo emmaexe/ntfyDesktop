@@ -145,55 +145,40 @@ void PixmapFetcher::fetchThumbnail() {
 
 AsyncCurlRequest::AsyncCurlRequest(const nlohmann::json& action, QObject* parent): QObject(parent) {
     try {
-        this->handle = curl_easy_init();
-        this->headers = NULL;
-
         this->url = static_cast<std::string>(action["url"]);
 
         if (action.contains("headers") && action["headers"].is_object()) {
             for (const auto& [key, value]: action["headers"].items()) {
                 rawHeaders.push_back(key + ": " + static_cast<std::string>(value));
-                headers = curl_slist_append(headers, this->rawHeaders.at(this->rawHeaders.size() - 1).c_str());
+                headers.append(this->rawHeaders.at(this->rawHeaders.size() - 1).c_str());
             }
         }
 
         if (action.contains("method") && action["method"].is_string()) {
             this->method = static_cast<std::string>(action["method"]);
             if (this->method == "POST") {
-                curl_easy_setopt(this->handle, CURLOPT_POST, 1L);
+                this->curlInstance.setOpt(CURLOPT_POST, 1L);
             } else if (this->method == "GET") {
-                curl_easy_setopt(this->handle, CURLOPT_HTTPGET, 1L);
+                this->curlInstance.setOpt(CURLOPT_HTTPGET, 1L);
             } else if (this->method == "HEAD") {
-                curl_easy_setopt(this->handle, CURLOPT_NOBODY, 1L);
+                this->curlInstance.setOpt(CURLOPT_NOBODY, 1L);
             } else {
-                curl_easy_setopt(this->handle, CURLOPT_CUSTOMREQUEST, this->method.c_str());
+                this->curlInstance.setOpt(CURLOPT_CUSTOMREQUEST, this->method.c_str());
             }
         } else {
-            curl_easy_setopt(this->handle, CURLOPT_POST, 1L);
+            this->curlInstance.setOpt(CURLOPT_POST, 1L);
         }
 
         if (action.contains("body") && action["body"].is_string()) {
             this->body = static_cast<std::string>(action["body"]);
-            curl_easy_setopt(this->handle, CURLOPT_POSTFIELDS, this->body.c_str());
+            this->curlInstance.setOpt(CURLOPT_POSTFIELDS, this->body.c_str());
         }
 
-        curl_easy_setopt(this->handle, CURLOPT_WRITEFUNCTION, &AsyncCurlRequest::writeCallback);
-        curl_easy_setopt(this->handle, CURLOPT_WRITEDATA, this);
-        curl_easy_setopt(this->handle, CURLOPT_URL, this->url.c_str());
-        curl_easy_setopt(this->handle, CURLOPT_HTTPHEADER, headers);
-        curl_easy_setopt(this->handle, CURLOPT_USERAGENT, ND_USERAGENT);
-        curl_easy_setopt(this->handle, CURLOPT_TIMEOUT, 120L);
-
-        bool verifyTls;
-        std::string CAPath;
-        {
-            DataBase db;
-            verifyTls = db.getTlsVerificationPreference();
-            CAPath = db.getCAPathPreference();
-        }
-
-        curl_easy_setopt(this->handle, CURLOPT_SSL_VERIFYPEER, verifyTls ? 1L : 0L);
-        if (!CAPath.empty()) { curl_easy_setopt(this->handle, Util::Strings::endsWith(CAPath, "/") ? CURLOPT_CAPATH : CURLOPT_CAINFO, CAPath.c_str()); }
+        this->curlInstance.setOpt(CURLOPT_WRITEFUNCTION, &AsyncCurlRequest::writeCallback);
+        this->curlInstance.setOpt(CURLOPT_WRITEDATA, this);
+        this->curlInstance.setOpt(CURLOPT_URL, this->url.c_str());
+        this->curlInstance.setOpt(CURLOPT_HTTPHEADER, headers.handle());
+        this->curlInstance.setOpt(CURLOPT_TIMEOUT, 120L);
 
         this->ready = true;
     } catch (const nlohmann::json::parse_error& e) {}
@@ -201,10 +186,10 @@ AsyncCurlRequest::AsyncCurlRequest(const nlohmann::json& action, QObject* parent
 
 void AsyncCurlRequest::run() {
     if (this->ready) {
-        CURLcode res = curl_easy_perform(this->handle);
+        CURLcode res = curl_easy_perform(this->curlInstance.handle());
         if (res == CURLE_OK) {
             long httpCode = 0;
-            curl_easy_getinfo(this->handle, CURLINFO_RESPONSE_CODE, &httpCode);
+            curl_easy_getinfo(this->curlInstance.handle(), CURLINFO_RESPONSE_CODE, &httpCode);
             if (200 <= httpCode && httpCode <= 299) {
                 emit completed(true);
                 return;
