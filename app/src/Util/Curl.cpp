@@ -1,6 +1,7 @@
 #include "Curl.hpp"
 
 #include "../DataBase/DataBase.hpp"
+#include "../Util/Logging.hpp"
 #include "../Util/Util.hpp"
 #include "ntfyDesktop.hpp"
 
@@ -49,6 +50,8 @@ Curl Curl::withDefaults() {
     handle.setOpt(CURLOPT_SSL_VERIFYPEER, verifyTls ? 1L : 0L);
     if (!CAPath.empty()) { handle.setOpt(Util::Strings::endsWith(CAPath, "/") ? CURLOPT_CAPATH : CURLOPT_CAINFO, CAPath.c_str()); }
 
+    if (Logger::get().debugModeActive()) { handle.setOpt(CURLOPT_VERBOSE, 1L); }
+
     return handle;
 }
 
@@ -85,4 +88,11 @@ CurlList& CurlList::operator=(CurlList&& other) noexcept {
 
 curl_slist* CurlList::handle() const noexcept { return this->internalList; }
 
-void CurlList::append(const std::string& item) noexcept { curl_slist* newInternalList = curl_slist_append(this->internalList, item.c_str()); }
+void CurlList::append(const std::string& item) {
+    curl_slist* newInternalList = curl_slist_append(this->internalList, item.c_str());
+    if (newInternalList) {
+        this->internalList = newInternalList;
+    } else {
+        throw std::runtime_error("Failed to append to CurlList");
+    }
+}

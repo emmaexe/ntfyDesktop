@@ -28,7 +28,7 @@ class Curl {
          */
         static Curl withDefaults();
     private:
-        CURL* internalHandle;
+        CURL* internalHandle = nullptr;
 };
 
 /**
@@ -49,9 +49,9 @@ class CurlList {
 
         curl_slist* handle() const noexcept;
 
-        void append(const std::string& item) noexcept;
+        void append(const std::string& item);
     private:
-        curl_slist* internalList;
+        curl_slist* internalList = nullptr;
 };
 
 #include "Curl.tpp"

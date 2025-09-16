@@ -171,7 +171,7 @@ AsyncCurlRequest::AsyncCurlRequest(const nlohmann::json& action, QObject* parent
 
         if (action.contains("body") && action["body"].is_string()) {
             this->body = static_cast<std::string>(action["body"]);
-            this->curlInstance.setOpt(CURLOPT_POSTFIELDS, this->body.c_str());
+            this->curlInstance.setOpt(CURLOPT_COPYPOSTFIELDS, this->body.c_str());
         }
 
         this->curlInstance.setOpt(CURLOPT_WRITEFUNCTION, &AsyncCurlRequest::writeCallback);
