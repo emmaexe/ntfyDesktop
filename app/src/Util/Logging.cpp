@@ -7,23 +7,6 @@
 
 Logger& Logger::get() {
     static Logger logger;
-    static bool init = false;
-
-    if (!init) {
-        init = true;
-        logger.debugMode = Util::getEnv("ND_DEBUG").has_value();
-        std::optional<std::string> logFileEnv = Util::getEnv("ND_LOGFILE");
-        if (logFileEnv.has_value()) {
-            logger.logFile = std::make_optional<std::ofstream>(logFileEnv.value(), std::ios::app);
-            if (!logger.logFile.value().is_open()) {
-                init = false;
-                logger.debugMode = false;
-                logger.logFile = std::nullopt;
-                throw std::runtime_error("Failed to open log file.");
-            }
-        }
-    }
-
     return logger;
 }
 
@@ -48,4 +31,15 @@ void Logger::error(const std::string& message) {
 
 bool Logger::debugModeActive() const { return this->debugMode; }
 
-Logger::Logger() {}
+Logger::Logger() {
+    this->debugMode = Util::getEnv("ND_DEBUG").has_value();
+    std::optional<std::string> logFileEnv = Util::getEnv("ND_LOGFILE");
+    if (logFileEnv.has_value()) {
+        this->logFile = std::make_optional<std::ofstream>(logFileEnv.value(), std::ios::app);
+        if (!this->logFile.value().is_open()) {
+            this->debugMode = false;
+            this->logFile = std::nullopt;
+            throw std::runtime_error("Failed to open log file.");
+        }
+    }
+}
