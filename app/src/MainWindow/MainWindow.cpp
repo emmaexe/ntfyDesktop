@@ -306,7 +306,7 @@ void NotificationPuller::run() {
                 std::string CAPath = db.getCAPathPreference();
 
                 threads.push_back(std::make_unique<NtfyThread>(name, protocol, domain, topic, authConfig, -1, verifyTls, CAPath, std::nullopt, std::nullopt, &mutex, true));
-            } catch (const nlohmann::json::out_of_range& e) { logger.error("Invalid source in config, ignoring: " + std::string(source)); }
+            } catch (const nlohmann::json::out_of_range& e) { logger.error("Invalid source in config, ignoring: " + source.dump()); }
         }
     }
     for (std::unique_ptr<NtfyThread>& thread: threads) {

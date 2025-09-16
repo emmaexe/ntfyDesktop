@@ -63,6 +63,6 @@ void ThreadManager::restartConfig() {
             std::string CAPath = db.getCAPathPreference();
 
             this->threads.push_back(std::make_unique<NtfyThread>(name, protocol, domain, topic, authConfig, lastTimestamp, verifyTls, CAPath, reconnectCount, timeout, &this->mutex));
-        } catch (nlohmann::json::out_of_range e) { Logger::get().error("Invalid source in config, ignoring: " + std::string(source)); }
+        } catch (nlohmann::json::out_of_range e) { Logger::get().error("Invalid source in config, ignoring: " + source.dump()); }
     }
 }
