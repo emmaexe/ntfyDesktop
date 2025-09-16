@@ -183,4 +183,9 @@ namespace Util {
         stream << std::put_time(std::localtime(&time), "%Y-%m-%d %H:%M:%S");
         return stream.str();
     }
+
+    std::optional<std::string> getEnv(const std::string& var) {
+        char* res = std::getenv(var.c_str());
+        return res == nullptr ? std::nullopt : std::make_optional<std::string>(res);
+    }
 }

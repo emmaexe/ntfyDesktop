@@ -2,6 +2,7 @@
 
 #include "../NotificationManager/NotificationManager.hpp"
 #include "../Util/Curl.hpp"
+#include "../Util/Logging.hpp"
 #include "../Util/Util.hpp"
 #include "ntfyDesktop.hpp"
 
@@ -11,7 +12,6 @@
 #include <KLocalizedString>
 #include <QApplication>
 #include <QString>
-#include <iostream>
 
 NtfyThread::NtfyThread(
     std::string name, std::string protocol, std::string domain, std::string topic, AuthConfig authConfig, int lastTimestamp, bool verifyTls, std::string CAPath, std::optional<int> reconnectCount,
@@ -38,6 +38,7 @@ NtfyThread::~NtfyThread() { this->stop(); }
 
 void NtfyThread::run() {
     this->running = true;
+    Logger& logger = Logger::get();
 
     Curl curlInstance = Curl::withDefaults();
     CurlList headers;
@@ -78,7 +79,7 @@ void NtfyThread::run() {
 
             this->runCount++;
             CURLcode res = curl_easy_perform(curlInstance.handle());
-            if (res != CURLE_OK && res != CURLE_ABORTED_BY_CALLBACK && res != CURLE_WRITE_ERROR) { std::cerr << "curl error: " << curl_easy_strerror(res) << std::endl; }
+            if (res != CURLE_OK && res != CURLE_ABORTED_BY_CALLBACK && res != CURLE_WRITE_ERROR) { logger.error("curl error: " + std::string(curl_easy_strerror(res))); }
         }
     }
 
@@ -105,6 +106,7 @@ size_t NtfyThread::writeCallback(char* ptr, size_t size, size_t nmemb, void* use
 
     if (!this_p->running) { return 0; }
 
+    Logger& logger = Logger::get();
     DataBase db;
 
     for (const std::string& line: data) {
@@ -118,15 +120,11 @@ size_t NtfyThread::writeCallback(char* ptr, size_t size, size_t nmemb, void* use
                     QMetaObject::invokeMethod(QApplication::instance(), [notification]() { NotificationManager::generalNotification(notification); });
                     db.enqueueNotification(notification);
                 } catch (const NtfyNotificationException& e) {
-                    this_p->mutex->lock();
-                    std::cerr << "Failed to parse notification: " << e.what() << std::endl;
-                    this_p->mutex->unlock();
+                    logger.error("Failed to parse notification: " + std::string(e.what()));
                 }
             }
         } catch (const nlohmann::json::parse_error& e) {
-            this_p->mutex->lock();
-            std::cerr << "Malformed JSON data from notification source: " << this_p->url << '\n' << e.what() << std::endl;
-            this_p->mutex->unlock();
+            logger.error("Malformed JSON data from notification source " + this_p->url + ": " + e.what());
         }
     }
 

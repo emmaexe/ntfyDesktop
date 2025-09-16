@@ -108,14 +108,6 @@ namespace Util {
     int random(int min, int max);
 
     /**
-     * @brief Get a random, commonly used user agent.
-     *
-     * @param limit Limit the search to the top N most commonly used user agents.
-     * @return std::string - The user agent.
-     */
-    std::string getRandomUA(int limit = 3);
-
-    /**
      * @brief Check if a string contains a valid ntfy domain
      *
      * @param domain The domain to check
@@ -161,4 +153,12 @@ namespace Util {
      * @return std::string - A formatted string of the given unix time
      */
     std::string timeToString(const std::time_t& time);
+
+    /**
+     * @brief Fetch the contents of an environment variable.
+     *
+     * @param var The environment variable
+     * @return std::optional<std::string> - The optional contents of the environment variable
+     */
+    std::optional<std::string> getEnv(const std::string& var);
 }

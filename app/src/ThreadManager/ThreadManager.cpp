@@ -3,10 +3,10 @@
 #include "../DataBase/DataBase.hpp"
 #include "../MainWindow/MainWindow.hpp"
 #include "../NotificationManager/NotificationManager.hpp"
+#include "../Util/Logging.hpp"
 #include "../Util/Util.hpp"
 
 #include <QApplication>
-#include <iostream>
 
 ThreadManager::ThreadManager(QObject* parent): QObject(parent) { this->restartConfig(); }
 
@@ -63,6 +63,6 @@ void ThreadManager::restartConfig() {
             std::string CAPath = db.getCAPathPreference();
 
             this->threads.push_back(std::make_unique<NtfyThread>(name, protocol, domain, topic, authConfig, lastTimestamp, verifyTls, CAPath, reconnectCount, timeout, &this->mutex));
-        } catch (nlohmann::json::out_of_range e) { std::cerr << "Invalid source in config, ignoring: " << source << std::endl; }
+        } catch (nlohmann::json::out_of_range e) { Logger::get().error("Invalid source in config, ignoring: " + source.dump()); }
     }
 }
