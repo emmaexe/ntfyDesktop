@@ -1,12 +1,15 @@
 #include "SingleInstanceManager.hpp"
 
+#include "../Util/Logging.hpp"
+
 #include <QApplication>
 #include <QDBusConnection>
 #include <QDBusMessage>
-#include <iostream>
 
 SingleInstanceManager::SingleInstanceManager(std::function<void(std::optional<std::string> url)> onNewInstanceStarted, std::optional<std::string> url, QObject* parent):
     QObject(parent), onNewInstanceStarted(onNewInstanceStarted) {
+    Logger& logger = Logger::get();
+
     QDBusConnection sessionBus = QDBusConnection::sessionBus();
     if (!sessionBus.registerService("moe.emmaexe.ntfyDesktop")) {
         QDBusMessage message = QDBusMessage::createMethodCall("moe.emmaexe.ntfyDesktop", "/SingleInstanceManager", "moe.emmaexe.ntfyDesktop.SingleInstanceManager", "newInstanceStarted");
@@ -16,12 +19,12 @@ SingleInstanceManager::SingleInstanceManager(std::function<void(std::optional<st
             message << "";
         }
         QDBusMessage reply = sessionBus.call(message);
-        if (reply.type() == QDBusMessage::ErrorMessage) { std::cerr << "DBus error: " << reply.errorMessage().toStdString() << std::endl; }
+        if (reply.type() == QDBusMessage::ErrorMessage) { logger.error("DBus error: " + reply.errorMessage().toStdString()); }
         exit(1);
     }
 
     if (!sessionBus.registerObject("/SingleInstanceManager", this, QDBusConnection::ExportAllSlots | QDBusConnection::ExportAllSignals)) {
-        std::cerr << "Failed to register DBus object: " << sessionBus.lastError().message().toStdString() << std::endl;
+        logger.error("Failed to register DBus object: " + sessionBus.lastError().message().toStdString());
         exit(1);
     }
 

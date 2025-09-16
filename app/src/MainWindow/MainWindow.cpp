@@ -5,6 +5,7 @@
 #include "../ImportDialog/ImportDialog.hpp"
 #include "../NotificationManager/NotificationManager.hpp"
 #include "../PreferencesDialog/PreferencesDialog.hpp"
+#include "../Util/Logging.hpp"
 #include "../Util/Util.hpp"
 #include "ui_MainWindow.h"
 
@@ -14,7 +15,6 @@
 #include <QIcon>
 #include <QPushButton>
 #include <algorithm>
-#include <iostream>
 
 using Util::Colors::ColorMode;
 
@@ -290,6 +290,7 @@ void MainWindow::pullButtonResults(const bool success) {
 NotificationPuller::NotificationPuller(const nlohmann::json& sources): sources(sources) {}
 
 void NotificationPuller::run() {
+    Logger& logger = Logger::get();
     bool error = false;
     std::vector<std::unique_ptr<NtfyThread>> threads;
     std::mutex mutex;
@@ -305,7 +306,7 @@ void NotificationPuller::run() {
                 std::string CAPath = db.getCAPathPreference();
 
                 threads.push_back(std::make_unique<NtfyThread>(name, protocol, domain, topic, authConfig, -1, verifyTls, CAPath, std::nullopt, std::nullopt, &mutex, true));
-            } catch (const nlohmann::json::out_of_range& e) { std::cerr << "Invalid source in config, ignoring: " << source << std::endl; }
+            } catch (const nlohmann::json::out_of_range& e) { logger.error("Invalid source in config, ignoring: " + std::string(source)); }
         }
     }
     for (std::unique_ptr<NtfyThread>& thread: threads) {

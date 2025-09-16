@@ -9,6 +9,7 @@
 #include "UnixSignalHandler/UnixSignalHandler.hpp"
 #include "Util/FileManager.hpp"
 #include "Util/ParsedURL.hpp"
+#include "Util/Logging.hpp"
 
 #include <curl/curl.h>
 #include <signal.h>
@@ -55,7 +56,7 @@ int main(int argc, char* argv[]) {
     std::optional<std::string> passedUrl = std::nullopt;
     if (!parser.positionalArguments().empty()) { passedUrl = parser.positionalArguments().first().toStdString(); }
     SingleInstanceManager singleInstanceManager(
-        [&](std::optional<std::string> url) { std::cerr << "A new instance was started, but this instance does not have a main window to show." << std::endl; }, passedUrl
+        [&](std::optional<std::string> url) { Logger::get().error("A new instance was started, but this instance does not have a main window to show."); }, passedUrl
     );
 
     std::srand(std::time(0));

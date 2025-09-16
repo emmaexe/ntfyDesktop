@@ -1,15 +1,17 @@
 #include "UnixSignalHandler.hpp"
 
-#include <iostream>
+#include "../Util/Logging.hpp"
 
 int UnixSignalHandler::sighupFileDescriptor[2] = {};
 int UnixSignalHandler::sigintFileDescriptor[2] = {};
 int UnixSignalHandler::sigtermFileDescriptor[2] = {};
 
 UnixSignalHandler::UnixSignalHandler(std::function<void(int)> fun, QObject* parent): fun(fun), QObject(parent) {
+    Logger& logger = Logger::get();
+
     // Register SigHup
     if (socketpair(AF_UNIX, SOCK_STREAM, 0, UnixSignalHandler::sighupFileDescriptor)) {
-        std::cerr << "Unable to handle SIGHUP: " << "Failed to create socketpair" << std::endl;
+        logger.error("Unable to handle SIGHUP: Failed to create socketpair");
     } else {
         this->sighupNotifier = new QSocketNotifier(UnixSignalHandler::sighupFileDescriptor[1], QSocketNotifier::Read, this);
         connect(this->sighupNotifier, SIGNAL(activated(QSocketDescriptor)), this, SLOT(handleSigHup()));
@@ -19,12 +21,12 @@ UnixSignalHandler::UnixSignalHandler(std::function<void(int)> fun, QObject* pare
         sigemptyset(&hup.sa_mask);
         hup.sa_flags = 0;
         hup.sa_flags |= SA_RESTART;
-        if (sigaction(SIGHUP, &hup, 0)) { std::cerr << "Unable to handle SIGHUP: " << "Failed to call sigaction" << std::endl; }
+        if (sigaction(SIGHUP, &hup, 0)) { logger.error("Unable to handle SIGHUP: Failed to call sigaction"); }
     }
 
     // Register SigInt
     if (socketpair(AF_UNIX, SOCK_STREAM, 0, UnixSignalHandler::sigintFileDescriptor)) {
-        std::cerr << "Unable to handle SIGINT: " << "Failed to create socketpair" << std::endl;
+        logger.error("Unable to handle SIGINT: Failed to create socketpair");
     } else {
         this->sigintNotifier = new QSocketNotifier(UnixSignalHandler::sigintFileDescriptor[1], QSocketNotifier::Read, this);
         connect(this->sigintNotifier, SIGNAL(activated(QSocketDescriptor)), this, SLOT(handleSigInt()));
@@ -34,12 +36,12 @@ UnixSignalHandler::UnixSignalHandler(std::function<void(int)> fun, QObject* pare
         sigemptyset(&intr.sa_mask);
         intr.sa_flags = 0;
         intr.sa_flags |= SA_RESTART;
-        if (sigaction(SIGINT, &intr, 0)) { std::cerr << "Unable to handle SIGINT: " << "Failed to call sigaction" << std::endl; }
+        if (sigaction(SIGINT, &intr, 0)) { logger.error("Unable to handle SIGINT: Failed to call sigaction"); }
     }
 
     // Register SigTerm
     if (socketpair(AF_UNIX, SOCK_STREAM, 0, UnixSignalHandler::sigtermFileDescriptor)) {
-        std::cerr << "Unable to handle SIGTERM: " << "Failed to create socketpair" << std::endl;
+        logger.error("Unable to handle SIGTERM: Failed to create socketpair");
     } else {
         this->sigtermNotifier = new QSocketNotifier(UnixSignalHandler::sigtermFileDescriptor[1], QSocketNotifier::Read, this);
         connect(this->sigtermNotifier, SIGNAL(activated(QSocketDescriptor)), this, SLOT(handleSigTerm()));
@@ -49,7 +51,7 @@ UnixSignalHandler::UnixSignalHandler(std::function<void(int)> fun, QObject* pare
         sigemptyset(&term.sa_mask);
         term.sa_flags = 0;
         term.sa_flags |= SA_RESTART;
-        if (sigaction(SIGTERM, &term, 0)) { std::cerr << "Unable to handle SIGTERM: " << "Failed to call sigaction" << std::endl; }
+        if (sigaction(SIGTERM, &term, 0)) { logger.error("Unable to handle SIGTERM: Failed to call sigaction"); }
     }
 }
 
