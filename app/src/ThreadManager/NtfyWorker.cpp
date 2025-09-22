@@ -104,7 +104,7 @@ namespace NtfyWorker {
                     this->options.lastTimestamp = std::make_optional(jsonData["time"].get<int>());
                     try {
                         NtfyNotification notification(jsonData, this->options.domain, this->options.topic);
-                        QMetaObject::invokeMethod(QApplication::instance(), &NotificationManager::generalNotification, notification);
+                        QMetaObject::invokeMethod(QApplication::instance(), [notification]() { NotificationManager::generalNotification(notification); });
                         db.enqueueNotification(notification);
                     } catch (const NtfyNotificationException& e) { logger.error("Failed to parse notification: " + std::string(e.what())); }
                 }
@@ -150,7 +150,7 @@ namespace NtfyWorker {
                     this->options.lastTimestamp = std::make_optional(jsonData["time"].get<int>());
                     try {
                         NtfyNotification notification(jsonData, this->options.domain, this->options.topic);
-                        QMetaObject::invokeMethod(QApplication::instance(), &NotificationManager::generalNotification, notification);
+                        QMetaObject::invokeMethod(QApplication::instance(), [notification]() { NotificationManager::generalNotification(notification); });
                         db.enqueueNotification(notification);
                     } catch (const NtfyNotificationException& e) { logger.error("Failed to parse notification: " + std::string(e.what())); }
                 }
@@ -164,4 +164,3 @@ namespace NtfyWorker {
 
     int PollWorker::progressCallback(void* clientp, curl_off_t dltotal, curl_off_t dlnow, curl_off_t ultotal, curl_off_t ulnow) { return this->running ? 0 : 1; }
 }
-
