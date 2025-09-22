@@ -15,6 +15,7 @@
 #include <QIcon>
 #include <QPushButton>
 #include <algorithm>
+#include <atomic>
 
 using Util::Colors::ColorMode;
 
@@ -69,9 +70,7 @@ MainWindow::MainWindow(std::shared_ptr<ThreadManager> threadManager, KAboutData&
 
     this->pullButtonTimer = new QTimer(this);
     this->pullButtonTimer->setSingleShot(true);
-    QObject::connect(this->pullButtonTimer, &QTimer::timeout, [this](){
-        Util::Colors::setButtonColor(*this->ui->pullButton, ColorMode::Normal);
-    });
+    QObject::connect(this->pullButtonTimer, &QTimer::timeout, [this]() { Util::Colors::setButtonColor(*this->ui->pullButton, ColorMode::Normal); });
 
     if (this->tabs.size() == 0) {
         this->show();
@@ -243,7 +242,7 @@ void MainWindow::restartAction() {
         Util::setLayoutVisibility(this->ui->noSourcesContainer, false);
     }
 
-    this->threadManager->restartConfig();
+    this->threadManager->recreateAll();
     this->newTabCounter = 1;
 
     if (wasShown) { this->show(); }
@@ -291,27 +290,46 @@ NotificationPuller::NotificationPuller(const nlohmann::json& sources): sources(s
 
 void NotificationPuller::run() {
     Logger& logger = Logger::get();
-    bool error = false;
-    std::vector<std::unique_ptr<NtfyThread>> threads;
-    std::mutex mutex;
+    std::atomic<bool> error = false;
+    std::vector<NtfyWorker::Bundle> workerBundles;
+
     if (this->sources.is_array()) {
         DataBase db;
         for (const nlohmann::json& source: this->sources) {
             try {
-                int lastTimestamp = -1;
-                std::string name = source["name"].get<std::string>(), protocol = source["protocol"].get<std::string>(), domain = source["domain"].get<std::string>(), topic = source["topic"].get<std::string>(), topicHash = Util::topicHash(domain, topic);
-                AuthConfig authConfig = db.getAuth(topicHash);
+                std::string domain = source["domain"].get<std::string>(), topic = source["topic"].get<std::string>();
 
-                bool verifyTls = db.getTlsVerificationPreference();
-                std::string CAPath = db.getCAPathPreference();
+                NtfyWorker::ConnectionOptions options{
+                    source["name"].get<std::string>(),
+                    source["protocol"].get<std::string>(),
+                    domain,
+                    topic,
+                    db.getAuth(Util::topicHash(domain, topic)),
+                    std::nullopt,
+                    std::nullopt,
+                    std::nullopt,
+                    db.getCAPathPreference(),
+                    db.getTlsVerificationPreference()
+                };
 
-                threads.push_back(std::make_unique<NtfyThread>(name, protocol, domain, topic, authConfig, -1, verifyTls, CAPath, std::nullopt, std::nullopt, &mutex, true));
+                std::unique_ptr<NtfyWorker::BaseWorker> worker = std::make_unique<NtfyWorker::PollWorker>(options);
+                std::unique_ptr<QThread> thread = std::make_unique<QThread>();
+
+                worker->moveToThread(thread.get());
+
+                QObject::connect(thread.get(), &QThread::started, worker.get(), &NtfyWorker::NtfyWorker::run);
+                QObject::connect(worker.get(), &NtfyWorker::NtfyWorker::finished, [&error, thread = thread.get()](NtfyWorker::ExitData exit) {
+                    if (exit.fatalError) { error = true; }
+                    thread->quit();
+                });
+
+                thread->start();
+
+                workerBundles.push_back(NtfyWorker::Bundle{ std::move(worker), std::move(thread) });
             } catch (const nlohmann::json::out_of_range& e) { logger.error("Invalid source in config, ignoring: " + source.dump()); }
         }
     }
-    for (std::unique_ptr<NtfyThread>& thread: threads) {
-        thread->waitForStop();
-        error = error || thread->hasError();
-    }
+    for (const NtfyWorker::Bundle& workerBundle: workerBundles) { workerBundle.thread->wait(); }
+
     emit complete(!error);
 }
