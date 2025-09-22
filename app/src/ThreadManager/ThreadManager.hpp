@@ -1,12 +1,10 @@
 #pragma once
 
 #include "../Config/Config.hpp"
-#include "NtfyThread.hpp"
+#include "../ThreadManager/NtfyWorker.hpp"
 
 #include <QObject>
-#include <atomic>
-#include <memory>
-#include <mutex>
+#include <QThread>
 #include <vector>
 
 class ThreadManager: public QObject {
@@ -16,8 +14,7 @@ class ThreadManager: public QObject {
         ~ThreadManager();
     public slots:
         void stopAll();
-        void restartConfig();
+        void recreateAll();
     private:
-        std::vector<std::unique_ptr<NtfyThread>> threads;
-        std::mutex mutex;
+        std::vector<NtfyWorker::Bundle> workerBundles;
 };
