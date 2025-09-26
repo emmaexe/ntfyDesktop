@@ -50,7 +50,7 @@ Curl Curl::withDefaults() {
     handle.setOpt(CURLOPT_SSL_VERIFYPEER, verifyTls ? 1L : 0L);
     if (!CAPath.empty()) { handle.setOpt(Util::Strings::endsWith(CAPath, "/") ? CURLOPT_CAPATH : CURLOPT_CAINFO, CAPath.c_str()); }
 
-    if (Logger::get().debugModeActive()) { handle.setOpt(CURLOPT_VERBOSE, 1L); }
+    if (Logger::get().debugMode) { handle.setOpt(CURLOPT_VERBOSE, 1L); }
 
     return handle;
 }
