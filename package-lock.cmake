@@ -10,7 +10,7 @@ CPMDeclarePackage(json
 )
 # emojicpp
 CPMDeclarePackage(emojicpp
-  VERSION 2.0.1
+  VERSION 3.0.0
   GITHUB_REPOSITORY emmaexe/emojicpp
   SYSTEM YES
   EXCLUDE_FROM_ALL YES

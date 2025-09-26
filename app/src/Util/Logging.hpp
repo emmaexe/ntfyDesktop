@@ -11,13 +11,12 @@ class Logger {
         Logger& operator=(const Logger& other) = delete;
         static Logger& get();
 
-        void log(const std::string& message);
-        void error(const std::string& message);
+        void debug(std::string_view message);
+        void log(std::string_view message);
+        void error(std::string_view message);
 
-        bool debugModeActive() const;
+        const bool debugMode = false;
     private:
         Logger();
         std::mutex mutex;
-        bool debugMode = false;
-        std::optional<std::ofstream> logFile = std::nullopt;
 };

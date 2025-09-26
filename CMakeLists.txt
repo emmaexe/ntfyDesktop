@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.20)
 project(
     ntfyDesktop
     VERSION 1.5.1
@@ -6,7 +6,7 @@ project(
     HOMEPAGE_URL "https://github.com/emmaexe/ntfyDesktop/"
     LANGUAGES C CXX
 )
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 # Set build flags
@@ -31,7 +31,7 @@ include(ECMAddAppIcon)
 
 if (ND_BUILD_TYPE STREQUAL "Flatpak")
     find_package(nlohmann_json 3.12.0 REQUIRED)
-    find_package(emojicpp 2.0.1 REQUIRED)
+    find_package(emojicpp 3.0.0 REQUIRED)
 else()
     # To update CPM.cmake, update the version number in the url and SHA hash as found in the most recent release asset.
     # https://github.com/cpm-cmake/CPM.cmake/wiki/Downloading-CPM.cmake-in-CMake
@@ -44,7 +44,7 @@ else()
     include(${CMAKE_CURRENT_BINARY_DIR}/cmake/CPM.cmake)
     CPMUsePackageLock(package-lock.cmake)
     CPMAddPackage("gh:nlohmann/json@3.12.0")
-    CPMAddPackage("gh:emmaexe/emojicpp@2.0.1")
+    CPMAddPackage("gh:emmaexe/emojicpp@3.0.0")
 endif()
 
 find_package(CURL REQUIRED)

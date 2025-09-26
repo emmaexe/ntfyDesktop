@@ -7,8 +7,6 @@
 
 #include <nlohmann/json.hpp>
 
-#include <iostream>
-
 ConfigTab::ConfigTab(std::string name, std::string protocol, std::string domain, std::string topic, AuthConfig authConfig, QWidget* parent): QWidget(parent), ui(new Ui::ConfigTab) {
     this->ui->setupUi(this);
     this->ui->nameLineEdit->setText(QString::fromStdString(name));
