@@ -12,9 +12,9 @@
 #include <fstream>
 #include <tuple>
 
-FileManagerException::FileManagerException(const char* message): message(message) {}
+FileManagerException::FileManagerException(std::string_view message): message(message) {}
 
-const char* FileManagerException::what() const throw() { return this->message.c_str(); }
+const char* FileManagerException::what() const noexcept { return this->message.c_str(); }
 
 std::map<QUrl, std::pair<std::unique_ptr<std::mutex>, QTemporaryFile*>> FileManager::tempFileHolder = {};
 std::mutex FileManager::tempFileHolderLock = std::mutex();
@@ -59,9 +59,7 @@ QUrl FileManager::urlToTempFile(QUrl url, bool outsidePath) {
     curlInstance.setOpt(CURLOPT_ERRORBUFFER, curlError);
 
     if (curl_easy_perform(curlInstance.handle()) != CURLE_OK) {
-        std::string err = "Failed to download file: ";
-        err.append(curlError);
-        throw FileManagerException(err.c_str());
+        throw FileManagerException(std::format("Failed to download file: {}", curlError));
     }
 
     QString fileName = file->fileName();

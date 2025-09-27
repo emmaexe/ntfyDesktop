@@ -36,7 +36,7 @@ MainWindow::MainWindow(std::shared_ptr<ThreadManager> threadManager, KAboutData&
         nlohmann::json sources = Config::data()["sources"];
         for (int i = 0; i < sources.size(); i++) {
             this->tabs.push_back(
-                new ConfigTab(sources[i]["name"], sources[i]["protocol"], sources[i]["domain"], sources[i]["topic"], db.getAuth(Util::topicHash(sources[i]["domain"], sources[i]["topic"])), this)
+                new ConfigTab(sources[i]["name"], sources[i]["protocol"], sources[i]["domain"], sources[i]["topic"], db.getAuth(Util::topicHash(sources[i]["domain"].get<std::string>(), sources[i]["topic"].get<std::string>())), this)
             );
             this->ui->tabs->addTab(this->tabs.at(i), this->tabs.at(i)->getName().c_str());
         }
@@ -229,7 +229,7 @@ void MainWindow::restartAction() {
     nlohmann::json sources = Config::data()["sources"];
     for (int i = 0; i < sources.size(); i++) {
         this->tabs.push_back(
-            new ConfigTab(sources[i]["name"], sources[i]["protocol"], sources[i]["domain"], sources[i]["topic"], db.getAuth(Util::topicHash(sources[i]["domain"], sources[i]["topic"])), this)
+            new ConfigTab(sources[i]["name"], sources[i]["protocol"], sources[i]["domain"], sources[i]["topic"], db.getAuth(Util::topicHash(sources[i]["domain"].get<std::string>(), sources[i]["topic"].get<std::string>())), this)
         );
         this->ui->tabs->addTab(this->tabs.at(i), this->tabs.at(i)->getName().c_str());
     }
@@ -300,16 +300,13 @@ void NotificationPuller::run() {
                 std::string domain = source["domain"].get<std::string>(), topic = source["topic"].get<std::string>();
 
                 NtfyWorker::ConnectionOptions options{
-                    source["name"].get<std::string>(),
-                    source["protocol"].get<std::string>(),
-                    domain,
-                    topic,
-                    db.getAuth(Util::topicHash(domain, topic)),
-                    std::nullopt,
-                    std::nullopt,
-                    std::nullopt,
-                    db.getCAPathPreference(),
-                    db.getTlsVerificationPreference()
+                    .workerName = source["name"].get<std::string>(),
+                    .protocol = source["protocol"].get<std::string>(),
+                    .domain = domain,
+                    .topic = topic,
+                    .authConfig = db.getAuth(Util::topicHash(domain, topic)),
+                    .CAPath = db.getCAPathPreference(),
+                    .verifyTls = db.getTlsVerificationPreference()
                 };
 
                 std::unique_ptr<NtfyWorker::BaseWorker> worker = std::make_unique<NtfyWorker::PollWorker>(options);

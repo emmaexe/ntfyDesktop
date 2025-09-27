@@ -26,4 +26,4 @@ void Logger::error(std::string_view message) {
     std::println(stderr, "[error] {}", message);
 }
 
-Logger::Logger(): debugMode(Util::getEnv("ND_DEBUG").has_value()) {}
+Logger::Logger(): debugMode(Util::Env::Commons::debug.has_value()) {}

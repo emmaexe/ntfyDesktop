@@ -17,7 +17,7 @@ class NotificationListItem: public QWidget {
         Q_OBJECT
     public:
         NotificationListItem(
-            const std::string& id, const std::string& server, const std::string& topic, const int& timestamp, const std::string& title, const std::string& message, const std::string& rawData,
+            std::string_view id, std::string_view server, std::string_view topic, const int& timestamp, std::string_view title, std::string_view message, std::string_view rawData,
             QWidget* parent = nullptr
         );
         ~NotificationListItem();

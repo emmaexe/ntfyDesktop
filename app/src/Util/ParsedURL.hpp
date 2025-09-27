@@ -7,8 +7,8 @@
 
 class ParsedURLException: public std::exception {
     public:
-        ParsedURLException(const char* message);
-        const char* what() const throw();
+        ParsedURLException(std::string_view message);
+        const char* what() const noexcept;
     private:
         std::string message;
 };
@@ -18,7 +18,7 @@ class ParsedURLException: public std::exception {
  */
 struct ParsedURL {
     public:
-        ParsedURL(const std::string& url);
+        ParsedURL(std::string_view url);
         /**
          * @brief The protocol of the parsed URL. (e.g. for `https://www.example.org/some/path/?help=true&data=abc` this would be `https`)
          */

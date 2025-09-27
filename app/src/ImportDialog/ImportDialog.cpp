@@ -37,7 +37,7 @@ void ImportDialog::fileSelectButton() {
                     int entryCounter = 1;
 
                     for (nlohmann::json source: data["subscriptions"]) {
-                        ParsedURL parsedUrl(source["baseUrl"]);
+                        ParsedURL parsedUrl(source["baseUrl"].get<std::string>());
                         nlohmann::json entry = nlohmann::json::object();
                         entry["name"] = source.contains("displayName") ? std::string(source["displayName"]) : "Imported Notification Source " + std::to_string(entryCounter);
                         entry["domain"] = parsedUrl.domain();
