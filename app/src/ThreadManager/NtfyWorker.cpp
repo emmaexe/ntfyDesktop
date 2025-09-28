@@ -38,12 +38,13 @@ namespace NtfyWorker {
         curlInstance.setOpt(CURLOPT_CONNECTTIMEOUT, 10L);
         curlInstance.setOpt(CURLOPT_HTTPHEADER, headers.handle());
 
-        std::string url = "://" + this->options.domain + "/" + this->options.topic + (Util::Strings::startsWith(this->options.protocol, "ws") ? "/ws" : "/json");
-        if (this->options.protocol == "https" || this->options.protocol == "http" || this->options.protocol == "wss" || this->options.protocol == "ws") {
-            url = this->options.protocol + url;
-        } else {
-            url = "https" + url;
-        }
+        std::string url = std::format(
+            "{}://{}/{}/{}",
+            this->options.protocol == "https" || this->options.protocol == "http" || this->options.protocol == "wss" || this->options.protocol == "ws" ? this->options.protocol : "https",
+            this->options.domain,
+            this->options.topic,
+            Util::Strings::startsWith(this->options.protocol, "ws") ? "ws" : "json"
+        );
 
         this->makeRequest(curlInstance, url, exitData);
 
@@ -75,7 +76,7 @@ namespace NtfyWorker {
                 QThread::sleep(std::chrono::milliseconds(this->options.timeout.value()));
             }
 
-            std::string currentUrl = url + "?since=" + (this->options.lastTimestamp.has_value() ? std::to_string(this->options.lastTimestamp.value() + 1) : "all");
+            std::string currentUrl = std::format("{}?since={}", url, (this->options.lastTimestamp.has_value() ? std::to_string(this->options.lastTimestamp.value() + 1) : "all"));
             curlInstance.setOpt(CURLOPT_URL, currentUrl.c_str());
 
             runCount++;

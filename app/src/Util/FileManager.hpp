@@ -8,7 +8,7 @@
 
 class FileManagerException: public std::exception {
     public:
-        FileManagerException(const char* message);
+        FileManagerException(std::string_view message);
         const char* what() const throw();
     private:
         std::string message;

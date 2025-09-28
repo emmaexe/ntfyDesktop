@@ -2,14 +2,15 @@
 
 #include "./Util.hpp"
 
-ParsedURLException::ParsedURLException(const char* message): message(message) {}
+#include <format>
 
-const char* ParsedURLException::what() const throw() { return this->message.c_str(); }
+ParsedURLException::ParsedURLException(std::string_view message): message(message) {}
 
-ParsedURL::ParsedURL(const std::string& url) {
+const char* ParsedURLException::what() const noexcept { return this->message.c_str(); }
+
+ParsedURL::ParsedURL(std::string_view url) {
     if (!Util::Strings::contains(url, "://")) {
-        const std::string err = "\"" + url + "\" is not a valid url.";
-        throw ParsedURLException(err.c_str());
+        throw ParsedURLException(std::format("\"{}\" is not a valid url.", url));
     }
     std::vector<std::string> parts = Util::Strings::split(url, "://");
 

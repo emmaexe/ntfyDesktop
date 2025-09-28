@@ -57,16 +57,16 @@ void ThreadManager::recreateAll() {
             std::string topicHash = Util::topicHash(domain, topic);
 
             NtfyWorker::ConnectionOptions options{
-                source["name"].get<std::string>(),
-                source["protocol"].get<std::string>(),
-                domain,
-                topic,
-                db.getAuth(topicHash),
-                db.getLastTimestamp(topicHash),
-                reconnectCount,
-                timeout,
-                db.getCAPathPreference(),
-                db.getTlsVerificationPreference()
+                .workerName = source["name"].get<std::string>(),
+                .protocol = source["protocol"].get<std::string>(),
+                .domain = domain,
+                .topic = topic,
+                .authConfig = db.getAuth(topicHash),
+                .lastTimestamp = db.getLastTimestamp(topicHash),
+                .reconnectCount = reconnectCount,
+                .timeout = timeout,
+                .CAPath = db.getCAPathPreference(),
+                .verifyTls = db.getTlsVerificationPreference()
             };
 
             std::unique_ptr<NtfyWorker::BaseWorker> worker = std::make_unique<NtfyWorker::NtfyWorker>(options);

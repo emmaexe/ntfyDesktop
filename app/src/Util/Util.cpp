@@ -20,7 +20,7 @@ size_t stringWriteCallback(char* ptr, size_t size, size_t nmemb, void* userdata)
 
 namespace Util {
     namespace Strings {
-        std::vector<std::string> split(const std::string& string, const std::string& delimiter) {
+        std::vector<std::string> split(std::string_view string, std::string_view delimiter) {
             std::vector<std::string> parts;
             std::string string_c = std::string(string);
             size_t pos = 0;
@@ -35,30 +35,30 @@ namespace Util {
         }
 
         void toUpper(std::string& str) {
-            for (char& c: str) { c = toupper(c); }
+            for (char& c: str) { c = std::toupper(c); }
         }
 
-        std::string getUpper(const std::string& str) {
-            std::string res = str;
-            for (char& c: res) { c = toupper(c); }
+        std::string getUpper(std::string_view str) {
+            std::string res(str);
+            for (char& c: res) { c = std::toupper(c); }
             return res;
         }
 
         void toLower(std::string& str) {
-            for (char& c: str) { c = tolower(c); }
+            for (char& c: str) { c = std::tolower(c); }
         }
 
-        std::string getLower(const std::string& str) {
-            std::string res = str;
-            for (char& c: res) { c = tolower(c); }
+        std::string getLower(std::string_view str) {
+            std::string res(str);
+            for (char& c: res) { c = std::tolower(c); }
             return res;
         }
 
-        bool contains(const std::string& str, const std::string& substr) { return str.find(substr) != std::string::npos; }
+        bool contains(std::string_view str, std::string_view substr) { return str.find(substr) != std::string::npos; }
 
-        bool startsWith(const std::string& str, const std::string& substr) { return str.size() >= substr.size() && str.compare(0, substr.size(), substr) == 0; }
+        bool startsWith(std::string_view str, std::string_view substr) { return str.size() >= substr.size() && str.compare(0, substr.size(), substr) == 0; }
 
-        bool endsWith(const std::string& str, const std::string& substr) { return str.size() >= substr.size() && str.compare(str.size() - substr.size(), substr.size(), substr) == 0; }
+        bool endsWith(std::string_view str, std::string_view substr) { return str.size() >= substr.size() && str.compare(str.size() - substr.size(), substr.size(), substr) == 0; }
     }
 
     namespace Colors {
@@ -123,6 +123,13 @@ namespace Util {
         const QColor buttonTextColorFailure() { return buttonTextColor(); }
     }
 
+    namespace Env {
+        std::optional<std::string> getVar(const std::string& var) {
+            char* res = std::getenv(var.c_str());
+            return res == nullptr ? std::nullopt : std::make_optional<std::string>(res);
+        }
+    }
+
     int random(int min, int max) { return rand() % (max - min + 1) + min; }
 
     bool isDomain(const std::string& domain) { return std::regex_match(domain, std::regex("^[-.0-9:A-Za-z]+$")); }
@@ -141,7 +148,7 @@ namespace Util {
         }
     }
 
-    int versionCompare(const std::string& first, const std::string& second) {
+    int versionCompare(std::string_view first, std::string_view second) {
         std::vector<std::string> firstParts = Strings::split(first, ".");
         std::vector<std::string> secondParts = Strings::split(second, ".");
         if (firstParts.size() != 3) { throw std::invalid_argument("Could not parse version: " + first); }
@@ -174,18 +181,13 @@ namespace Util {
         }
     }
 
-    std::string topicHash(const std::string& domain, const std::string& topic) {
-        return QCryptographicHash::hash(QString::fromStdString(domain + "/" + topic).toUtf8(), QCryptographicHash::Sha256).toHex().toStdString();
+    std::string topicHash(std::string_view domain, std::string_view topic) {
+        return QCryptographicHash::hash(QString::fromStdString(std::string(domain + "/" + topic)).toUtf8(), QCryptographicHash::Sha256).toHex().toStdString();
     }
 
     std::string timeToString(const std::time_t& time) {
         std::ostringstream stream;
         stream << std::put_time(std::localtime(&time), "%Y-%m-%d %H:%M:%S");
         return stream.str();
-    }
-
-    std::optional<std::string> getEnv(const std::string& var) {
-        char* res = std::getenv(var.c_str());
-        return res == nullptr ? std::nullopt : std::make_optional<std::string>(res);
     }
 }

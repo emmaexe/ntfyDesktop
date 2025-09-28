@@ -21,7 +21,6 @@
 #include <QMainWindow>
 #include <cstdlib>
 #include <ctime>
-#include <iostream>
 #include <memory>
 #include <optional>
 #include <string>
