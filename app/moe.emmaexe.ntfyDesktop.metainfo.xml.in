@@ -63,6 +63,19 @@
     </keywords>
 
   <releases>
+    <release version="1.6.0" date="2025-09-30">
+      <url type="details">https://github.com/emmaexe/ntfyDesktop/releases/tag/v1.6.0</url>
+      <description>
+        <p>Release v1.6.0</p>
+          <ul>
+            <li>Added option to disable TLS verification</li>
+            <li>Added option to specifiy custom certificate authorities</li>
+            <li>Fixed memory leak with curl lists</li>
+            <li>Added new logging functionality</li>
+            <li>Code refactoring, rewrites and upgrades</li>
+          </ul>
+      </description>
+    </release>
     <release version="1.5.1" date="2025-08-05">
       <url type="details">https://github.com/emmaexe/ntfyDesktop/releases/tag/v1.5.1</url>
       <description>
