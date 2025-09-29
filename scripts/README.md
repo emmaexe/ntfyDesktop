@@ -73,6 +73,7 @@ If you want to build ntfyDesktop for another distribution you will need the foll
 - Basic development tools (git, make, etc.)
 - A C++ compiler (e.g. g++)
 - Ninja and CMake (with [ECM](https://api.kde.org/frameworks/extra-cmake-modules/html/index.html))
+- The [GNU Perfect Hash Function Generator (gperf)](https://www.gnu.org/software/gperf/manual/gperf.html)
 - libcurl development libraries
 - Base Qt6 development libraries (with SQLite support)
 - KDE Frameworks' KCoreAddons, Ki18n, KNotifications and KXmlGui development libraries
