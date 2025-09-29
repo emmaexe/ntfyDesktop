@@ -151,23 +151,23 @@ namespace Util {
     int versionCompare(std::string_view first, std::string_view second) {
         std::vector<std::string> firstParts = Strings::split(first, ".");
         std::vector<std::string> secondParts = Strings::split(second, ".");
-        if (firstParts.size() != 3) { throw std::invalid_argument("Could not parse version: " + first); }
-        if (secondParts.size() != 3) { throw std::invalid_argument("Could not parse version: " + second); }
+        if (firstParts.size() != 3) { throw std::invalid_argument(std::format("Could not parse version: {}", first)); }
+        if (secondParts.size() != 3) { throw std::invalid_argument(std::format("Could not parse version: {}", second)); }
 
         int firstMajor, firstMinor, firstPatch, secondMajor, secondMinor, secondPatch;
         try {
             firstMajor = std::stoi(firstParts[0]);
             firstMinor = std::stoi(firstParts[1]);
             firstPatch = std::stoi(firstParts[2]);
-        } catch (const std::invalid_argument& e) { throw std::invalid_argument("Could not parse version, NaN: " + first); } catch (const std::out_of_range& e) {
-            throw std::invalid_argument("Version number is too large: " + first);
+        } catch (const std::invalid_argument& e) { throw std::invalid_argument(std::format("Could not parse version, NaN: {}", first)); } catch (const std::out_of_range& e) {
+            throw std::invalid_argument(std::format("Could not parse version, NaN: {}", first));
         }
         try {
             secondMajor = std::stoi(secondParts[0]);
             secondMinor = std::stoi(secondParts[1]);
             secondPatch = std::stoi(secondParts[2]);
-        } catch (const std::invalid_argument& e) { throw std::invalid_argument("Could not parse version, NaN: " + second); } catch (const std::out_of_range& e) {
-            throw std::invalid_argument("Version number is too large: " + second);
+        } catch (const std::invalid_argument& e) { throw std::invalid_argument(std::format("Could not parse version, NaN: {}", second)); } catch (const std::out_of_range& e) {
+            throw std::invalid_argument(std::format("Could not parse version, NaN: {}", second));
         }
 
         if (firstMajor != secondMajor) {
@@ -182,7 +182,7 @@ namespace Util {
     }
 
     std::string topicHash(std::string_view domain, std::string_view topic) {
-        return QCryptographicHash::hash(QString::fromStdString(std::string(domain + "/" + topic)).toUtf8(), QCryptographicHash::Sha256).toHex().toStdString();
+        return QCryptographicHash::hash(QString::fromStdString(std::format("{}/{}", domain, topic)).toUtf8(), QCryptographicHash::Sha256).toHex().toStdString();
     }
 
     std::string timeToString(const std::time_t& time) {
