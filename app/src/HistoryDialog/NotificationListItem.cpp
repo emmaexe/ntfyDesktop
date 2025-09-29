@@ -11,6 +11,7 @@
 #include <QListWidgetItem>
 #include <QPushButton>
 #include <QThread>
+#include <format>
 
 using Util::Colors::ColorMode;
 
@@ -23,7 +24,7 @@ NotificationListItem::NotificationListItem(
     internalServer(server),
     internalTopic(topic),
     internalTimestamp(timestamp),
-    internalTitle("<b>" + title + "</b>"),
+    internalTitle(std::format("<b>{}</b>", title)),
     internalMessage(message) {
     this->ui->setupUi(this);
     this->ui->titleLabel->setText(QString::fromStdString(this->internalTitle));
