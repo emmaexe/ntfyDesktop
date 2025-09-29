@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.20)
 project(
     ntfyDesktop
-    VERSION 1.5.1
+    VERSION 1.6.0
     DESCRIPTION "Receive ntfy notifications"
     HOMEPAGE_URL "https://github.com/emmaexe/ntfyDesktop/"
     LANGUAGES C CXX
