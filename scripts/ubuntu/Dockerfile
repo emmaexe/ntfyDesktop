@@ -2,7 +2,7 @@ FROM ubuntu:rolling
 
 RUN apt update && \
     apt upgrade -y && \
-    apt install -y git g++ ninja-build cmake extra-cmake-modules libcurl4-openssl-dev qt6-base-dev libkf6coreaddons-dev libkf6i18n-dev libkf6notifications-dev libkf6xmlgui-dev
+    apt install -y git g++ ninja-build cmake extra-cmake-modules gperf libcurl4-openssl-dev qt6-base-dev libkf6coreaddons-dev libkf6i18n-dev libkf6notifications-dev libkf6xmlgui-dev
 
 ARG USER_ID
 ARG GROUP_ID
