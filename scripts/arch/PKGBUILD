@@ -7,7 +7,7 @@ arch=("x86_64" "aarch64")
 url="https://github.com/emmaexe/ntfyDesktop"
 license=("GPL-3.0-only")
 depends=("curl" "qt6-base" "kcoreaddons" "ki18n" "knotifications" "kxmlgui")
-makedepends=("git" "gcc" "cmake" "extra-cmake-modules" "ninja")
+makedepends=("git" "gcc" "cmake" "extra-cmake-modules" "ninja" "gperf")
 source=("https://github.com/emmaexe/ntfyDesktop/archive/refs/tags/v${pkgver}.tar.gz")
 sha256sums=("78ba23a78ea2adffc7ee7abb5c659a77109c45a8799a8e73c8bc0bc7caf093fc")
 
