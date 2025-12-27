@@ -6,7 +6,7 @@
 #include "NotificationManager/NotificationManager.hpp"
 #include "SingleInstanceManager/SingleInstanceManager.hpp"
 #include "ThreadManager/ThreadManager.hpp"
-#include "UnixSignalHandler/UnixSignalHandler.hpp"
+#include "UnixSignalBridge/UnixSignalBridge.hpp"
 #include "Util/FileManager.hpp"
 #include "Util/Logging.hpp"
 #include "Util/ParsedURL.hpp"
@@ -67,16 +67,13 @@ int main(int argc, char* argv[]) {
                 }
             }
         };
-        UnixSignalHandler* signalHandler = new UnixSignalHandler(
-            [threadManager, window](int signal) {
-                if (signal == SIGTERM || signal == SIGINT || signal == SIGHUP) {
-                    window->hide();
-                    threadManager->stopAll();
-                    QApplication::quit();
-                }
-            },
-            window
-        );
+        QObject::connect(UnixSignalBridge::get(), &UnixSignalBridge::signal, [threadManager, window](int signal) {
+            if (signal == SIGTERM || signal == SIGINT || signal == SIGHUP) {
+                window->hide();
+                threadManager->stopAll();
+                QApplication::quit();
+            }
+        });
     } else {
         ErrorWindow* window = new ErrorWindow(aboutData);
     }
