@@ -19,7 +19,7 @@
 
 using Util::Colors::ColorMode;
 
-MainWindow::MainWindow(std::shared_ptr<ThreadManager> threadManager, KAboutData& aboutData, QWidget* parent): QMainWindow(parent), ui(new Ui::MainWindow), threadManager(threadManager) {
+MainWindow::MainWindow(ThreadManager* threadManager, KAboutData& aboutData, QWidget* parent): QMainWindow(parent), ui(new Ui::MainWindow), threadManager(threadManager) {
     this->ui->setupUi(this);
     QObject::connect(this->ui->saveAction, &QAction::triggered, this, &MainWindow::saveAction);
     QObject::connect(this->ui->addAction, &QAction::triggered, this, &MainWindow::addAction);

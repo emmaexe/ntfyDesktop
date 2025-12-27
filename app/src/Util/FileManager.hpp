@@ -21,7 +21,8 @@ class FileManager {
     public:
         FileManager() = delete;
         /**
-         * @brief Initialize the FileManager
+         * @brief This function initializes FileManager (eager loading).
+         * If it is not called at the start of the program, lazy loading will be used instead.
          */
         static void init();
         /**
@@ -32,6 +33,8 @@ class FileManager {
          */
         static QUrl urlToTempFile(QUrl url, bool outsidePath = false);
     private:
+        inline static std::once_flag init_flag;
+        static void init_impl() noexcept;
         static void cleanup();
         static size_t urlToTempFileWriteCallback(char* ptr, size_t size, size_t nmemb, void* userdata);
         static std::map<QUrl, std::pair<std::unique_ptr<std::mutex>, QTemporaryFile*>> tempFileHolder;

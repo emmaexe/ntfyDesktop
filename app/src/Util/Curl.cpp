@@ -6,8 +6,15 @@
 #include "ntfyDesktop.hpp"
 
 #include <stdexcept>
+#include <cstdlib>
+#include <ctime>
+
+void Curl::init() noexcept {
+    std::call_once(Curl::init_flag, &Curl::init_impl);
+}
 
 Curl::Curl() {
+    std::call_once(Curl::init_flag, &Curl::init_impl);
     this->internalHandle = curl_easy_init();
     if (!this->internalHandle) { throw std::runtime_error("Failed to initialize CURL internalHandle"); }
 }
@@ -53,6 +60,10 @@ Curl Curl::withDefaults() {
     if (Logger::get().debugMode) { handle.setOpt(CURLOPT_VERBOSE, 1L); }
 
     return handle;
+}
+
+void Curl::init_impl() noexcept {
+    curl_global_init(CURL_GLOBAL_DEFAULT);
 }
 
 CurlList::CurlList() noexcept {}

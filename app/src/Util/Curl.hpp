@@ -2,6 +2,7 @@
 
 #include <curl/curl.h>
 
+#include <mutex>
 #include <string>
 #include <vector>
 
@@ -12,6 +13,12 @@ class Curl {
     public:
         Curl();
         ~Curl();
+
+        /**
+         * @brief This function initializes libcurl (eager loading).
+         * If it is not called at the start of the program, lazy loading will be used instead.
+         */
+        static void init() noexcept;
 
         Curl(Curl&& other) noexcept;
         Curl& operator=(Curl&& other) noexcept;
@@ -28,6 +35,9 @@ class Curl {
          */
         static Curl withDefaults();
     private:
+        inline static std::once_flag init_flag;
+        static void init_impl() noexcept;
+
         CURL* internalHandle = nullptr;
 };
 

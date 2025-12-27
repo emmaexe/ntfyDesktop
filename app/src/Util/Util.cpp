@@ -6,7 +6,7 @@
 #include <QCryptographicHash>
 #include <QSpacerItem>
 #include <algorithm>
-#include <cstdlib>
+#include <random>
 #include <iomanip>
 #include <memory>
 #include <regex>
@@ -130,7 +130,11 @@ namespace Util {
         }
     }
 
-    int random(int min, int max) { return rand() % (max - min + 1) + min; }
+    int random(int min, int max) {
+        static thread_local std::mt19937 engine(std::random_device{}());
+        std::uniform_int_distribution<int> dist(min, max);
+        return dist(engine);
+    }
 
     bool isDomain(const std::string& domain) { return std::regex_match(domain, std::regex("^[-.0-9:A-Za-z]+$")); }
 

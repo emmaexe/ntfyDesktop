@@ -1,6 +1,5 @@
 #include "FileManager.hpp"
 
-#include "../DataBase/DataBase.hpp"
 #include "../Util/Curl.hpp"
 #include "./Util.hpp"
 #include "ntfyDesktop.hpp"
@@ -20,10 +19,11 @@ std::map<QUrl, std::pair<std::unique_ptr<std::mutex>, QTemporaryFile*>> FileMana
 std::mutex FileManager::tempFileHolderLock = std::mutex();
 
 void FileManager::init() {
-    QObject::connect(QCoreApplication::instance(), &QCoreApplication::aboutToQuit, []() { FileManager::cleanup(); });
+    std::call_once(FileManager::init_flag, &FileManager::init_impl);
 }
 
 QUrl FileManager::urlToTempFile(QUrl url, bool outsidePath) {
+    std::call_once(FileManager::init_flag, &FileManager::init_impl);
     FileManager::tempFileHolderLock.lock();
     auto target = FileManager::tempFileHolder.find(url);
     bool found = target != FileManager::tempFileHolder.end();
@@ -65,6 +65,10 @@ QUrl FileManager::urlToTempFile(QUrl url, bool outsidePath) {
     QString fileName = file->fileName();
     if (ND_BUILD_TYPE == "Flatpak" && outsidePath) { fileName.prepend(QString::fromStdString("/run/user/" + std::to_string(getuid()) + "/.flatpak/moe.emmaexe.ntfyDesktop")); }
     return QUrl::fromLocalFile(fileName);
+}
+
+void FileManager::init_impl() noexcept {
+    QObject::connect(QCoreApplication::instance(), &QCoreApplication::aboutToQuit, []() { FileManager::cleanup(); });
 }
 
 void FileManager::cleanup() {
