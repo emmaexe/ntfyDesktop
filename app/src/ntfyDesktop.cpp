@@ -45,19 +45,19 @@ int main(int argc, char* argv[]) {
     parser.process(app);
     aboutData.processCommandLine(&parser);
 
-    std::optional<std::string> passedUrl = std::nullopt;
-    if (!parser.positionalArguments().empty()) { passedUrl = parser.positionalArguments().first().toStdString(); }
-    SingleInstanceManager singleInstanceManager(
-        [&](std::optional<std::string> url) { Logger::get().error("A new instance was started, but this instance does not have a main window to show."); }, passedUrl
+    SingleInstanceManager::get()->init(
+        !parser.positionalArguments().empty() ?
+        std::make_optional(parser.positionalArguments().first()) :
+        std::nullopt
     );
 
     if (Config::ready()) {
         ThreadManager* threadManager = new ThreadManager(&app);
         MainWindow* window = new MainWindow(threadManager, aboutData);
-        singleInstanceManager.onNewInstanceStarted = [&](std::optional<std::string> url) {
+        QObject::connect(SingleInstanceManager::get(), &SingleInstanceManager::new_instance, [&](std::optional<QString> url){
             if (url.has_value()) {
                 try {
-                    window->ntfyProtocolTriggered(ParsedURL(url.value()));
+                    window->ntfyProtocolTriggered(ParsedURL(url.value().toStdString()));
                 } catch (ParsedURLException e) { NotificationManager::errorNotification("An invalid url was passed to ntfyDesktop", e.what()); }
             } else {
                 if (window->isHidden()) {
@@ -66,7 +66,7 @@ int main(int argc, char* argv[]) {
                     app.alert(window);
                 }
             }
-        };
+        });
         QObject::connect(UnixSignalBridge::get(), &UnixSignalBridge::signal, [threadManager, window](int signal) {
             if (signal == SIGTERM || signal == SIGINT || signal == SIGHUP) {
                 window->hide();

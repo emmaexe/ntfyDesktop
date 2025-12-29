@@ -1,16 +1,22 @@
 #pragma once
 
 #include <QObject>
-#include <functional>
+#include <QString>
 #include <optional>
+#include <mutex>
 
 class SingleInstanceManager: public QObject {
         Q_OBJECT
+        Q_DISABLE_COPY(SingleInstanceManager)
         Q_CLASSINFO("D-Bus Interface", "moe.emmaexe.ntfyDesktop.SingleInstanceManager")
     public:
-        SingleInstanceManager(std::function<void(std::optional<std::string> url)> onNewInstanceStarted, std::optional<std::string> url, QObject* parent = nullptr);
-        ~SingleInstanceManager();
-        std::function<void(const std::optional<std::string> url)> onNewInstanceStarted;
+        static SingleInstanceManager* get();
+        void init(std::optional<QString> url);
     public slots:
-        void newInstanceStarted(const QString& url);
+        void newInstance(bool has_value, QString url);
+    signals:
+        void new_instance(std::optional<QString> url);
+    private:
+        SingleInstanceManager(QObject* parent = nullptr);
+        std::once_flag init_flag;
 };
