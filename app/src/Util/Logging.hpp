@@ -1,15 +1,16 @@
 #pragma once
 
-#include <string>
+#include <QObject>
 #include <mutex>
+#include <string>
 
 /**
  * @brief A singleton that can be used to log messages and errors
  */
-class Logger {
+class Logger: QObject {
+        Q_OBJECT
+        Q_DISABLE_COPY(Logger)
     public:
-        Logger(const Logger& other) = delete;
-        Logger& operator=(const Logger& other) = delete;
         /**
          * @brief Get the Logger instance
          */
@@ -30,6 +31,6 @@ class Logger {
 
         const bool debugMode = false;
     private:
-        Logger();
+        Logger(QObject* parent = nullptr);
         std::mutex mutex;
 };
