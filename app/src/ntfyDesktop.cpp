@@ -56,9 +56,12 @@ int main(int argc, char* argv[]) {
         MainWindow* window = new MainWindow(threadManager, aboutData);
         QObject::connect(SingleInstanceManager::get(), &SingleInstanceManager::new_instance, [&](std::optional<QString> url){
             if (url.has_value()) {
-                try {
-                    window->ntfyProtocolTriggered(ParsedURL(url.value().toStdString()));
-                } catch (ParsedURLException e) { NotificationManager::errorNotification("An invalid url was passed to ntfyDesktop", e.what()); }
+                auto parsed_url = ParsedURL::from_string(url.value().toStdString());
+                if (parsed_url.has_value()) {
+                    window->ntfyProtocolTriggered(*parsed_url);
+                } else {
+                    NotificationManager::errorNotification("An invalid url was passed to ntfyDesktop", parsed_url.error());
+                }
             } else {
                 if (window->isHidden()) {
                     window->show();
