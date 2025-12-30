@@ -5,14 +5,14 @@
 #include <QApplication>
 #include <print>
 
-Logger& Logger::get() {
+Logger& Logger::instance() {
     static Logger* instance = new Logger(QApplication::instance());
     return *instance;
 }
 
 void Logger::debug(std::string_view message) {
     std::lock_guard<std::mutex> lock(this->mutex);
-    if (this->debugMode) { std::println(stderr, "[debug] {}", message); }
+    if (this->debug_mode) { std::println(stderr, "[debug] {}", message); }
 }
 
 void Logger::log(std::string_view message) {
@@ -25,4 +25,4 @@ void Logger::error(std::string_view message) {
     std::println(stderr, "[error] {}", message);
 }
 
-Logger::Logger(QObject* parent): QObject(parent), debugMode(Util::Env::Commons::debug.has_value()) {}
+Logger::Logger(QObject* parent): QObject(parent), debug_mode(Util::Env::Commons::debug.has_value()) {}

@@ -44,7 +44,7 @@ void UnixSignalBridge::handleSigTerm() {
 }
 
 UnixSignalBridge::UnixSignalBridge(QObject* parent): QObject(parent) {
-    Logger& logger = Logger::get();
+    Logger& logger = Logger::instance();
 
     // Register SigHup
     if (socketpair(AF_UNIX, SOCK_STREAM, 0, UnixSignalBridge::sighupFileDescriptor)) {

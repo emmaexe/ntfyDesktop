@@ -14,7 +14,7 @@ class Logger: public QObject {
         /**
          * @brief Get the Logger instance
          */
-        static Logger& get();
+        static Logger& instance();
 
         /**
          * @brief Use to help with debugging; Only active when the ND_DEBUG env variable is set
@@ -29,7 +29,7 @@ class Logger: public QObject {
          */
         void error(std::string_view message);
 
-        const bool debugMode = false;
+        const bool debug_mode = false;
     private:
         Logger(QObject* parent = nullptr);
         std::mutex mutex;

@@ -17,7 +17,7 @@ namespace NtfyWorker {
 
     void BaseWorker::run() {
         this->running = true;
-        Logger& logger = Logger::get();
+        Logger& logger = Logger::instance();
         ExitData exitData{ this->options };
 
         Curl curlInstance = Curl::withDefaults();
@@ -67,7 +67,7 @@ namespace NtfyWorker {
     NtfyWorker::NtfyWorker(const ConnectionOptions& options, QObject* parent): BaseWorker(options, parent) {}
 
     void NtfyWorker::makeRequest(Curl& curlInstance, const std::string& url, ExitData& exitData) {
-        Logger& logger = Logger::get();
+        Logger& logger = Logger::instance();
         int runCount = 0;
         while (this->running) {
             if (this->options.reconnectCount.has_value() && runCount > this->options.reconnectCount.value()) {
@@ -94,7 +94,7 @@ namespace NtfyWorker {
 
         if (!this->running) { return 0; }
 
-        Logger& logger = Logger::get();
+        Logger& logger = Logger::instance();
         DataBase db;
 
         for (const std::string& line: data) {
@@ -122,7 +122,7 @@ namespace NtfyWorker {
     PollWorker::PollWorker(const ConnectionOptions& options, QObject* parent): BaseWorker(options, parent) {}
 
     void PollWorker::makeRequest(Curl& curlInstance, const std::string& url, ExitData& exitData) {
-        Logger& logger = Logger::get();
+        Logger& logger = Logger::instance();
 
         std::string currentUrl = url + "?poll=1&since=all";
         curlInstance.setOpt(CURLOPT_URL, currentUrl.c_str());
@@ -140,7 +140,7 @@ namespace NtfyWorker {
 
         if (!this->running) { return 0; }
 
-        Logger& logger = Logger::get();
+        Logger& logger = Logger::instance();
         DataBase db;
 
         for (const std::string& line: data) {

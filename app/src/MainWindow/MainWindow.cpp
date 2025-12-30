@@ -289,7 +289,7 @@ void MainWindow::pullButtonResults(const bool success) {
 NotificationPuller::NotificationPuller(const nlohmann::json& sources): sources(sources) {}
 
 void NotificationPuller::run() {
-    Logger& logger = Logger::get();
+    Logger& logger = Logger::instance();
     std::atomic<bool> error = false;
     std::vector<NtfyWorker::Bundle> workerBundles;
 

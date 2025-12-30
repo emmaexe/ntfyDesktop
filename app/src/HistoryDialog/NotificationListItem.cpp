@@ -146,7 +146,7 @@ void PixmapFetcher::fetchThumbnail() {
         image.load(file->toLocalFile());
         emit thumbnailFetched(image.scaled(128, 128, Qt::KeepAspectRatio, Qt::FastTransformation));
     } else {
-        Logger::get().error(file.error());
+        Logger::instance().error(file.error());
         emit thumbnailFetched(Util::Placeholders::image_missing());
     }
 }

@@ -37,7 +37,7 @@ void NotificationManager::generalNotification(NtfyNotification ntfyNotification)
             if (file.has_value()) {
                 notification->setUrls({ *file });
             } else {
-                Logger::get().error(file.error());
+                Logger::instance().error(file.error());
             }
         }
     }

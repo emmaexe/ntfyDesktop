@@ -14,7 +14,7 @@
 #include <filesystem>
 
 DataBase::DataBase() {
-    Logger& logger = Logger::get();
+    Logger& logger = Logger::instance();
     if (!std::filesystem::exists(DataBase::getDBPath()) || !std::filesystem::is_directory(DataBase::getDBPath())) { std::filesystem::create_directory(DataBase::getDBPath()); }
 
     this->connectionName = "SQliteDB_" + QUuid::createUuid().toString(QUuid::Id128).toStdString();
@@ -248,7 +248,7 @@ void DataBase::setAuth(const std::string& topicHash, const AuthConfig& authConfi
         query.addBindValue(authConfig.type);
         query.addBindValue(QString::fromStdString(authConfig.token));
     }
-    if (!query.exec()) { Logger::get().error("DataBase query failed: " + query.lastError().text().toStdString()); }
+    if (!query.exec()) { Logger::instance().error("DataBase query failed: " + query.lastError().text().toStdString()); }
 }
 
 void DataBase::multiSetAuth(const std::map<std::string, AuthConfig>& data) {
@@ -297,7 +297,7 @@ void DataBase::multiSetAuth(const std::map<std::string, AuthConfig>& data) {
     if (!failure) {
         this->db.commit();
     } else {
-        Logger::get().error("DataBase query failed: " + query.lastError().text().toStdString());
+        Logger::instance().error("DataBase query failed: " + query.lastError().text().toStdString());
         this->db.rollback();
     }
 }
@@ -322,7 +322,7 @@ AuthConfig DataBase::getAuth(const std::string& topicHash) {
             authConfig.token = query.value(3).isNull() ? "" : query.value(3).toString().toStdString();
         }
     } else {
-        Logger::get().error("DataBase query failed: " + query.lastError().text().toStdString());
+        Logger::instance().error("DataBase query failed: " + query.lastError().text().toStdString());
     }
 
     return authConfig;
@@ -356,7 +356,7 @@ void DataBase::commitNotificationQueue() {
     if (!failure) {
         this->db.commit();
     } else {
-        Logger::get().error("DataBase query failed: " + query.lastError().text().toStdString());
+        Logger::instance().error("DataBase query failed: " + query.lastError().text().toStdString());
         this->db.rollback();
     }
     this->notificationQueue.clear();
@@ -416,7 +416,7 @@ void DataBase::deleteNotification(const std::string& id) {
         WHERE Id = :id
     )");
     query.bindValue(":id", QString::fromStdString(id));
-    if (!query.exec()) { Logger::get().error("DataBase query failed: " + query.lastError().text().toStdString()); }
+    if (!query.exec()) { Logger::instance().error("DataBase query failed: " + query.lastError().text().toStdString()); }
 }
 
 void DataBase::deleteNotifications(const std::vector<std::string>& ids) {
@@ -439,7 +439,7 @@ void DataBase::deleteNotifications(const std::vector<std::string>& ids) {
     if (!failure) {
         this->db.commit();
     } else {
-        Logger::get().error("DataBase query failed: " + query.lastError().text().toStdString());
+        Logger::instance().error("DataBase query failed: " + query.lastError().text().toStdString());
         this->db.rollback();
     }
 }
@@ -448,14 +448,14 @@ void DataBase::setTlsVerificationPreference(bool preference) {
     QSqlQuery query(this->db);
     query.prepare("INSERT OR REPLACE INTO GlobalPreferences (key, value) VALUES ('TlsVerification', :preference);");
     query.bindValue(":preference", preference ? "1" : "0");
-    if (!query.exec()) { Logger::get().error("DataBase query failed: " + query.lastError().text().toStdString()); }
+    if (!query.exec()) { Logger::instance().error("DataBase query failed: " + query.lastError().text().toStdString()); }
 }
 
 void DataBase::setCAPathPreference(const std::string& preference) {
     QSqlQuery query(this->db);
     query.prepare("INSERT OR REPLACE INTO GlobalPreferences (key, value) VALUES ('CaPath', :preference);");
     query.bindValue(":preference", QString::fromStdString(preference));
-    if (!query.exec()) { Logger::get().error("DataBase query failed: " + query.lastError().text().toStdString()); }
+    if (!query.exec()) { Logger::instance().error("DataBase query failed: " + query.lastError().text().toStdString()); }
 }
 
 bool DataBase::getTlsVerificationPreference() {
@@ -505,7 +505,7 @@ int DataBase::countRows(const std::string& table) {
 
 void DataBase::executeQuery(const std::string& queryText) {
     QSqlQuery query(QString::fromStdString(queryText), this->db);
-    if (!query.exec()) { Logger::get().error("DataBase query failed: " + query.lastError().text().toStdString()); }
+    if (!query.exec()) { Logger::instance().error("DataBase query failed: " + query.lastError().text().toStdString()); }
 }
 
 const std::string DataBase::getDBPath() { return QStandardPaths::writableLocation(QStandardPaths::AppDataLocation).toStdString(); }

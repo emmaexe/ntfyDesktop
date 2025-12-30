@@ -13,7 +13,7 @@ SingleInstanceManager* SingleInstanceManager::get() {
 
 void SingleInstanceManager::init(std::optional<QString> url) {
     std::call_once(this->init_flag, [&](){
-        Logger& logger = Logger::get();
+        Logger& logger = Logger::instance();
 
         QDBusConnection sessionBus = QDBusConnection::sessionBus();
         if (!sessionBus.registerService("moe.emmaexe.ntfyDesktop")) {
