@@ -3,6 +3,7 @@
 #include "../DataBase/DataBase.hpp"
 #include "../NotificationManager/NtfyNotification.hpp"
 #include "../Util/FileManager.hpp"
+#include "../Util/Logging.hpp"
 #include "../Util/Util.hpp"
 #include "ntfyDesktop.hpp"
 #include "ui_NotificationListItem.h"
@@ -139,9 +140,15 @@ const std::string& NotificationListItem::message() { return this->internalMessag
 PixmapFetcher::PixmapFetcher(std::string url, QObject* parent): url(url), QObject(parent) {}
 
 void PixmapFetcher::fetchThumbnail() {
-    QPixmap image;
-    image.load(FileManager::urlToTempFile(QUrl(QString::fromStdString(this->url))).toLocalFile());
-    emit thumbnailFetched(image.scaled(128, 128, Qt::KeepAspectRatio, Qt::FastTransformation));
+    auto file = FileManager::instance().url_to_temp_file(QUrl(QString::fromStdString(this->url)));
+    if (file.has_value()) {
+        QPixmap image;
+        image.load(file->toLocalFile());
+        emit thumbnailFetched(image.scaled(128, 128, Qt::KeepAspectRatio, Qt::FastTransformation));
+    } else {
+        Logger::get().error(file.error());
+        emit thumbnailFetched(Util::Placeholders::image_missing());
+    }
 }
 
 AsyncCurlRequest::AsyncCurlRequest(const nlohmann::json& action, QObject* parent): QObject(parent) {

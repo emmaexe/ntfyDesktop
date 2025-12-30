@@ -96,6 +96,14 @@ namespace Util {
         const QColor buttonTextColor();
         const QColor buttonTextColorSuccess();
         const QColor buttonTextColorFailure();
+        bool is_dark_mode();
+    }
+
+    /**
+     * @brief Miscellaneous placeholders
+     */
+    namespace Placeholders {
+        QPixmap image_missing(int size = 128);
     }
 
     /**

@@ -7,7 +7,7 @@
 /**
  * @brief A singleton that can be used to log messages and errors
  */
-class Logger: QObject {
+class Logger: public QObject {
         Q_OBJECT
         Q_DISABLE_COPY(Logger)
     public:

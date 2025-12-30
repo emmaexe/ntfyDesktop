@@ -2,6 +2,7 @@
 
 #include "../Config/Config.hpp"
 #include "../Util/FileManager.hpp"
+#include "../Util/Logging.hpp"
 #include "ntfyDesktop.hpp"
 
 #include <KNotification>
@@ -32,8 +33,12 @@ void NotificationManager::generalNotification(NtfyNotification ntfyNotification)
             KNotificationAction* knaction = notification->addAction(QStringLiteral("Open Attachment"));
             KNotificationAction::connect(knaction, &KNotificationAction::activated, [fileUrl]() { QDesktopServices::openUrl(fileUrl); });
         } else {
-            QUrl tempFileUrl = FileManager::urlToTempFile(QUrl(QString::fromStdString(ntfyNotification.attachment()->url)));
-            notification->setUrls({ tempFileUrl });
+            auto file = FileManager::instance().url_to_temp_file(QUrl(QString::fromStdString(ntfyNotification.attachment()->url)));
+            if (file.has_value()) {
+                notification->setUrls({ *file });
+            } else {
+                Logger::get().error(file.error());
+            }
         }
     }
 

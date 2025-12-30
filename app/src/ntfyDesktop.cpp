@@ -33,7 +33,7 @@ int main(int argc, char* argv[]) {
         QStringLiteral(ND_HOMEPAGE_URL),
         QStringLiteral(ND_ISSUES_URL)
     );
-    aboutData.setProgramLogo(QIcon(":/icons/ntfyDesktop.svg"));
+    aboutData.setProgramLogo(QIcon(":/icons/dark/ntfyDesktop.svg"));
     aboutData.setDesktopFileName("moe.emmaexe.ntfyDesktop");
     aboutData.addAuthor(QStringLiteral("Emma"), i18n("Author"), QStringLiteral("contact@emmaexe.moe"), QStringLiteral("https://emmaexe.moe/"), QStringLiteral(""));
     KAboutData::setApplicationData(aboutData);

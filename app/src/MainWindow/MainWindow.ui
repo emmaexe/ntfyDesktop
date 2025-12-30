@@ -15,7 +15,7 @@
   </property>
   <property name="windowIcon">
    <iconset theme="moe.emmaexe.ntfyDesktop" resource="../../resources/resources.qrc">
-    <normaloff>:/icons/ntfyDesktop.svg</normaloff>:/icons/ntfyDesktop.svg</iconset>
+    <normaloff>:/icons/dark/ntfyDesktop.svg</normaloff>:/icons/dark/ntfyDesktop.svg</iconset>
   </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QVBoxLayout" name="verticalLayout">
