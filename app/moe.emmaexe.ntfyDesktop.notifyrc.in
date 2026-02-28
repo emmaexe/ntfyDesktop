@@ -4,9 +4,15 @@ IconName=moe.emmaexe.ntfyDesktop
 Comment=@CPACK_PROJECT_DESCRIPTION_SUMMARY@
 DesktopEntry=moe.emmaexe.ntfyDesktop.desktop
 
+[Event/ntfy]
+Name=Ntfy Notifications
+Comment=Notifications from ntfy.
+Action=Popup
+Urgency=Normal
+
 [Event/general]
 Name=General Notifications
-Comment=Notifications that come in from notification sources.
+Comment=Various notifications (e.g. when a file download completes).
 Action=Popup
 Urgency=Normal
 
@@ -18,6 +24,6 @@ Urgency=Normal
 
 [Event/error]
 Name=Error Notifications
-Comment=Notifications sent for errors and other issues (e.g. when a server isn't responding). 
+Comment=Notifications sent for errors and other issues (e.g. when a server isn't responding).
 Action=Popup
 Urgency=Normal

@@ -8,78 +8,127 @@
 #include <KNotification>
 #include <QDesktopServices>
 
-void NotificationManager::generalNotification(NtfyNotification ntfyNotification) {
-    KNotification* notification = new KNotification("general");
+namespace NotificationManager {
+    void ntfy_notification(const NtfyMessage message) {
+        if (message.event != NtfyMessage::Event::MESSAGE) { return; }
+        KNotification* notification = new KNotification("ntfy");
 
-    if (ntfyNotification.priority().has_value()) {
-        if (ntfyNotification.priority().value() == NotificationPriority::HIGHEST) {
-            notification->setUrgency(KNotification::Urgency::CriticalUrgency);
-        } else if (ntfyNotification.priority().value() == NotificationPriority::HIGH) {
-            notification->setUrgency(KNotification::Urgency::HighUrgency);
-        } else if (ntfyNotification.priority().value() == NotificationPriority::NORMAL) {
-            notification->setUrgency(KNotification::Urgency::NormalUrgency);
-        } else if (ntfyNotification.priority().value() == NotificationPriority::LOW || ntfyNotification.priority().value() == NotificationPriority::LOWEST) {
-            notification->setUrgency(KNotification::Urgency::LowUrgency);
+        notification->setTitle(message.title.value_or("Ntfy Desktop - " + message.topic));
+
+        QString text = message.message.value_or("No message attached.");
+        if (message.content_type == NtfyMessage::ContentType::TEXT_MARKDOWN) {
+            // ~todo: Render markdown text to Qt's Text.StyledText
         }
-    }
-
-    notification->setTitle(QString::fromStdString(ntfyNotification.title()));
-    notification->setText(QString::fromStdString(ntfyNotification.message()));
-    notification->setIconName("moe.emmaexe.ntfyDesktop");
-
-    if (ntfyNotification.attachment().has_value()) {
-        if (ND_BUILD_TYPE == "Flatpak") {
-            QUrl fileUrl = QUrl(QString::fromStdString(ntfyNotification.attachment()->url));
-            KNotificationAction* knaction = notification->addAction(QStringLiteral("Open Attachment"));
-            KNotificationAction::connect(knaction, &KNotificationAction::activated, [fileUrl]() { QDesktopServices::openUrl(fileUrl); });
-        } else {
-            auto file = FileManager::instance().url_to_temp_file(QUrl(QString::fromStdString(ntfyNotification.attachment()->url)));
-            if (file.has_value()) {
-                notification->setUrls({ *file });
-            } else {
-                Logger::instance().error(file.error());
+        if (message.tags && message.tags->size() > 0) {
+            text += " Tags: ";
+            for (const QString& tag: *message.tags) {
+                text += tag + " ";
             }
         }
-    }
+        notification->setText(text);
 
-    if (ntfyNotification.actions().has_value()) {
-        for (NotificationAction action: ntfyNotification.actions().value()) {
-            if (!action.useable) { continue; }
-            KNotificationAction* knaction;
+        notification->setIconName("moe.emmaexe.ntfyDesktop");
+        if (message.icon && ND_BUILD_TYPE != "Flatpak") {
+            auto icon_file_res = message.get_icon_temp_file();
+            if (icon_file_res) {
+                QString file_path = (*icon_file_res)->toLocalFile();
 
-            if (action.type == NotificationActionType::CLICK) {
-                KNotificationAction* bknaction = notification->addAction(QString::fromStdString(action.label));
-                KNotificationAction::connect(bknaction, &KNotificationAction::activated, [actionUrl = action.url]() { QDesktopServices::openUrl(QUrl(QString::fromStdString(actionUrl))); });
-                knaction = notification->addDefaultAction(QString::fromStdString(action.label));
-            } else if (action.type == NotificationActionType::BUTTON) {
-                knaction = notification->addAction(QString::fromStdString(action.label));
+                QPixmap pixmap;
+                if (pixmap.load(file_path)) {
+                    notification->setPixmap(pixmap);
+                }
             }
-
-            KNotificationAction::connect(knaction, &KNotificationAction::activated, [actionUrl = action.url]() { QDesktopServices::openUrl(QUrl(QString::fromStdString(actionUrl))); });
         }
+
+        if (message.priority) {
+            if (message.priority == NtfyMessage::Priority::HIGHEST) {
+                notification->setUrgency(KNotification::Urgency::CriticalUrgency);
+            } else if (message.priority == NtfyMessage::Priority::HIGH) {
+                notification->setUrgency(KNotification::Urgency::HighUrgency);
+            } else if (message.priority == NtfyMessage::Priority::NORMAL) {
+                notification->setUrgency(KNotification::Urgency::NormalUrgency);
+            } else if (message.priority == NtfyMessage::Priority::LOW || message.priority == NtfyMessage::Priority::LOWEST) {
+                notification->setUrgency(KNotification::Urgency::LowUrgency);
+            }
+        }
+
+        if (message.click) {
+            KNotificationAction* action = notification->addDefaultAction("Open URL");
+            KNotificationAction::connect(
+                action,
+                &KNotificationAction::activated,
+                [message]() {
+                    message.trigger_click();
+                }
+            );
+        }
+
+        if (message.actions && message.actions->size() > 0) {
+            for (const auto& action: *message.actions) {
+                if (std::holds_alternative<NtfyMessage::BroadcastAction>(action)) { continue; }
+
+                std::visit([&notification](auto&& action) {
+                    KNotificationAction* knaction = notification->addAction(action.label);
+                    KNotificationAction::connect(
+                        knaction,
+                        &KNotificationAction::activated,
+                        [action]() {
+                            action.trigger_action();
+                        }
+                    );
+                }, action);
+            }
+        }
+
+        if (message.attachment) {
+            KNotificationAction* action = notification->addAction("Download Attachment");
+            KNotificationAction::connect(
+                action,
+                &KNotificationAction::activated,
+                [attachment = *message.attachment]() {
+                    attachment.do_user_download();
+                }
+            );
+
+            if (ND_BUILD_TYPE != "Flatpak") {
+                auto file_res = message.attachment->get_temp_file();
+                if (file_res) {
+                    notification->setUrls({ *file_res });
+                }
+            }
+        }
+
+        notification->sendEvent();
     }
 
-    notification->sendEvent();
-}
-
-void NotificationManager::startupNotification() {
-    if (Config::data()["preferences"].is_object() && Config::data()["preferences"]["notifications"].is_object() && Config::data()["preferences"]["notifications"]["startup"].is_boolean() && Config::data()["preferences"]["notifications"]["startup"]) {
-        KNotification* notification = new KNotification("startup");
-        notification->setUrgency(KNotification::Urgency::LowUrgency);
-        notification->setTitle("Ntfy Desktop");
-        notification->setText("Ntfy Desktop is running in the background.");
+    void general_notification(const QString title, const QString message) {
+        KNotification* notification = new KNotification("general");
+        notification->setUrgency(KNotification::Urgency::NormalUrgency);
+        notification->setTitle(title);
+        notification->setText(message);
         notification->setIconName("moe.emmaexe.ntfyDesktop");
         notification->sendEvent();
     }
-}
 
-void NotificationManager::errorNotification(const std::string title, const std::string message) {
-    if (Config::data()["preferences"].is_object() && Config::data()["preferences"]["notifications"].is_object() && Config::data()["preferences"]["notifications"]["error"].is_boolean() && Config::data()["preferences"]["notifications"]["error"]) {
-        KNotification* notification = new KNotification("error");
-        notification->setTitle(QString::fromStdString(title));
-        notification->setText(QString::fromStdString(message));
-        notification->setUrgency(KNotification::Urgency::HighUrgency);
-        notification->setIconName(QStringLiteral("moe.emmaexe.ntfyDesktop"));
-        notification->sendEvent();
+    void startup_notification() {
+        if (Config::data()["preferences"].is_object() && Config::data()["preferences"]["notifications"].is_object() && Config::data()["preferences"]["notifications"]["startup"].is_boolean() && Config::data()["preferences"]["notifications"]["startup"]) {
+            KNotification* notification = new KNotification("startup");
+            notification->setTitle("Ntfy Desktop");
+            notification->setText("Ntfy Desktop is running in the background.");
+            notification->setUrgency(KNotification::Urgency::LowUrgency);
+            notification->setIconName("moe.emmaexe.ntfyDesktop");
+            notification->sendEvent();
+        }
+    }
+
+    void error_notification(const QString title, const QString message) {
+        if (Config::data()["preferences"].is_object() && Config::data()["preferences"]["notifications"].is_object() && Config::data()["preferences"]["notifications"]["error"].is_boolean() && Config::data()["preferences"]["notifications"]["error"]) {
+            KNotification* notification = new KNotification("error");
+            notification->setTitle(title);
+            notification->setText(message);
+            notification->setUrgency(KNotification::Urgency::HighUrgency);
+            notification->setIconName("moe.emmaexe.ntfyDesktop");
+            notification->sendEvent();
+        }
     }
 }

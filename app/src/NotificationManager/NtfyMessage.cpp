@@ -1,6 +1,16 @@
 #include "NtfyMessage.hpp"
 
+#include "../NotificationManager/NotificationManager.hpp"
+#include "../Util/Curl.hpp"
+#include "../Util/FileManager.hpp"
 #include "../Util/Util.hpp"
+
+#include <QApplication>
+#include <QClipboard>
+#include <QDesktopServices>
+#include <QFileDialog>
+#include <QMessageBox>
+#include <QStandardPaths>
 
 #include <emojicpp/emoji.hpp>
 
@@ -259,6 +269,10 @@ std::expected<NtfyMessage::ViewAction, std::string> NtfyMessage::ViewAction::cre
     );
 }
 
+void NtfyMessage::ViewAction::trigger_action() const {
+    QDesktopServices::openUrl(this->url);
+}
+
 std::expected<NtfyMessage::BroadcastAction, std::string> NtfyMessage::BroadcastAction::create(const nlohmann::json& json) {
     if (!json.is_object()) {
         return std::unexpected("NtfyMessage::BroadcastAction::create: Incorrect input type");
@@ -274,13 +288,13 @@ std::expected<NtfyMessage::BroadcastAction, std::string> NtfyMessage::BroadcastA
     }
     const QString intent = QString::fromStdString(json["intent"]);
 
-    std::optional<std::unordered_map<QString, QString>> extras = std::nullopt;
+    std::optional<QHash<QString, QString>> extras = std::nullopt;
     if (json.contains("extras")) {
         if (!json["extras"].is_object()) {
             return std::unexpected("NtfyMessage::BroadcastAction::create: Could not parse \"extras\"");
         }
 
-        extras = std::make_optional<std::unordered_map<QString, QString>>();
+        extras = std::make_optional<QHash<QString, QString>>();
         for (const auto& [key, value] : json["extras"].items()) {
             if (!value.is_string()) {
                 return std::unexpected("NtfyMessage::BroadcastAction::create: Could not parse \"extras\"");
@@ -308,6 +322,10 @@ std::expected<NtfyMessage::BroadcastAction, std::string> NtfyMessage::BroadcastA
         extras,
         clear
     );
+}
+
+void NtfyMessage::BroadcastAction::trigger_action() const {
+    // Nothing
 }
 
 std::expected<NtfyMessage::HttpAction, std::string> NtfyMessage::HttpAction::create(const nlohmann::json& json) {
@@ -360,16 +378,16 @@ std::expected<NtfyMessage::HttpAction, std::string> NtfyMessage::HttpAction::cre
         }
     }
 
-    std::optional<std::unordered_map<QString, QString>> headers = std::nullopt;
+    std::optional<QHash<QString, QString>> headers = std::nullopt;
     if (json.contains("headers")) {
         if (!json["headers"].is_object()) {
-            return std::unexpected("NtfyMessage::BroadcastAction::create: Could not parse \"headers\"");
+            return std::unexpected("NtfyMessage::HttpAction::create: Could not parse \"headers\"");
         }
 
-        headers = std::make_optional<std::unordered_map<QString, QString>>();
+        headers = std::make_optional<QHash<QString, QString>>();
         for (const auto& [key, value] : json["headers"].items()) {
             if (!value.is_string()) {
-                return std::unexpected("NtfyMessage::BroadcastAction::create: Could not parse \"headers\"");
+                return std::unexpected("NtfyMessage::HttpAction::create: Could not parse \"headers\"");
             }
 
             headers->emplace(
@@ -407,6 +425,81 @@ std::expected<NtfyMessage::HttpAction, std::string> NtfyMessage::HttpAction::cre
     );
 }
 
+void NtfyMessage::HttpAction::trigger_action() const {
+    auto bundle_res = Curl::Bundle::create_heap();
+    if (!bundle_res) { return; }
+
+    Curl::Bundle* bundle = *bundle_res;
+    Curl::Worker& worker = bundle->worker();
+    Curl::Easy& curl = worker.curl();
+
+    curl.set_opt(CURLOPT_URL, url.toString().toStdString());
+
+    if (this->method) {
+        switch (*this->method) {
+            case Method::GET:
+                curl.set_opt(CURLOPT_HTTPGET, 1L);
+                break;
+            case Method::POST:
+                curl.set_opt(CURLOPT_POST, 1L);
+                break;
+            case Method::PUT:
+                curl.set_opt(CURLOPT_CUSTOMREQUEST, "PUT");
+                break;
+            case Method::DELETE:
+                curl.set_opt(CURLOPT_CUSTOMREQUEST, "DELETE");
+                break;
+            case Method::PATCH:
+                curl.set_opt(CURLOPT_CUSTOMREQUEST, "PATCH");
+                break;
+            case Method::HEAD:
+                curl.set_opt(CURLOPT_NOBODY, 1L);
+                break;
+            case Method::OPTIONS:
+                curl.set_opt(CURLOPT_CUSTOMREQUEST, "OPTIONS");
+                break;
+            case Method::TRACE:
+                curl.set_opt(CURLOPT_CUSTOMREQUEST, "TRACE");
+                break;
+            case Method::CONNECT:
+                curl.set_opt(CURLOPT_CUSTOMREQUEST, "CONNECT");
+                break;
+        }
+    } else {
+        curl.set_opt(CURLOPT_POST, 1L);
+    }
+
+    if (this->body) {
+        std::string body = this->body->toStdString();
+        curl.set_opt(CURLOPT_POSTFIELDS, body);
+        curl.set_opt(CURLOPT_POSTFIELDSIZE, static_cast<long>(body.size()));
+    }
+
+    if (this->headers && !this->headers->empty()) {
+        Curl::List* list = Curl::List::create_heap(bundle);
+
+        for (const auto& [key, value]: headers->asKeyValueRange()) {
+            std::string header = key.toStdString() + ": " + value.toStdString();
+            list->append(header);
+        }
+
+        curl.set_opt(CURLOPT_HTTPHEADER, *list);
+    }
+
+    QObject::connect(
+        &worker,
+        &Curl::Worker::finished,
+        bundle,
+        [bundle](std::expected<void, std::string> result) {
+            bundle->deleteLater();
+        }
+    );
+
+    if (!bundle->start()) {
+        bundle->deleteLater();
+    }
+}
+
 std::expected<NtfyMessage::CopyAction, std::string> NtfyMessage::CopyAction::create(const nlohmann::json& json) {
     if (!json.is_object()) {
         return std::unexpected("NtfyMessage::CopyAction::create: Incorrect input type");
@@ -438,22 +531,26 @@ std::expected<NtfyMessage::CopyAction, std::string> NtfyMessage::CopyAction::cre
     );
 }
 
+void NtfyMessage::CopyAction::trigger_action() const {
+    QApplication::clipboard()->setText(this->value);
+}
+
 std::expected<NtfyMessage::Attachment, std::string> NtfyMessage::Attachment::create(const nlohmann::json& json) {
     if (!json.is_object()) {
         return std::unexpected("NtfyMessage::Attachment::create: Incorrect input type");
     }
 
     if (!(json.contains("name") && json["name"].is_string())) {
-        return std::unexpected("NtfyMessage::ViewAction::create: Could not parse \"name\"");
+        return std::unexpected("NtfyMessage::Attachment::create: Could not parse \"name\"");
     }
     const QString name = QString::fromStdString(json["name"]);
 
     if (!(json.contains("url") && json["url"].is_string())) {
-        return std::unexpected("NtfyMessage::ViewAction::create: Could not parse \"url\"");
+        return std::unexpected("NtfyMessage::Attachment::create: Could not parse \"url\"");
     }
     const QUrl url(QString::fromStdString(json["url"]));
     if (!(url.isValid() && !url.isEmpty())) {
-        return std::unexpected("NtfyMessage::ViewAction::create: Could not parse \"url\"");
+        return std::unexpected("NtfyMessage::Attachment::create: Could not parse \"url\"");
     }
 
     std::optional<QString> type = std::nullopt;
@@ -461,7 +558,7 @@ std::expected<NtfyMessage::Attachment, std::string> NtfyMessage::Attachment::cre
         if (json["type"].is_string()) {
             type = QString::fromStdString(json["type"]);
         } else {
-            return std::unexpected("NtfyMessage::ViewAction::create: Could not parse \"type\"");
+            return std::unexpected("NtfyMessage::Attachment::create: Could not parse \"type\"");
         }
     }
 
@@ -471,10 +568,10 @@ std::expected<NtfyMessage::Attachment, std::string> NtfyMessage::Attachment::cre
             try {
                 size = json["size"].get<uint64_t>();
             } catch(...){
-                return std::unexpected("NtfyMessage::ViewAction::create: Could not parse \"size\"");
+                return std::unexpected("NtfyMessage::Attachment::create: Could not parse \"size\"");
             }
         } else {
-            return std::unexpected("NtfyMessage::ViewAction::create: Could not parse \"size\"");
+            return std::unexpected("NtfyMessage::Attachment::create: Could not parse \"size\"");
         }
     }
 
@@ -484,10 +581,10 @@ std::expected<NtfyMessage::Attachment, std::string> NtfyMessage::Attachment::cre
             try {
                 expires = json["expires"].get<uint64_t>();
             } catch(...){
-                return std::unexpected("NtfyMessage::ViewAction::create: Could not parse \"expires\"");
+                return std::unexpected("NtfyMessage::Attachment::create: Could not parse \"expires\"");
             }
         } else {
-            return std::unexpected("NtfyMessage::ViewAction::create: Could not parse \"expires\"");
+            return std::unexpected("NtfyMessage::Attachment::create: Could not parse \"expires\"");
         }
     }
 
@@ -499,6 +596,38 @@ std::expected<NtfyMessage::Attachment, std::string> NtfyMessage::Attachment::cre
         expires
     );
 
+}
+
+std::expected<QUrl, std::string> NtfyMessage::Attachment::get_temp_file() const {
+    auto file_res = FileManager::instance().url_to_temp_file(this->url);
+    if (file_res) {
+        return *file_res;
+    } else {
+        return std::unexpected(std::format("NtfyMessage::Attachment::get_temp_file: {}", file_res.error()));
+    }
+}
+
+void NtfyMessage::Attachment::do_user_download() const {
+    QString dest_path = QFileDialog::getSaveFileName(
+        nullptr,
+        "Save Attachment",
+        QStandardPaths::writableLocation(QStandardPaths::HomeLocation)
+    );
+    if (dest_path.isEmpty()) { return; }
+
+    NotificationManager::general_notification("Ntfy Desktop", "Download started: " + dest_path);
+
+    auto file_res = FileManager::instance().url_to_temp_file(this->url);
+    if (file_res) {
+        QString src_path = file_res->toLocalFile();
+        if (QFile::copy(src_path, dest_path)) {
+            NotificationManager::general_notification("Ntfy Desktop", "Download completed: " + dest_path);
+        } else {
+            NotificationManager::general_notification("Ntfy Desktop", "Download failed: " + dest_path);
+        }
+    } else {
+        NotificationManager::general_notification("Ntfy Desktop", "Download failed: " + dest_path);
+    }
 }
 
 std::expected<NtfyMessage::ContentType::Value, std::string> NtfyMessage::ContentType::from_json(const nlohmann::json& json) {
@@ -518,94 +647,110 @@ std::expected<NtfyMessage::ContentType::Value, std::string> NtfyMessage::Content
     }
 }
 
+void NtfyMessage::trigger_click() const {
+    if (this->click) {
+        QDesktopServices::openUrl(*this->click);
+    }
+}
+
+std::expected<std::optional<QUrl>, std::string> NtfyMessage::get_icon_temp_file() const {
+    if (!this->icon) { return std::nullopt; }
+    auto file_res = FileManager::instance().url_to_temp_file(*this->icon);
+    if (file_res) {
+        return *file_res;
+    } else {
+        return std::unexpected(std::format("NtfyMessage::get_icon_temp_file: {}", file_res.error()));
+    }
+}
+
 NtfyMessage::ViewAction::ViewAction(
-    const QString label,
-    const QUrl url,
-    const std::optional<bool> clear
+    QString label,
+    QUrl url,
+    std::optional<bool> clear
 ):
-    label(label),
-    url(url),
+    label(std::move(label)),
+    url(std::move(url)),
     clear(clear) {}
 
 NtfyMessage::BroadcastAction::BroadcastAction(
-    const QString label,
-    const QString intent,
-    const std::optional<std::unordered_map<QString, QString>> extras,
-    const std::optional<bool> clear
+    QString label,
+    QString intent,
+    std::optional<QHash<QString, QString>> extras,
+    std::optional<bool> clear
 ):
-    label(label),
-    intent(intent),
-    extras(extras),
+    label(std::move(label)),
+    intent(std::move(intent)),
+    extras(std::move(extras)),
     clear(clear) {}
 
 NtfyMessage::HttpAction::HttpAction(
-    const QString label,
-    const QUrl url,
-    const std::optional<Method> method,
-    const std::optional<std::unordered_map<QString, QString>> headers,
-    const std::optional<QString> body,
-    const std::optional<bool> clear
+    QString label,
+    QUrl url,
+    std::optional<Method> method,
+    std::optional<QHash<QString, QString>> headers,
+    std::optional<QString> body,
+    std::optional<bool> clear
 ):
-    label(label),
-    url(url),
+    label(std::move(label)),
+    url(std::move(url)),
     method(method),
-    headers(headers),
-    body(body),
+    headers(std::move(headers)),
+    body(std::move(body)),
     clear(clear) {}
 
 NtfyMessage::CopyAction::CopyAction(
-    const QString label,
-    const QString value,
-    const std::optional<bool> clear
+    QString label,
+    QString value,
+    std::optional<bool> clear
 ):
-    label(label),
-    value(value),
+    label(std::move(label)),
+    value(std::move(value)),
     clear(clear) {}
 
 NtfyMessage::Attachment::Attachment(
-    const QString name,
-    const QUrl url,
-    const std::optional<QString> type,
-    const std::optional<uint64_t> size,
-    const std::optional<uint64_t> expires
+    QString name,
+    QUrl url,
+    std::optional<QString> type,
+    std::optional<uint64_t> size,
+    std::optional<uint64_t> expires
 ):
-    name(name),
-    url(url),
-    type(type),
+    name(std::move(name)),
+    url(std::move(url)),
+    type(std::move(type)),
     size(size),
     expires(expires) {}
 
 NtfyMessage::NtfyMessage(
-    const QString json_str,
-    const QString id,
-    const uint64_t time,
-    const uint64_t expires,
-    const Event::Value event,
-    const QString topic,
-    const std::optional<QString> sequence_id,
-    const std::optional<QString> message,
-    const std::optional<QString> title,
-    const std::optional<std::vector<QString>> tags,
-    const std::optional<Priority::Value> priority,
-    const std::optional<QUrl> click,
-    const std::optional<std::vector<std::variant<ViewAction, BroadcastAction, HttpAction, CopyAction>>> actions,
-    const std::optional<Attachment> attachment,
-    const std::optional<QUrl> icon,
-    const std::optional<ContentType::Value> content_type
+    QString json_str,
+    QString id,
+    uint64_t time,
+    uint64_t expires,
+    Event::Value event,
+    QString topic,
+    std::optional<QString> sequence_id,
+    std::optional<QString> message,
+    std::optional<QString> title,
+    std::optional<std::vector<QString>> tags,
+    std::optional<Priority::Value> priority,
+    std::optional<QUrl> click,
+    std::optional<std::vector<std::variant<ViewAction, BroadcastAction, HttpAction, CopyAction>>> actions,
+    std::optional<Attachment> attachment,
+    std::optional<QUrl> icon,
+    std::optional<ContentType::Value> content_type
 ):
-    json_str(json_str),
-    id(id),
+    json_str(std::move(json_str)),
+    id(std::move(id)),
     time(time),
     expires(expires),
     event(event),
-    topic(topic),
-    sequence_id(sequence_id),
-    message(message),
-    title(title),
-    tags(tags),
+    topic(std::move(topic)),
+    sequence_id(std::move(sequence_id)),
+    message(std::move(message)),
+    title(std::move(title)),
+    tags(std::move(tags)),
     priority(priority),
-    click(click),
-    actions(actions),
-    attachment(attachment),
-    icon(icon),
+    click(std::move(click)),
+    actions(std::move(actions)),
+    attachment(std::move(attachment)),
+    icon(std::move(icon)),
     content_type(content_type) {}

@@ -1,15 +1,14 @@
 #pragma once
 
-#include "./NtfyNotification.hpp"
+#include "../NotificationManager/NtfyMessage.hpp"
 
 #include <nlohmann/json.hpp>
 
 #include <string>
 
-class NotificationManager {
-    public:
-        NotificationManager() = delete;
-        static void generalNotification(NtfyNotification ntfyNotification);
-        static void startupNotification();
-        static void errorNotification(const std::string title, const std::string message);
+namespace NotificationManager {
+    void ntfy_notification(const NtfyMessage message);
+    void general_notification(const QString title, const QString message);
+    void startup_notification();
+    void error_notification(const QString title, const QString message);
 };
