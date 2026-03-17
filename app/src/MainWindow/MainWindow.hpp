@@ -20,7 +20,7 @@ QT_END_NAMESPACE
 class MainWindow: public QMainWindow {
         Q_OBJECT
     public:
-        MainWindow(std::shared_ptr<ThreadManager> threadManager, KAboutData& aboutData, QWidget* parent = nullptr);
+        MainWindow(ThreadManager* threadManager, KAboutData& aboutData, QWidget* parent = nullptr);
         ~MainWindow();
     public slots:
         void ntfyProtocolTriggered(ParsedURL url);
@@ -42,13 +42,13 @@ class MainWindow: public QMainWindow {
     private:
         int newTabCounter = 1;
         std::vector<ConfigTab*> tabs;
-        std::shared_ptr<ThreadManager> threadManager;
-        Ui::MainWindow* ui;
+        ThreadManager* threadManager;
         QSystemTrayIcon* tray;
         QMenu* trayMenu;
         QAction* showHideQAction;
         KHelpMenu* helpMenu;
         QTimer* pullButtonTimer;
+        Ui::MainWindow* ui;
 };
 
 class NotificationPuller: public QObject {

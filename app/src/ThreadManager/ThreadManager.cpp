@@ -87,6 +87,6 @@ void ThreadManager::recreateAll() {
             thread->start();
 
             this->workerBundles.push_back(NtfyWorker::Bundle{ std::move(worker), std::move(thread) });
-        } catch (nlohmann::json::out_of_range e) { Logger::get().error("Invalid source in config, ignoring: " + source.dump()); }
+        } catch (nlohmann::json::out_of_range e) { Logger::instance().error("Invalid source in config, ignoring: " + source.dump()); }
     }
 }

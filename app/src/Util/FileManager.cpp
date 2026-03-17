@@ -1,6 +1,5 @@
 #include "FileManager.hpp"
 
-#include "../DataBase/DataBase.hpp"
 #include "../Util/Curl.hpp"
 #include "./Util.hpp"
 #include "ntfyDesktop.hpp"
@@ -12,22 +11,16 @@
 #include <fstream>
 #include <tuple>
 
-FileManagerException::FileManagerException(std::string_view message): message(message) {}
-
-const char* FileManagerException::what() const noexcept { return this->message.c_str(); }
-
-std::map<QUrl, std::pair<std::unique_ptr<std::mutex>, QTemporaryFile*>> FileManager::tempFileHolder = {};
-std::mutex FileManager::tempFileHolderLock = std::mutex();
-
-void FileManager::init() {
-    QObject::connect(QCoreApplication::instance(), &QCoreApplication::aboutToQuit, []() { FileManager::cleanup(); });
+FileManager& FileManager::instance() {
+    static FileManager* instance = new FileManager(QApplication::instance());
+    return *instance;
 }
 
-QUrl FileManager::urlToTempFile(QUrl url, bool outsidePath) {
-    FileManager::tempFileHolderLock.lock();
-    auto target = FileManager::tempFileHolder.find(url);
-    bool found = target != FileManager::tempFileHolder.end();
-    FileManager::tempFileHolderLock.unlock();
+std::expected<QUrl, std::string> FileManager::url_to_temp_file(QUrl url, bool outsidePath) {
+    this->mutex.lock();
+    auto target = this->files.find(url);
+    bool found = target != this->files.end();
+    this->mutex.unlock();
 
     if (found) {
         target->second.first->lock();
@@ -37,21 +30,25 @@ QUrl FileManager::urlToTempFile(QUrl url, bool outsidePath) {
         return QUrl::fromLocalFile(fileName);
     }
 
-    QTemporaryFile* file = new QTemporaryFile();
-    FileManager::tempFileHolderLock.lock();
-    auto [iterator, inserted] = FileManager::tempFileHolder.emplace(url, std::make_pair(std::make_unique<std::mutex>(), file));
-    FileManager::tempFileHolderLock.unlock();
+    QTemporaryFile* file = new QTemporaryFile(this);
+    this->mutex.lock();
+    auto [iterator, inserted] = this->files.emplace(url, std::make_pair(std::make_unique<std::mutex>(), file));
+    this->mutex.unlock();
 
     std::lock_guard<std::mutex> guard(*iterator->second.first);
 
-    if (!file->open()) { throw FileManagerException("Unable to create temporary file."); }
+    if (!file->open()) { return std::unexpected("Unable to create temporary file."); }
     file->setAutoRemove(true);
 
     std::ofstream fileStream(file->fileName().toStdString(), std::ios::binary);
     Curl curlInstance = Curl::withDefaults();
 
     curlInstance.setOpt(CURLOPT_URL, url.toString().toStdString().c_str());
-    curlInstance.setOpt(CURLOPT_WRITEFUNCTION, FileManager::urlToTempFileWriteCallback);
+    curlInstance.setOpt(CURLOPT_WRITEFUNCTION, +[](char* ptr, size_t size, size_t nmemb, void* userdata) -> size_t {
+        std::ofstream* fileStream = static_cast<std::ofstream*>(userdata);
+        fileStream->write(ptr, size * nmemb);
+        return size * nmemb;
+    });
     curlInstance.setOpt(CURLOPT_WRITEDATA, &fileStream);
     curlInstance.setOpt(CURLOPT_FOLLOWLOCATION, 1L);
 
@@ -59,7 +56,7 @@ QUrl FileManager::urlToTempFile(QUrl url, bool outsidePath) {
     curlInstance.setOpt(CURLOPT_ERRORBUFFER, curlError);
 
     if (curl_easy_perform(curlInstance.handle()) != CURLE_OK) {
-        throw FileManagerException(std::format("Failed to download file: {}", curlError));
+        return std::unexpected(std::format("Failed to download file: {}", curlError));
     }
 
     QString fileName = file->fileName();
@@ -67,18 +64,4 @@ QUrl FileManager::urlToTempFile(QUrl url, bool outsidePath) {
     return QUrl::fromLocalFile(fileName);
 }
 
-void FileManager::cleanup() {
-    for (auto& [url, file]: FileManager::tempFileHolder) {
-        if (file.second) {
-            delete file.second;
-            file.second = nullptr;
-        }
-    }
-    FileManager::tempFileHolder.clear();
-}
-
-size_t FileManager::urlToTempFileWriteCallback(char* ptr, size_t size, size_t nmemb, void* userdata) {
-    std::ofstream* fileStream = static_cast<std::ofstream*>(userdata);
-    fileStream->write(ptr, size * nmemb);
-    return size * nmemb;
-}
+FileManager::FileManager(QObject* parent): QObject(parent) {}

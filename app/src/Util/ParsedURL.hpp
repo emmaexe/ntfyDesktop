@@ -1,24 +1,16 @@
 #pragma once
 
-#include <exception>
+#include <expected>
 #include <map>
 #include <string>
 #include <vector>
-
-class ParsedURLException: public std::exception {
-    public:
-        ParsedURLException(std::string_view message);
-        const char* what() const noexcept;
-    private:
-        std::string message;
-};
 
 /**
  * @brief Struct representing a URL. Creates an immutable object that holds parsed data from a URL.
  */
 struct ParsedURL {
     public:
-        ParsedURL(std::string_view url);
+        static std::expected<ParsedURL, std::string> from_string(std::string_view url);
         /**
          * @brief The protocol of the parsed URL. (e.g. for `https://www.example.org/some/path/?help=true&data=abc` this would be `https`)
          */
@@ -36,7 +28,8 @@ struct ParsedURL {
          */
         const std::map<const std::string, const std::string>& params();
     private:
-        std::string internalProtocol = "", internalDomain = "";
-        std::vector<std::string> internalPath = {};
-        std::map<const std::string, const std::string> internalParams = {};
+        ParsedURL(std::string protocol, std::string domain, std::vector<std::string> path, std::map<const std::string, const std::string> params);
+        std::string m_protocol = "", m_domain = "";
+        std::vector<std::string> m_path = {};
+        std::map<const std::string, const std::string> m_params = {};
 };

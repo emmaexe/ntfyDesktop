@@ -19,7 +19,7 @@
 
 using Util::Colors::ColorMode;
 
-MainWindow::MainWindow(std::shared_ptr<ThreadManager> threadManager, KAboutData& aboutData, QWidget* parent): QMainWindow(parent), ui(new Ui::MainWindow), threadManager(threadManager) {
+MainWindow::MainWindow(ThreadManager* threadManager, KAboutData& aboutData, QWidget* parent): QMainWindow(parent), ui(new Ui::MainWindow), threadManager(threadManager) {
     this->ui->setupUi(this);
     QObject::connect(this->ui->saveAction, &QAction::triggered, this, &MainWindow::saveAction);
     QObject::connect(this->ui->addAction, &QAction::triggered, this, &MainWindow::addAction);
@@ -52,20 +52,20 @@ MainWindow::MainWindow(std::shared_ptr<ThreadManager> threadManager, KAboutData&
 
     this->trayMenu = new QMenu(this);
 
-    this->showHideQAction = new QAction(QIcon(":/icons/ntfy-symbolic.svg"), QAction::tr("Show/hide window"), this);
+    this->showHideQAction = new QAction(QIcon(":/icons/dark/ntfy-symbolic.svg"), QAction::tr("Show/hide window"), this);
     QObject::connect(this->showHideQAction, &QAction::triggered, this, &MainWindow::showHideAction);
     this->trayMenu->addAction(this->showHideQAction);
     this->trayMenu->addAction(this->ui->restartAction);
     this->trayMenu->addAction(this->ui->exitAction);
 
     this->tray = new QSystemTrayIcon(this);
-    this->tray->setIcon(QIcon(":/icons/ntfy-symbolic.svg").pixmap(236, 236));
+    this->tray->setIcon(QIcon(":/icons/dark/ntfy-symbolic.svg").pixmap(236, 236));
     this->tray->setContextMenu(this->trayMenu);
     this->tray->show();
     QObject::connect(this->tray, &QSystemTrayIcon::activated, this, &MainWindow::trayIconPressed);
 
     this->helpMenu = new KHelpMenu(this, aboutData);
-    this->helpMenu->action(KHelpMenu::MenuId::menuAboutApp)->setIcon(QIcon(QStringLiteral(":/icons/ntfyDesktop.svg")));
+    this->helpMenu->action(KHelpMenu::MenuId::menuAboutApp)->setIcon(QIcon(QStringLiteral(":/icons/dark/ntfyDesktop.svg")));
     this->ui->menuBar->addMenu(this->helpMenu->menu());
 
     this->pullButtonTimer = new QTimer(this);
@@ -289,7 +289,7 @@ void MainWindow::pullButtonResults(const bool success) {
 NotificationPuller::NotificationPuller(const nlohmann::json& sources): sources(sources) {}
 
 void NotificationPuller::run() {
-    Logger& logger = Logger::get();
+    Logger& logger = Logger::instance();
     std::atomic<bool> error = false;
     std::vector<NtfyWorker::Bundle> workerBundles;
 

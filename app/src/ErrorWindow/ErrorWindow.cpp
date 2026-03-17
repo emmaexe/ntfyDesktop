@@ -13,7 +13,7 @@ ErrorWindow::ErrorWindow(KAboutData& aboutData, QWidget* parent): QMainWindow(pa
     QObject::connect(this->ui->ResetButton, &QPushButton::clicked, this, &ErrorWindow::resetConfig);
 
     this->helpMenu = new KHelpMenu(this, aboutData);
-    this->helpMenu->action(KHelpMenu::MenuId::menuAboutApp)->setIcon(QIcon(QStringLiteral(":/icons/ntfyDesktop.svg")));
+    this->helpMenu->action(KHelpMenu::MenuId::menuAboutApp)->setIcon(QIcon(QStringLiteral(":/icons/dark/ntfyDesktop.svg")));
     this->ui->menuBar->addMenu(this->helpMenu->menu());
     this->show();
 }

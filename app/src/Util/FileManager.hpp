@@ -1,39 +1,33 @@
 #pragma once
 
+#include <QObject>
 #include <QTemporaryFile>
 #include <QUrl>
-#include <exception>
+#include <expected>
 #include <mutex>
 #include <string>
 
-class FileManagerException: public std::exception {
-    public:
-        FileManagerException(std::string_view message);
-        const char* what() const throw();
-    private:
-        std::string message;
-};
-
 /**
- * @brief Static class with misc file managment functionality
+ * @brief A singleton with misc file managment functionality
  */
-class FileManager {
+class FileManager: public QObject {
+        Q_OBJECT
+        Q_DISABLE_COPY(FileManager)
     public:
-        FileManager() = delete;
         /**
-         * @brief Initialize the FileManager
+         * @brief Get the singleton instance
          */
-        static void init();
+        static FileManager& instance();
+
         /**
          * @brief Temporarly download a file from the web.
          *
          * @param url Url to a file on the web.
          * @return QUrl - Url to a temporary locally downloaded copy of the file from the web. The file will be deleted when the QApplication exits.
          */
-        static QUrl urlToTempFile(QUrl url, bool outsidePath = false);
+        std::expected<QUrl, std::string> url_to_temp_file(QUrl url, bool outsidePath = false);
     private:
-        static void cleanup();
-        static size_t urlToTempFileWriteCallback(char* ptr, size_t size, size_t nmemb, void* userdata);
-        static std::map<QUrl, std::pair<std::unique_ptr<std::mutex>, QTemporaryFile*>> tempFileHolder;
-        static std::mutex tempFileHolderLock;
+        FileManager(QObject* parent = nullptr);
+        std::map<QUrl, std::pair<std::unique_ptr<std::mutex>, QTemporaryFile*>> files;
+        std::mutex mutex;
 };

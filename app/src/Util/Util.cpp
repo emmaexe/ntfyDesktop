@@ -4,11 +4,13 @@
 
 #include <QApplication>
 #include <QCryptographicHash>
+#include <QPainter>
 #include <QSpacerItem>
+#include <QSvgRenderer>
 #include <algorithm>
-#include <cstdlib>
 #include <iomanip>
 #include <memory>
+#include <random>
 #include <regex>
 #include <stdexcept>
 
@@ -121,6 +123,20 @@ namespace Util {
         const QColor buttonTextColor() { return QApplication::palette().color(QPalette::ButtonText); }
         const QColor buttonTextColorSuccess() { return buttonTextColor(); }
         const QColor buttonTextColorFailure() { return buttonTextColor(); }
+        bool is_dark_mode() { return QApplication::palette().color(QPalette::Window).lightness() < 128; }
+    }
+
+    namespace Placeholders {
+        QPixmap image_missing(int size) {
+            QPixmap pixmap(size, size);
+            pixmap.fill(Qt::transparent);
+
+            QSvgRenderer renderer(Colors::is_dark_mode() ? QStringLiteral(":/misc/noimage-dark.svg") : QStringLiteral(":/misc/noimage-light.svg"));
+            QPainter painter(&pixmap);
+            renderer.render(&painter);
+
+            return pixmap;
+        }
     }
 
     namespace Env {
@@ -130,7 +146,11 @@ namespace Util {
         }
     }
 
-    int random(int min, int max) { return rand() % (max - min + 1) + min; }
+    int random(int min, int max) {
+        static thread_local std::mt19937 engine(std::random_device{}());
+        std::uniform_int_distribution<int> dist(min, max);
+        return dist(engine);
+    }
 
     bool isDomain(const std::string& domain) { return std::regex_match(domain, std::regex("^[-.0-9:A-Za-z]+$")); }
 

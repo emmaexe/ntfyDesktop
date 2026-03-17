@@ -18,7 +18,7 @@
   </property>
   <property name="windowIcon">
    <iconset theme="moe.emmaexe.ntfyDesktop" resource="../../resources/resources.qrc">
-    <normaloff>:/icons/ntfyDesktop.svg</normaloff>:/icons/ntfyDesktop.svg</iconset>
+    <normaloff>:/icons/dark/ntfyDesktop.svg</normaloff>:/icons/dark/ntfyDesktop.svg</iconset>
   </property>
   <property name="modal">
    <bool>true</bool>

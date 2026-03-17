@@ -1,10 +1,9 @@
 <RCC>
-  <qresource prefix="icons">
-    <file>ntfyDesktop.svg</file>
-    <file>ntfy-nobg.svg</file>
-    <file>ntfy-symbolic.svg</file>
-  </qresource>
-  <qresource prefix="config">
-    <file>defaultConfig.json</file>
+  <qresource prefix="/">
+    <file>icons/dark/ntfyDesktop.svg</file>
+    <file>icons/dark/ntfy-symbolic.svg</file>
+    <file>misc/dark/image-missing.svg</file>
+    <file>misc/light/image-missing.svg</file>
+    <file>config/defaultConfig.json</file>
   </qresource>
 </RCC>

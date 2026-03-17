@@ -4,39 +4,41 @@
 
 #include <format>
 
-ParsedURLException::ParsedURLException(std::string_view message): message(message) {}
-
-const char* ParsedURLException::what() const noexcept { return this->message.c_str(); }
-
-ParsedURL::ParsedURL(std::string_view url) {
-    if (!Util::Strings::contains(url, "://")) {
-        throw ParsedURLException(std::format("\"{}\" is not a valid url.", url));
-    }
+std::expected<ParsedURL, std::string> ParsedURL::from_string(std::string_view url) {
+    if (!Util::Strings::contains(url, "://")) { return std::unexpected(std::format("\"{}\" is not a valid url.", url)); }
     std::vector<std::string> parts = Util::Strings::split(url, "://");
 
-    this->internalProtocol = parts[0];
+    std::string protocol = "", domain = "";
+    std::vector<std::string> path = {};
+    std::map<const std::string, const std::string> params = {};
+
+    protocol = parts[0];
     parts = Util::Strings::split(parts[1], "/");
 
-    this->internalDomain = parts[0];
-    for (int i = 1; i < parts.size() - 1; i++) { this->internalPath.push_back(parts[i]); }
+    domain = parts[0];
+    for (int i = 1; i < parts.size() - 1; i++) { path.push_back(parts[i]); }
 
     parts = Util::Strings::split(parts.back(), "?");
-    this->internalPath.push_back(parts[0]);
+    path.push_back(parts[0]);
 
     if (parts.size() > 1 && !parts.back().empty()) {
         parts = Util::Strings::split(parts.back(), "&");
         for (int i = 0; i < parts.size(); i++) {
             std::vector<std::string> pair = Util::Strings::split(parts[i], "=");
             if (pair.size() != 2) { continue; }
-            this->internalParams.insert(std::make_pair(pair[0], pair[1]));
+            params.insert(std::make_pair(pair[0], pair[1]));
         }
     }
+
+    return ParsedURL(protocol, domain, path, params);
 }
 
-const std::string& ParsedURL::protocol() { return this->internalProtocol; }
+ParsedURL::ParsedURL(std::string protocol, std::string domain, std::vector<std::string> path, std::map<const std::string, const std::string> params): m_protocol(protocol), m_domain(domain), m_path(path), m_params(params) {}
 
-const std::string& ParsedURL::domain() { return this->internalDomain; }
+const std::string& ParsedURL::protocol() { return this->m_protocol; }
 
-const std::vector<std::string>& ParsedURL::path() { return this->internalPath; }
+const std::string& ParsedURL::domain() { return this->m_domain; }
 
-const std::map<const std::string, const std::string>& ParsedURL::params() { return this->internalParams; }
+const std::vector<std::string>& ParsedURL::path() { return this->m_path; }
+
+const std::map<const std::string, const std::string>& ParsedURL::params() { return this->m_params; }

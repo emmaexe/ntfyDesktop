@@ -1,6 +1,7 @@
 #include "ImportDialog.hpp"
 
 #include "../Config/Config.hpp"
+#include "../Util/Logging.hpp"
 #include "../Util/ParsedURL.hpp"
 #include "../Util/Util.hpp"
 #include "ntfyDesktop.hpp"
@@ -37,14 +38,20 @@ void ImportDialog::fileSelectButton() {
                     int entryCounter = 1;
 
                     for (nlohmann::json source: data["subscriptions"]) {
-                        ParsedURL parsedUrl(source["baseUrl"].get<std::string>());
-                        nlohmann::json entry = nlohmann::json::object();
-                        entry["name"] = source.contains("displayName") ? std::string(source["displayName"]) : "Imported Notification Source " + std::to_string(entryCounter);
-                        entry["domain"] = parsedUrl.domain();
-                        entry["topic"] = source["topic"];
-                        entry["protocol"] = (parsedUrl.protocol() == "http" || parsedUrl.protocol() == "https" || parsedUrl.protocol() == "ws" || parsedUrl.protocol() == "wss") ? parsedUrl.protocol() : "https";
-                        this->internalTempConfig["sources"].push_back(entry);
-                        entryCounter++;
+                        auto parsed_url = ParsedURL::from_string(source["baseUrl"].get<std::string>());
+                        if (parsed_url.has_value()) {
+                            nlohmann::json entry = nlohmann::json::object();
+                            entry["name"] = source.contains("displayName") ? std::string(source["displayName"]) : "Imported Notification Source " + std::to_string(entryCounter);
+                            entry["domain"] = parsed_url->domain();
+                            entry["topic"] = source["topic"];
+                            entry["protocol"] = (parsed_url->protocol() == "http" || parsed_url->protocol() == "https" || parsed_url->protocol() == "ws" || parsed_url->protocol() == "wss") ?
+                                parsed_url->protocol() :
+                                "https";
+                            this->internalTempConfig["sources"].push_back(entry);
+                            entryCounter++;
+                        } else {
+                            Logger::instance().error(std::format("Failed to parse an ntfy source during import, skipping: {}", parsed_url.error()));
+                        }
                     }
 
                     this->fileSuccess("Backup loaded successfully. Press the apply button to merge it into the current config.", this->internalTempConfig.dump());
