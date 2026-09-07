@@ -38,6 +38,14 @@ namespace NtfyWorker {
         curlInstance.setOpt(CURLOPT_CONNECTTIMEOUT, 10L);
         curlInstance.setOpt(CURLOPT_HTTPHEADER, headers.handle());
 
+        // Detect dead connections (e.g. after system suspend/resume or a network change), since
+        // ntfy's streaming endpoint otherwise leaves curl blocked forever reading from a stale socket.
+        curlInstance.setOpt(CURLOPT_TCP_KEEPALIVE, 1L);
+        curlInstance.setOpt(CURLOPT_TCP_KEEPIDLE, 60L);
+        curlInstance.setOpt(CURLOPT_TCP_KEEPINTVL, 60L);
+        curlInstance.setOpt(CURLOPT_LOW_SPEED_LIMIT, 1L);
+        curlInstance.setOpt(CURLOPT_LOW_SPEED_TIME, 120L);
+
         std::string url = std::format(
             "{}://{}/{}/{}",
             this->options.protocol == "https" || this->options.protocol == "http" || this->options.protocol == "wss" || this->options.protocol == "ws" ? this->options.protocol : "https",
