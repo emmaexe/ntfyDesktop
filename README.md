@@ -86,6 +86,47 @@ Example installation method, using the `yay` AUR helper:
 yay ntfydesktop
 ```
 
+## Nix
+
+Running on Nix is no different to any other idiomatic nix-based project.\
+Examples all use the [new `nix` command](https://wiki.nixos.org/wiki/Nix_(command)).
+
+### Testing
+If you want to test the application out simply:
+```bash
+nix run github:emmaexe/ntfyDesktop
+```
+or if you've cloned the repository
+```bash
+nix run .
+```
+
+### Installation
+
+If you like what you see you have two options for installation:
+- Flakes\
+  Add to your flake.nix
+  ```nix
+  {
+    inputs.ntfyDesktop.url = "github:emmaexe/ntfyDesktop";
+  }
+  ```
+
+  Then install the package:
+  ```nix
+  {pkgs, ntfyDesktop, ...}: let
+    inherit ntfyDesktop.packages.${pkgs.stdenv.hostPlatform.system}.ntfyDesktop;
+  in {
+    environment.systemPackages = [ntfyDesktop];
+    # Or just for your user
+    users.users.yourusername.packages = [ntfyDesktop];
+  }
+  ```
+- Profiles (usually frowned upon)
+  ```bash
+  nix profile add github:emmaexe/ntfyDesktop
+  ```
+
 ### Manual installation
 
 You can download the latest build artifacts in the [latest release](https://github.com/emmaexe/ntfyDesktop/releases/latest) for manual installation.

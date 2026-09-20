@@ -20,3 +20,6 @@ _deps
 
 # Dolphin/KDE
 .directory
+
+# Nix
+/result
